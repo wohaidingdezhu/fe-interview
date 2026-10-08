@@ -1,0 +1,117 @@
+[
+  {
+    "id": "react-learn",
+    "title": "React 官方学习指南",
+    "url": "https://zh-hans.react.dev/learn",
+    "description": "从组件、状态与交互开始，系统学习 React 的基础概念。",
+    "source": "React 官方",
+    "type": "官方文档",
+    "category": "React",
+    "tags": [
+      "React",
+      "基础"
+    ],
+    "addedAt": "2026-10-08"
+  },
+  {
+    "id": "react-state-guide",
+    "title": "State 如同一张快照",
+    "url": "https://zh-hans.react.dev/learn/state-as-a-snapshot",
+    "description": "理解一次渲染中的状态值，以及事件处理器为什么会读取旧状态。",
+    "source": "React 官方",
+    "type": "官方文档",
+    "category": "React",
+    "tags": [
+      "React",
+      "状态",
+      "面试"
+    ],
+    "addedAt": "2026-10-08"
+  },
+  {
+    "id": "mdn-js-guide",
+    "title": "JavaScript 指南",
+    "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide",
+    "description": "涵盖语言基础、函数、对象与异步编程的 JavaScript 学习资料。",
+    "source": "MDN",
+    "type": "官方文档",
+    "category": "JavaScript",
+    "tags": [
+      "JavaScript",
+      "基础"
+    ],
+    "addedAt": "2026-10-07"
+  },
+  {
+    "id": "mdn-closures",
+    "title": "闭包与词法作用域",
+    "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Closures",
+    "description": "结合代码理解词法作用域、闭包的用途和常见误区。",
+    "source": "MDN",
+    "type": "官方文档",
+    "category": "JavaScript",
+    "tags": [
+      "JavaScript",
+      "闭包",
+      "面试"
+    ],
+    "addedAt": "2026-10-07"
+  },
+  {
+    "id": "mdn-cache",
+    "title": "HTTP 缓存指南",
+    "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching",
+    "description": "了解缓存新鲜度、验证器与 Cache-Control 的使用方式。",
+    "source": "MDN",
+    "type": "官方文档",
+    "category": "浏览器与网络",
+    "tags": [
+      "网络",
+      "性能",
+      "面试"
+    ],
+    "addedAt": "2026-10-06"
+  },
+  {
+    "id": "vite-guide",
+    "title": "Vite 入门指南",
+    "url": "https://vite.dev/guide/",
+    "description": "了解开发服务器、构建命令与项目配置，从零搭建前端工程。",
+    "source": "Vite 官方",
+    "type": "官方文档",
+    "category": "工程化",
+    "tags": [
+      "Vite",
+      "工程化"
+    ],
+    "addedAt": "2026-10-06"
+  },
+  {
+    "id": "vite-repository",
+    "title": "Vite 开源项目",
+    "url": "https://github.com/vitejs/vite",
+    "description": "查看 Vite 的源码、更新记录和社区讨论。",
+    "source": "GitHub · vitejs",
+    "type": "开源项目",
+    "category": "工程化",
+    "tags": [
+      "Vite",
+      "源码"
+    ],
+    "addedAt": "2026-10-05"
+  },
+  {
+    "id": "typescript-playground",
+    "title": "TypeScript Playground",
+    "url": "https://www.typescriptlang.org/play/",
+    "description": "在线验证类型推导、检查编译结果并分享 TypeScript 示例。",
+    "source": "TypeScript 官方",
+    "type": "工具",
+    "category": "TypeScript",
+    "tags": [
+      "TypeScript",
+      "工具"
+    ],
+    "addedAt": "2026-10-05"
+  }
+]
