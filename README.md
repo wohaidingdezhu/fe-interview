@@ -106,6 +106,6 @@ order: 20
 
 计划地址：`https://wohaidingdezhu.github.io/fe-interview/`，由独立 `fe-interview` 仓库管理，和原博客主页共存。
 
-源码仓库：`https://github.com/wohaidingdezhu/fe-interview`，当前为私有仓库。文档转换草稿 `draft_*_folder/` 仅保留在本地，不进入源码仓库。
+源码仓库：`https://github.com/wohaidingdezhu/fe-interview`，当前为公开仓库。文档转换草稿 `draft_*_folder/` 仅保留在本地，不进入源码仓库。
 
-尚未发布网站。发布时再确认仓库可见性与 Pages 可用性，配置 GitHub Actions 自动构建并上传 `dist/`，无需向原博客发布仓库强制推送。
+尚未发布网站。发布时配置 GitHub Actions 自动构建并上传 `dist/`，无需向原博客发布仓库强制推送。
