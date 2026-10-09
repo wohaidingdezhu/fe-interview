@@ -24,6 +24,29 @@ test('Markdown 元数据自动解析，支持 CRLF 与包含冒号的标题', ()
   assert.equal(result.title, 'React: 状态'); assert.deepEqual(result.tags, ['React']); assert.equal(result.content, '## 正文');
   assert.throws(() => parseArticle('## 无元数据', 'bad.md'), /缺少 YAML/);
 });
+test('文章元数据支持搜索别名、相关文章和保鲜日期', () => {
+  const raw = `---
+id: chrome-devtools
+title: Chrome 调试
+category: 浏览器
+description: 调试流程
+kind: 知识文章
+tags: [Chrome]
+aliases: [Google 浏览器调试, F12 调试, F12 调试]
+related: [http-cache, http-cache]
+addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
+reviewedAt: "2026-10-09"
+---
+## 正文`;
+  const article = parseArticle(raw, 'chrome.md');
+  assert.deepEqual(article.aliases, ['Google 浏览器调试', 'F12 调试']);
+  assert.deepEqual(article.related, ['http-cache']);
+  assert.equal(article.updatedAt, '2026-10-09'); assert.equal(article.reviewedAt, '2026-10-09');
+  assert.throws(() => parseArticle(raw.replace('related: [http-cache, http-cache]', 'related: [Bad_ID]'), 'bad-related.md'), /相关文章 ID/);
+  assert.throws(() => parseArticle(raw.replace('updatedAt: "2026-10-09"', 'updatedAt: "2026-10-07"'), 'bad-date.md'), /早于 addedAt/);
+  assert.throws(() => parseArticle(raw.replace('reviewedAt: "2026-10-09"', 'reviewedAt: "2026-02-30"'), 'bad-review.md'), /有效的 YYYY-MM-DD/);
+});
 test('组合筛选对多个标签取交集，分页越界可恢复，并且不修改源数据', () => {
   const items = [resource, { ...resource, id: 'old', addedAt: '2026-10-01', tags: ['React'] }, { ...resource, id: 'network', category: '网络', tags: ['面试'], title: '缓存' }];
   const filters = { query: 'react 状态', category: 'React', tags: ['React', '面试'], type: '官方文档', sort: 'newest', page: 99, pageSize: 1 };
@@ -36,6 +59,23 @@ test('组合筛选对多个标签取交集，分页越界可恢复，并且不�
 test('空结果及异常页码不会产生空分页范围', () => {
   const result = filterItems([resource], { query: '不存在', category: '', tags: [], type: '', sort: 'title', page: -3, pageSize: 0 });
   assert.equal(result.page, 1); assert.equal(result.pages, 1); assert.deepEqual(result.items, []);
+});
+test('维护状态筛选区分待补充、待审核、草稿和已公开内容', () => {
+  const items = [
+    { ...resource, id: 'incomplete', status: 'draft', quality: 'incomplete' },
+    { ...resource, id: 'ready', status: 'draft', quality: 'complete' },
+    { ...resource, id: 'published', status: 'published', quality: 'complete' },
+    { ...resource, id: 'external-draft', status: 'draft' },
+  ];
+  const base = { query: '', category: '', tags: [], type: '', sort: 'title', page: 1, pageSize: 20 };
+  const ids = (maintenance) => filterItems(items, { ...base, maintenance }).items.map((item) => item.id);
+  assert.deepEqual(ids('incomplete'), ['incomplete']);
+  assert.deepEqual(ids('ready'), ['ready']);
+  assert.deepEqual(ids('draft'), ['incomplete', 'ready', 'external-draft']);
+  assert.deepEqual(ids('published'), ['published']);
+  const partial = { ...resource, id: 'partial', status: 'draft', quality: 'incomplete', questionCount: 36, publishedQuestionCount: 3 };
+  const emptyTopic = { ...partial, id: 'empty-topic', publishedQuestionCount: 0 };
+  assert.deepEqual(filterItems([partial, emptyTopic], { ...base, maintenance: 'published' }).items.map(item => item.id), ['partial']);
 });
 test('笔记列表搜索正文，与全站全文检索保持一致', () => {
   const result = filterItems([{ ...resource, content: '这段正文提到了事件循环' }], { query: '事件循环', category: '', tags: [], type: '', sort: 'newest', page: 1, pageSize: 6 });

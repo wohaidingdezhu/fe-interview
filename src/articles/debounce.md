@@ -5,10 +5,14 @@ category: "手写题"
 kind: "手写题解"
 description: "从搜索输入场景开始，写出支持参数、this 和取消的防抖函数。"
 tags: ["JavaScript", "手写题", "面试"]
+aliases: ["debounce", "搜索框防抖", "延迟执行"]
+related: ["closure", "event-loop"]
 addedAt: "2026-10-08"
 order: 4
 status: published
 quality: complete
+sources: ["https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout","https://developer.mozilla.org/en-US/docs/Web/API/Window/clearTimeout"]
+technologyVersion: "现代 JavaScript；浏览器定时器 API"
 ---
 
 ## 题目要求

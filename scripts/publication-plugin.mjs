@@ -37,9 +37,11 @@ export function publicationPlugin() {
           response.setHeader('Content-Type', 'application/json; charset=utf-8'); response.setHeader('Cache-Control', 'no-cache'); response.end(asset.source);
         } catch (error) { next(error); }
       });
-      server.watcher.add([resolve(root, 'src/articles'), resolve(root, 'src/data/resources.json')]);
+      const resourcesFile = resolve(root, 'src/data/resources.json');
+      const questionPublicationFile = resolve(root, 'src/data/question-publication.json');
+      server.watcher.add([resolve(root, 'src/articles'), resourcesFile, questionPublicationFile]);
       const reload = (file) => {
-        if (file.startsWith(resolve(root, 'src/articles') + '/') || file === resolve(root, 'src/data/resources.json')) {
+        if (file.startsWith(resolve(root, 'src/articles') + '/') || file === resourcesFile || file === questionPublicationFile) {
           const module = server.moduleGraph.getModuleById(virtualId);
           if (module) server.moduleGraph.invalidateModule(module);
           server.ws.send({ type: 'full-reload' });

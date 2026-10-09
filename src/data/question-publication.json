@@ -1,0 +1,32 @@
+{
+  "Q134": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toPrimitive"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q137": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/clearTimeout"
+    ],
+    "technologyVersion": "现代 JavaScript；浏览器定时器 API",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q138": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now"
+    ],
+    "technologyVersion": "现代 JavaScript；浏览器定时器 API",
+    "reviewedAt": "2026-10-09"
+  }
+}

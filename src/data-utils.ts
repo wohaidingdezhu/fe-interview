@@ -2,6 +2,10 @@ import { parse } from 'yaml';
 
 export const resourceTypes = ['文章', '官方文档', '视频', '工具', '开源项目'] as const;
 export type PublicationStatus = 'draft' | 'published';
+export type QuestionPublication = {
+  status: PublicationStatus; quality: 'complete' | 'incomplete'; sources: string[];
+  technologyVersion?: string; reviewedAt?: string;
+};
 export type Resource = {
   id: string; title: string; url: string; description: string; source: string;
   type: typeof resourceTypes[number]; category: string; tags: string[]; addedAt: string; status: PublicationStatus;
@@ -10,8 +14,11 @@ export type Article = {
   id: string; title: string; category: string; description: string;
   kind: '阅读指南' | '知识文章' | '手写题解'; tags: string[]; addedAt: string; order: number; content: string;
   status: PublicationStatus; quality: 'complete' | 'incomplete'; sources: string[]; technologyVersion?: string;
+  aliases: string[]; related: string[]; updatedAt?: string; reviewedAt?: string;
 };
-export type ArticleMetadata = Omit<Article, 'content'> & { contentLength: number; bodyPath: string };
+export type ArticleMetadata = Omit<Article, 'content'> & {
+  contentLength: number; bodyPath: string; questionCount: number; publishedQuestionCount: number;
+};
 function record(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${label} 必须是对象`);
   return value as Record<string, unknown>;
@@ -35,6 +42,10 @@ function tags(value: unknown, label: string): string[] {
   if (!Array.isArray(value)) throw new Error(`${label} 必须是字符串数组`);
   return [...new Set(value.map((tag) => text(tag, label)))];
 }
+function identifiers(value: unknown, label: string): string[] {
+  if (!Array.isArray(value)) throw new Error(`${label} 必须是 ID 数组`);
+  return [...new Set(value.map((item) => identifier(item, label)))];
+}
 function date(value: unknown, label: string): string {
   const result = text(value, label);
   const timestamp = new Date(`${result}T00:00:00Z`);
@@ -51,6 +62,25 @@ export function validateURL(value: unknown): string {
     throw new Error(`URL 必须是无账号密码的 HTTP(S) 链接：${input}`);
   }
   return input;
+}
+export function validateQuestionPublicationMap(value: unknown): Record<string, QuestionPublication> {
+  const data = record(value, '逐题发布清单');
+  const result: Record<string, QuestionPublication> = {};
+  for (const [key, raw] of Object.entries(data)) {
+    if (!/^Q[1-9]\d*$/.test(key)) throw new Error(`逐题发布清单键 ${key} 必须是 Q数字`);
+    const item = record(raw, key);
+    const quality = item.quality ?? 'incomplete';
+    if (quality !== 'complete' && quality !== 'incomplete') throw new Error(`${key} 的 quality 必须是 complete 或 incomplete`);
+    const sources = item.sources ?? [];
+    if (!Array.isArray(sources)) throw new Error(`${key} 的 sources 必须是 URL 数组`);
+    result[key] = {
+      status: publicationStatus(item, key), quality,
+      sources: sources.map((source) => validateURL(source)),
+      technologyVersion: item.technologyVersion === undefined ? undefined : text(item.technologyVersion, `${key} 技术版本`),
+      reviewedAt: item.reviewedAt === undefined ? undefined : date(item.reviewedAt, `${key} 审核日期`),
+    };
+  }
+  return result;
 }
 // 忽略定位片段与常见跟踪参数，保留影响正文的查询参数。
 export function canonicalURL(value: string): string {
@@ -88,14 +118,19 @@ export function parseArticle(raw: string, path: string): Article {
   if (quality !== 'complete' && quality !== 'incomplete') throw new Error(`${path} 的 quality 必须是 complete 或 incomplete`);
   const sources = data.sources ?? [];
   if (!Array.isArray(sources)) throw new Error(`${path} 的 sources 必须是 URL 数组`);
+  const addedAt = date(data.addedAt, `${path}日期`);
+  const updatedAt = data.updatedAt === undefined ? undefined : date(data.updatedAt, `${path}更新日期`);
+  if (updatedAt && updatedAt < addedAt) throw new Error(`${path} 的 updatedAt 不能早于 addedAt`);
   return {
     id: identifier(data.id, `${path} ID`), title: text(data.title, `${path}标题`),
     category: text(data.category, `${path}分类`), description: text(data.description, `${path}简介`),
     kind: kind as Article['kind'], tags: tags(data.tags, `${path}标签`),
-    addedAt: date(data.addedAt, `${path}日期`), order, content: text(match[2], `${path}正文`),
+    addedAt, order, content: text(match[2], `${path}正文`),
     status: publicationStatus(data, path), quality,
     sources: sources.map((value: unknown) => validateURL(value)),
     technologyVersion: data.technologyVersion === undefined ? undefined : text(data.technologyVersion, `${path}技术版本`),
+    aliases: tags(data.aliases ?? [], `${path}搜索别名`), related: identifiers(data.related ?? [], `${path}相关文章 ID`),
+    updatedAt, reviewedAt: data.reviewedAt === undefined ? undefined : date(data.reviewedAt, `${path}审核日期`),
   };
 }
 export function validateLibrary(data: unknown, articles: Article[] = []): Resource[] {
@@ -117,14 +152,22 @@ export function validateLibrary(data: unknown, articles: Article[] = []): Resour
 export type ListItem = {
   id: string; title: string; description: string; category: string;
   tags: string[]; type: string; source: string; addedAt: string; url?: string; content?: string;
+  status?: PublicationStatus; quality?: 'complete' | 'incomplete';
+  questionCount?: number; publishedQuestionCount?: number;
 };
-export type Filters = { query: string; category: string; tags: string[]; type: string; sort: string; page: number; pageSize: number };
+export type Filters = { query: string; category: string; tags: string[]; type: string; sort: string; page: number; pageSize: number; maintenance?: string };
 export function filterItems(items: ListItem[], filters: Filters) {
   const terms = filters.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   const matching = items.filter((item) => {
     const searchable = `${item.title} ${item.description} ${item.source} ${item.category} ${item.tags.join(' ')} ${item.content || ''}`.toLocaleLowerCase();
+    const maintenanceMatches = !filters.maintenance
+      || filters.maintenance === 'ready' && item.status === 'draft' && item.quality === 'complete'
+      || filters.maintenance === 'incomplete' && item.quality === 'incomplete'
+      || filters.maintenance === 'draft' && item.status === 'draft'
+      || filters.maintenance === 'published' && (item.status === 'published' || (item.publishedQuestionCount ?? 0) > 0);
     return (!filters.category || item.category === filters.category)
       && (!filters.type || item.type === filters.type)
+      && maintenanceMatches
       && filters.tags.every((tag) => item.tags.includes(tag))
       && terms.every((term) => searchable.includes(term));
   }).sort((a, b) => filters.sort === 'title'

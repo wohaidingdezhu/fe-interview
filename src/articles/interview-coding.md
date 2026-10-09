@@ -234,9 +234,30 @@ shared.self = shared; hasCycle(shared); // true
 
 ## Q134｜实现一个柯里化函数 add
 
-1. add(1,2,3).valueOf() // 6
-2. add(1,2)(3)(4,5).valueOf() // 15
-3. add(1)(2)(3)(4,5,6)(7).valueOf() // 28
+这个题目的调用参数个数没有结束标记，因此不能像固定参数柯里化那样自动返回数字；做法是始终返回同一个收集函数，并通过 valueOf、toString 和 Symbol.toPrimitive 暴露累计值。实现只接受有限数字，避免字符串拼接、NaN 或 Infinity 让结果失去数值语义。收集函数内部状态可变，不应从同一个中间结果分叉成两条独立计算链。
+
+```js
+function add(...initialValues) {
+  const sum = (values) => values.reduce((total, value) => {
+    if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('add 只接受有限数字');
+    return total + value;
+  }, 0);
+  let total = sum(initialValues);
+  function collect(...values) { total += sum(values); return collect; }
+  Object.defineProperties(collect, {
+    valueOf: { value: () => total },
+    toString: { value: () => String(total) },
+    [Symbol.toPrimitive]: { value: () => total },
+  });
+  return collect;
+}
+```
+
+```js
+add(1, 2, 3).valueOf(); // 6
+add(1, 2)(3)(4, 5).valueOf(); // 15
+add(1)(2)(3)(4, 5, 6)(7).valueOf(); // 28
+```
 
 ---
 
@@ -272,7 +293,35 @@ const reverse = text => [...segmenter.segment(text)].map(x => x.segment).reverse
 
 ## Q137｜实现一个防抖函数
 
-**定义：**当事件触发后，会设置一个定时器，在指定的延迟时间后再执行相应的操作，如果在延迟时间内再次触发了同一个事件，那么就会清除之前的定时器，并重新设置新的定时器，直到事件触发完成。
+防抖把一串连续触发合并为停止触发后的最后一次执行。下面是 trailing-only 版本：保存最后一次调用的 this 和参数，并提供 cancel 与 flush。定时器触发的返回值无法同步交给最初调用者；flush 可立即执行待处理调用并取得结果。组件卸载、请求切换等场景应调用 cancel，避免过期副作用。
+
+```js
+function debounce(fn, wait) {
+  if (typeof fn !== 'function') throw new TypeError('fn 必须是函数');
+  if (!Number.isFinite(wait) || wait < 0) throw new RangeError('wait 必须是非负有限数字');
+  let timer, context, args, result;
+  function invoke() {
+    const currentContext = context, currentArgs = args;
+    timer = context = args = undefined;
+    result = fn.apply(currentContext, currentArgs);
+    return result;
+  }
+  function debounced(...nextArgs) {
+    context = this; args = nextArgs;
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(invoke, wait);
+    return result;
+  }
+  debounced.cancel = () => { if (timer !== undefined) clearTimeout(timer); timer = context = args = undefined; };
+  debounced.flush = () => { if (timer === undefined) return result; clearTimeout(timer); return invoke(); };
+  return debounced;
+}
+```
+
+```js
+const search = debounce((keyword) => console.log(keyword), 300);
+search('rea'); search('react'); // 停止输入 300ms 后只输出 react
+```
 
 ![](./images/interview/大前端面试宝典-diagram-4.png)
 
@@ -280,7 +329,39 @@ const reverse = text => [...segmenter.segment(text)].map(x => x.segment).reverse
 
 ## Q138｜实现一个截流函数
 
-**定义：**当事件触发后，事件处理函数会在固定的时间间隔内执行，即使事件被频繁触发也是如此。
+通常称为“节流”。它保证高频触发期间每个时间窗口最多执行一次。下面采用 leading + trailing 语义：窗口开始立即执行首个调用，窗口结束再执行期间最后一次调用；连续调用始终保留最新 this 和参数。cancel 会同时取消尾调用并重置窗口。若业务只允许 leading 或 trailing，需要把选项作为明确 API，而不是含糊地修改定时器。
+
+```js
+function throttle(fn, wait) {
+  if (typeof fn !== 'function') throw new TypeError('fn 必须是函数');
+  if (!Number.isFinite(wait) || wait < 0) throw new RangeError('wait 必须是非负有限数字');
+  let last = 0, timer, context, args, result;
+  function invoke(time) {
+    last = time;
+    const currentContext = context, currentArgs = args;
+    timer = context = args = undefined;
+    result = fn.apply(currentContext, currentArgs);
+    return result;
+  }
+  function throttled(...nextArgs) {
+    const now = Date.now(), remaining = wait - (now - last);
+    context = this; args = nextArgs;
+    if (remaining <= 0 || remaining > wait) {
+      if (timer !== undefined) clearTimeout(timer);
+      return invoke(now);
+    }
+    if (timer === undefined) timer = setTimeout(() => invoke(Date.now()), remaining);
+    return result;
+  }
+  throttled.cancel = () => { if (timer !== undefined) clearTimeout(timer); last = 0; timer = context = args = undefined; };
+  return throttled;
+}
+```
+
+```js
+const reportScroll = throttle(() => console.log(window.scrollY), 200);
+window.addEventListener('scroll', reportScroll);
+```
 
 ![](./images/interview/大前端面试宝典-diagram-5.png)
 

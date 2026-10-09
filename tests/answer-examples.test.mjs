@@ -28,6 +28,34 @@ test('组合、柯里化、洗牌、once 和原型链边界', () => {
   let calls = 0; const fn = example.once(() => ++calls); assert.equal(fn(), 1); assert.equal(fn(), 1);
   assert.equal(example.myInstanceOf([], Array), true); assert.equal(example.myInstanceOf(null, Object), false);
 });
+test('链式 add 支持题目中的三种调用并拒绝非有限数字', () => {
+  assert.equal(example.add(1, 2, 3).valueOf(), 6);
+  assert.equal(example.add(1, 2)(3)(4, 5).valueOf(), 15);
+  assert.equal(example.add(1)(2)(3)(4, 5, 6)(7).valueOf(), 28);
+  assert.equal(String(example.add(2)(3)), '5');
+  assert.throws(() => example.add(1, Number.NaN), TypeError);
+});
+test('防抖保留最后参数和 this，并支持 cancel 与 flush', async () => {
+  const calls = [];
+  const debounced = example.debounce(function (value) { calls.push([this.name, value]); return value * 2; }, 15);
+  const context = { name: 'context', run: debounced };
+  context.run(1); context.run(2);
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  assert.deepEqual(calls, [['context', 2]]);
+  context.run(3); assert.equal(debounced.flush(), 6); assert.deepEqual(calls.at(-1), ['context', 3]);
+  context.run(4); debounced.cancel(); await new Promise((resolve) => setTimeout(resolve, 25));
+  assert.equal(calls.length, 2);
+});
+test('节流立即执行首个调用，并在窗口结束时执行最后一次调用', async () => {
+  const calls = [];
+  const throttled = example.throttle((value) => calls.push(value), 20);
+  throttled(1); throttled(2); throttled(3);
+  assert.deepEqual(calls, [1]);
+  await new Promise((resolve) => setTimeout(resolve, 35));
+  assert.deepEqual(calls, [1, 3]);
+  throttled(4); throttled.cancel(); await new Promise((resolve) => setTimeout(resolve, 25));
+  assert.deepEqual(calls, [1, 3]);
+});
 test('树构建、Unicode 窗口、阶梯计数、链表与三种遍历', () => {
   assert.equal(example.toTree([{ id: 2, parentId: 1 }, { id: 1, parentId: null }])[0].children[0].id, 2);
   assert.throws(() => example.toTree([{ id: 1, parentId: 2 }, { id: 2, parentId: 1 }]), /循环/);

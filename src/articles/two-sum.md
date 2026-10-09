@@ -5,10 +5,14 @@ category: "手写题"
 kind: "手写题解"
 description: "用哈希表把嵌套遍历变成一次遍历，并解释复杂度。"
 tags: ["算法", "手写题", "面试"]
+aliases: ["Two Sum", "哈希表查找", "LeetCode 1"]
+related: ["interview-coding"]
 addedAt: "2026-10-08"
 order: 5
 status: published
 quality: complete
+sources: ["https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"]
+technologyVersion: "现代 JavaScript（ES2015+）；Map 查询采用平均次线性复杂度的规范要求"
 ---
 
 ## 题目描述

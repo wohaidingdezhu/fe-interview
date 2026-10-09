@@ -60,6 +60,64 @@ export function curry(fn, arity = fn.length) {
   function collect(previous) { return function (...args) { const all = [...previous, ...args]; return all.length >= arity ? fn.apply(this, all) : collect(all); }; }
   return collect([]);
 }
+export function add(...initialValues) {
+  const sum = (values) => values.reduce((total, value) => {
+    if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('add 只接受有限数字');
+    return total + value;
+  }, 0);
+  let total = sum(initialValues);
+  function collect(...values) { total += sum(values); return collect; }
+  Object.defineProperties(collect, {
+    valueOf: { value: () => total },
+    toString: { value: () => String(total) },
+    [Symbol.toPrimitive]: { value: () => total },
+  });
+  return collect;
+}
+export function debounce(fn, wait) {
+  if (typeof fn !== 'function') throw new TypeError('fn 必须是函数');
+  if (!Number.isFinite(wait) || wait < 0) throw new RangeError('wait 必须是非负有限数字');
+  let timer, context, args, result;
+  function invoke() {
+    const currentContext = context, currentArgs = args;
+    timer = context = args = undefined;
+    result = fn.apply(currentContext, currentArgs);
+    return result;
+  }
+  function debounced(...nextArgs) {
+    context = this; args = nextArgs;
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(invoke, wait);
+    return result;
+  }
+  debounced.cancel = () => { if (timer !== undefined) clearTimeout(timer); timer = context = args = undefined; };
+  debounced.flush = () => { if (timer === undefined) return result; clearTimeout(timer); return invoke(); };
+  return debounced;
+}
+export function throttle(fn, wait) {
+  if (typeof fn !== 'function') throw new TypeError('fn 必须是函数');
+  if (!Number.isFinite(wait) || wait < 0) throw new RangeError('wait 必须是非负有限数字');
+  let last = 0, timer, context, args, result;
+  function invoke(time) {
+    last = time;
+    const currentContext = context, currentArgs = args;
+    timer = context = args = undefined;
+    result = fn.apply(currentContext, currentArgs);
+    return result;
+  }
+  function throttled(...nextArgs) {
+    const now = Date.now(), remaining = wait - (now - last);
+    context = this; args = nextArgs;
+    if (remaining <= 0 || remaining > wait) {
+      if (timer !== undefined) clearTimeout(timer);
+      return invoke(now);
+    }
+    if (timer === undefined) timer = setTimeout(() => invoke(Date.now()), remaining);
+    return result;
+  }
+  throttled.cancel = () => { if (timer !== undefined) clearTimeout(timer); last = 0; timer = context = args = undefined; };
+  return throttled;
+}
 export function once(fn) {
   let called = false, value;
   return function (...args) {

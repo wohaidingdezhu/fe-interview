@@ -5,10 +5,14 @@ category: "React"
 kind: "知识文章"
 description: "理解渲染、状态更新与函数式更新之间的关系。"
 tags: ["React", "状态", "面试"]
+aliases: ["React state 快照", "函数式更新", "旧状态"]
+related: ["closure", "use-persist-fn"]
 addedAt: "2026-10-08"
 order: 3
 status: published
 quality: complete
+sources: ["https://zh-hans.react.dev/learn/state-as-a-snapshot","https://zh-hans.react.dev/learn/queueing-a-series-of-state-updates"]
+technologyVersion: "React 18/19 函数组件"
 ---
 
 ## 状态是一次渲染的快照

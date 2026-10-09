@@ -5,10 +5,14 @@ category: "浏览器与网络"
 kind: "知识文章"
 description: "沿着一次请求，理解新鲜度检查、条件请求与 304。"
 tags: ["网络", "性能", "面试"]
+aliases: ["强缓存", "协商缓存", "304 缓存"]
+related: ["chrome-devtools-workflow", "interview-network"]
 addedAt: "2026-10-08"
 order: 6
 status: published
 quality: complete
+sources: ["https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching","https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control"]
+technologyVersion: "HTTP 缓存语义（RFC 9111）"
 ---
 
 ## 先理解两个阶段

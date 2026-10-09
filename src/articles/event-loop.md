@@ -5,10 +5,14 @@ category: "JavaScript"
 kind: "知识文章"
 description: "通过一道输出题，区分同步代码、微任务和定时器。"
 tags: ["JavaScript", "异步", "面试"]
+aliases: ["宏任务微任务", "异步执行顺序", "Event Loop"]
+related: ["closure", "debounce"]
 addedAt: "2026-10-08"
 order: 2
 status: published
 quality: complete
+sources: ["https://developer.mozilla.org/zh-CN/docs/Web/API/HTML_DOM_API/Microtask_guide"]
+technologyVersion: "现代浏览器事件循环；不套用 Node 调度队列"
 ---
 
 ## 先预测输出

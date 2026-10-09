@@ -5,10 +5,14 @@ category: "JavaScript"
 kind: "知识文章"
 description: "从函数的词法环境出发，理解闭包保存的究竟是什么。"
 tags: ["JavaScript", "闭包", "面试"]
+aliases: ["词法作用域", "closure", "函数闭包"]
+related: ["debounce", "event-loop", "react-state"]
 addedAt: "2026-10-08"
 order: 1
 status: published
 quality: complete
+sources: ["https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Closures"]
+technologyVersion: "现代 JavaScript（ES2015+）"
 ---
 
 ## 面试中怎么回答

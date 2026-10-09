@@ -26,6 +26,7 @@ function App() {
   const isNotes = Boolean(id) || params.get('view') === 'notes';
   const article = articles.find((item) => item.id === id);
   const currentIndex = articles.findIndex((item) => item.id === id);
+  const relatedArticles = article?.related.map((relatedId) => articles.find((item) => item.id === relatedId)).filter((item): item is (typeof articles)[number] => Boolean(item)) ?? [];
   const collection = isNotes ? articles : resources;
   const categories = [...new Set(collection.map((item) => item.category))];
   const category = article?.category || params.get('category') || '';
@@ -85,12 +86,13 @@ function App() {
     <div className={`workspace ${!id ? 'list-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       {!id ? <LibraryList params={params} navigate={navigate} /> : article ? <>
         <div className="breadcrumb">{link('?view=notes', '我的笔记')}<span>/</span>{article.category}<span>/</span><b>{article.title}</b></div>
-        <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.addedAt}>{article.addedAt}</time></div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
-        {article.quality === 'incomplete' && <p className="quality-notice" role="note">这篇草稿尚未完成逐题审核，不会进入线上发布。</p>}
+        <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}{article.questionCount > 0 && <span>{article.publishedQuestionCount} / {article.questionCount} 题已公开</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.updatedAt ?? article.addedAt}>{article.updatedAt ? `更新 ${article.updatedAt}` : `收录 ${article.addedAt}`}</time>{article.reviewedAt && <time dateTime={article.reviewedAt}>审核 {article.reviewedAt}</time>}</div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+        {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}
         {article.category === 'JavaScript' && <ReaderBoundary key={`playground-${article.id}`}><Suspense fallback={<p role="status">正在加载代码运行工具…</p>}><CodePlayground /></Suspense></ReaderBoundary>}
         {body.id === article.id && body.error ? <p role="alert">{body.error}<button className="text-button" onClick={() => setLoadAttempt((value) => value + 1)}>重新加载正文</button></p>
           : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent key={article.id} content={body.content} navigate={navigate} onHeadings={setToc} /></Suspense></ReaderBoundary>
           : <p role="status">正在加载正文…</p>}
+        {relatedArticles.length > 0 && <section className="related-articles" aria-labelledby="related-title"><div className="related-heading"><span>KEEP EXPLORING</span><h2 id="related-title">继续阅读</h2></div><div className="related-grid">{relatedArticles.map((related) => <a key={related.id} href={articleHref(related.id)} onClick={(event) => { if (modified(event)) return; event.preventDefault(); navigate(articleHref(related.id)); }}><small>{related.category}</small><strong>{related.title}</strong><p>{related.description}</p><span aria-hidden="true">↗</span></a>)}</div></section>}
         <div className="article-end"><span />把读过的内容，变成自己的理解。<span /></div><nav className="pagination" aria-label="上一篇和下一篇">{currentIndex > 0 ? <div><small>← 上一篇</small>{link(articleHref(articles[currentIndex - 1].id), articles[currentIndex - 1].title)}</div> : <div />}{currentIndex < articles.length - 1 && <div><small>下一篇 →</small>{link(articleHref(articles[currentIndex + 1].id), articles[currentIndex + 1].title)}</div>}</nav>
       </> : <div className="not-found"><span className="pill">404</span><h1>这篇笔记还不存在</h1><p>链接可能有误，或笔记已经移动。</p>{link('?view=notes', '返回我的笔记 →')}</div>}
       <footer className="page-footer">前端资料库 <span>收藏资料 · 沉淀笔记</span></footer>

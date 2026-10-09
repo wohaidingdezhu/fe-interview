@@ -15,6 +15,7 @@
     "check:links": "node scripts/check-links.mjs",
     "fetch:resource": "node scripts/fetch-resource.mjs",
     "import:resources": "node scripts/import-resources.mjs",
+    "new:article": "node scripts/new-article.mjs",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
@@ -31,7 +32,9 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "parse5": "^8.0.1",
+    "remark-parse": "^11.0.0",
     "typescript": "^7.0.2",
+    "unified": "^11.0.5",
     "vite": "^8.3.3"
   }
 }

@@ -2,7 +2,7 @@
 id: "interview-react"
 title: "React 生态面试题"
 category: "React 生态"
-description: "收录 Q204–Q227 的参考答案、原理说明与配图。"
+description: "整理 React 生态中的核心概念、Hooks、状态管理与工程实践。"
 kind: "知识文章"
 tags: ["React","Hooks","面试"]
 addedAt: "2026-10-08"

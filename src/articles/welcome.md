@@ -5,10 +5,14 @@ category: "阅读指南"
 kind: "阅读指南"
 description: "建立自己的知识体系，让每一次复习都有迹可循。"
 tags: ["阅读指南"]
+aliases: ["使用指南", "资料库入口", "知识库导航"]
+related: ["closure", "react-state", "http-cache"]
 addedAt: "2026-10-08"
 order: 0
 status: published
 quality: complete
+sources: ["https://github.com/wohaidingdezhu/fe-interview"]
+technologyVersion: "本站资料库维护流程（2026-10-09）"
 ---
 
 ## 写在开始之前

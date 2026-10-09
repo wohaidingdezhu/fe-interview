@@ -1,13 +1,14 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { readLibrary } from './library.mjs';
-import { selectPublished } from './publication.mjs';
+import { selectPublished, linkPaths } from './publication.mjs';
 import { checkLinks } from './link-utils.mjs';
 
 const library = selectPublished(await readLibrary());
 const urls = library.resources.map(item => item.url);
+for (const question of Object.values(library.questionPublication ?? {})) if (question.status === 'published') urls.push(...question.sources);
 for (const article of library.articles) {
   urls.push(...article.sources);
-  for (const match of article.content.matchAll(/\]\(<?(https?:\/\/[^\s)>]+)>?/g)) urls.push(match[1]);
+  urls.push(...linkPaths(article.content).filter(url => /^https?:\/\//i.test(url)));
 }
 const results = await checkLinks(urls);
 const labels = { ok: '正常', redirected: '可用（重定向）', dead: '疑似失效', restricted: '需要登录或禁止机器人', temporary: '临时失败', review: '需要复核' };

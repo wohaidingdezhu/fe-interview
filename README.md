@@ -100,6 +100,46 @@ technologyVersion: "现代 JavaScript（ES2022+）"
 
 正文支持 Markdown 表格、代码块和普通链接，不执行嵌入 HTML 或 JSX。站内链接写成 `[理解闭包](?article=closure)`；已有博客文章可以作为普通外部链接引用。图片放在 `public/images/`，使用 `![说明](./images/example.png)`。
 
+## 大型知识库的目录与新增流程
+
+一般知识采用“一篇主题一个 Markdown 文件”，可以按领域使用任意层级的分类子目录；构建会递归发现 `.md` 文件，目录只用于维护，页面分类仍由 frontmatter 的 `category` 决定：
+
+```text
+src/articles/
+  browser/
+    chrome-devtools-workflow.md
+  react/
+    hooks/
+      use-persist-fn.md
+  interview-react.md
+```
+
+`Qxxx` 是从原面试宝典保留下来的稳定题号，只用于面试题库。新增普通教程、操作流程、项目复盘或原理文章时使用语义 ID，不分配 Q 编号。面试题暂时仍集中在专题文件并由逐题清单控制发布，后续可迁移成一题一文件。
+
+使用脚手架创建安全草稿：
+
+```bash
+npm run new:article -- browser/chrome-devtools-workflow \
+  --title "Chrome DevTools 调试操作流程" \
+  --category 浏览器 \
+  --description "从复现问题到定位、验证和记录的完整调试流程。" \
+  --tags "Chrome DevTools,调试,性能" \
+  --aliases "Google 浏览器调试,F12 调试" \
+  --related "http-cache,interview-browser" \
+  --updated-at "YYYY-MM-DD" \
+  --reviewed-at "YYYY-MM-DD"
+```
+
+命令会自动创建子目录，生成合法 YAML、`draft / incomplete` 状态和维护提纲，并拒绝目录穿越、非法 ID 及覆盖已有文件。维护流程是：创建草稿 → 完成正文 → 补来源和适用版本 → 改为 `quality: complete` → 审核 → 改为 `status: published` → 运行测试和构建。
+
+`aliases` 用于补充标题中没有出现的常用搜索词；`related` 使用稳定文章 ID 建立继续阅读关系。`updatedAt` 表示正文最近实质修改时间，`reviewedAt` 表示最近完成技术复核的时间。若更新晚于审核，质量报告会提示重新复核；线上只展示当前生产目录中存在的相关文章，不会生成草稿死链。
+
+普通文章发布时也检查实质正文、`sources` 和 `technologyVersion`；脚手架的维护提示和占位提纲必须替换为实际内容，仅修改状态不能通过构建。草稿中的这些问题作为告警，方便逐步整理。
+
+本地“我的笔记”列表提供维护状态筛选：`待补充` 表示 `draft / incomplete`，`待审核` 表示 `draft / complete`，`已公开` 包含整篇公开文章和已有题目上线的专题。专题卡片显示公开题数与总题数；部分公开的专题仍可出现在草稿维护队列中。筛选条件保存在 URL 中，可以把待审核队列保存为书签。
+
+`scripts/import-interview-content.mjs` 只用于最初从大文档生成面试专题。专题进入人工维护后不要再次覆盖导入；新知识应直接使用独立文章或脚手架。
+
 ## 内容与发布边界
 
 示例资料用于展示录入格式，示例笔记为本项目编写的起步内容。正式发布前继续核对题解与引用来源。
@@ -110,9 +150,25 @@ technologyVersion: "现代 JavaScript（ES2022+）"
 
 **草稿不是私人数据。** 此仓库公开，`src/` 内的草稿与历史提交依然可以在 GitHub 阅读。私人备注仅存放在本地 `.private/resources.json` 或独立私有仓库；`.private/` 已被 Git 忽略，构建和客户端都不读取它。公开模型禁止 `privateNotes` 字段。`.private/` 不随普通 Git 同步，不提供跨设备同步或管理后台。
 
-本次导入的 17 个专题（403 题）均保持 `draft / incomplete`，逐题审核和补充后再发布。原有 7 篇笔记与 8 条资料标为公开。内容校验生成 `.reports/content-quality.md` 和 JSON 报告（不提交），列出空答案、少于 30 个有效字符的短答案，以及缺少来源和技术版本的专题；短答案和草稿空答案是告警，公开空答案是错误。图片和占位“答案：”不计作答案。字符数只能帮助筛查，不代替技术准确性审核。
+本次导入的 17 个专题（403 题）在源文件层面保持 `draft / incomplete`，原有 7 篇笔记与 8 条资料整篇公开。面试专题改用 `src/data/question-publication.json` 逐题审核：省略的题默认草稿；某题只有同时满足 `published + complete + 逐题来源 + 技术版本 + 审核日期`，并通过内容门禁，才会进入生产正文、搜索索引和图片集合。一个专题只要有一道题通过审核，就会在线上出现，但只包含已公开题目。
 
-本次补充了 90 处题解，包括 58 道空答案、31 道短答案和洗牌问题的错误说明，并给手写算法增加测试。当前报告空答案与短答案均为零，但全部 403 道题还没有逐条完成技术审核，17 个导入专题继续保持草稿。`examples/interview-algorithms.mjs` 是接受测试的算法版本，测试同时检查题解代码与其一致。
+```json
+{
+  "Q134": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf"],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  }
+}
+```
+
+内容校验生成 `.reports/content-quality.md` 和 JSON 报告（不提交），除空答案和短答案外，还识别实现题缺少代码、只有概念定义、遗留占位内容等语义完整度问题。逐题公开内容遇到任一问题会阻断构建；草稿只产生报告。字符数和规则只能帮助筛查，不代替技术准确性审核。
+
+本次补充了 90 处题解，包括 58 道空答案、31 道短答案和洗牌问题的错误说明，并给手写算法增加测试。Q134、Q137、Q138 已补充可运行实现、边界说明和行为测试，并作为首批逐题发布示例；其余题目继续保持草稿。`examples/interview-algorithms.mjs` 是接受测试的算法版本，测试同时检查题解代码与其一致。
+
+逐题过滤保留已公开题目需要的 Markdown 图片和链接定义，排除未使用的草稿引用；代码示例中的链接、图片写法不参与检查。公开进度使用原专题总题数，例如代码编程专题显示 `3 / 36 题已公开`。`usePersistFn` 已整理到 `src/articles/react/hooks/use-persist-fn.md`，作为独立知识文章待审核，不再追加 Q 编号。
 
 首屏仅加载文章元数据；进入文章时请求对应的 `content/*.json`，第一次搜索时才请求独立的 `search/index-*.json`。索引保留规范化后的全文以维持正文搜索，结果展示关键词片段，体积仍随公开内容增长。正文、索引均先过滤草稿再生成，文件名包含内容摘要，加载失败可重试。Markdown 阅读界面、代码运行工具也分开按需加载；目录支持内部滚动、折叠与当前章节高亮。
 
