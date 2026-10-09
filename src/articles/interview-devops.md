@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["Git","Docker","DevOps"]
 addedAt: "2026-10-08"
 order: 112
+status: draft
+quality: incomplete
 ---
 
 ## Q330｜设计文档规范

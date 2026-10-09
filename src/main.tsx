@@ -82,7 +82,8 @@ function App() {
     <div className={`workspace ${!id ? 'list-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       {!id ? <LibraryList params={params} navigate={navigate} /> : article ? <>
         <div className="breadcrumb">{link('?view=notes', '我的笔记')}<span>/</span>{article.category}<span>/</span><b>{article.title}</b></div>
-        <div className="article-meta"><span className="pill">{article.kind}</span><span>约 {Math.max(1, Math.ceil(article.content.length / 450))} 分钟阅读</span><time dateTime={article.addedAt}>{article.addedAt}</time></div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+        <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}<span>约 {Math.max(1, Math.ceil(article.content.length / 450))} 分钟阅读</span><time dateTime={article.addedAt}>{article.addedAt}</time></div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+        {article.quality === 'incomplete' && <p className="quality-notice" role="note">这篇草稿尚未整理完整，部分题目缺少答案；不会进入线上发布。</p>}
         {article.category === 'JavaScript' && <CodePlayground />}
         <div className="article-body" ref={bodyRef} key={article.id}><Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug, rehypeHighlight]} components={{
           pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,

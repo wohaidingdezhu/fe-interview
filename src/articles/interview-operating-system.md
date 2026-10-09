@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["操作系统","进程","内存"]
 addedAt: "2026-10-08"
 order: 110
+status: draft
+quality: incomplete
 ---
 
 ## Q290｜0.1 + 0.2 为什么不等于 0.3 ？

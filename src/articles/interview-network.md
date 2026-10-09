@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["HTTP","TCP","网络安全"]
 addedAt: "2026-10-08"
 order: 111
+status: draft
+quality: incomplete
 ---
 
 ## Q293｜HTTP 请求方式

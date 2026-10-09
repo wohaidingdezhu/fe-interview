@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["Node.js","Nginx","服务端"]
 addedAt: "2026-10-08"
 order: 113
+status: draft
+quality: incomplete
 ---
 
 ## Q346｜nodejs 特点

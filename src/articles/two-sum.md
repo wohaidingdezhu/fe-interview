@@ -7,6 +7,8 @@ description: "用哈希表把嵌套遍历变成一次遍历，并解释复杂度
 tags: ["算法", "手写题", "面试"]
 addedAt: "2026-10-08"
 order: 5
+status: published
+quality: complete
 ---
 
 ## 题目描述

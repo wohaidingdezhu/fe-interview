@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["LLM","RAG","Agent"]
 addedAt: "2026-10-08"
 order: 115
+status: draft
+quality: incomplete
 ---
 
 ## Q368｜LLM 是什么

@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["Vue","响应式","面试"]
 addedAt: "2026-10-08"
 order: 104
+status: draft
+quality: incomplete
 ---
 
 ## Q159｜Vue2 不能监听数组下标原因

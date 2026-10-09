@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["JavaScript","面试"]
 addedAt: "2026-10-08"
 order: 101
+status: draft
+quality: incomplete
 ---
 
 ## Q40｜以下哪段代码运行效率更高（隐藏类）

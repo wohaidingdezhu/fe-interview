@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["Webpack","Vite","工程化"]
 addedAt: "2026-10-08"
 order: 106
+status: draft
+quality: incomplete
 ---
 
 ## Q228｜webpack 的作用

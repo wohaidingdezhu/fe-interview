@@ -1,17 +1,25 @@
 import { parse } from 'yaml';
 
 export const resourceTypes = ['文章', '官方文档', '视频', '工具', '开源项目'] as const;
+export type PublicationStatus = 'draft' | 'published';
 export type Resource = {
   id: string; title: string; url: string; description: string; source: string;
-  type: typeof resourceTypes[number]; category: string; tags: string[]; addedAt: string;
+  type: typeof resourceTypes[number]; category: string; tags: string[]; addedAt: string; status: PublicationStatus;
 };
 export type Article = {
   id: string; title: string; category: string; description: string;
   kind: '阅读指南' | '知识文章' | '手写题解'; tags: string[]; addedAt: string; order: number; content: string;
+  status: PublicationStatus; quality: 'complete' | 'incomplete'; sources: string[]; technologyVersion?: string;
 };
 function record(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${label} 必须是对象`);
   return value as Record<string, unknown>;
+}
+function publicationStatus(data: Record<string, unknown>, label: string): PublicationStatus {
+  if ('privateNotes' in data) throw new Error(`${label} 的私人备注必须存放在 .private/ 中`);
+  const status = data.status ?? 'draft';
+  if (status !== 'draft' && status !== 'published') throw new Error(`${label} 的 status 必须是 draft 或 published`);
+  return status;
 }
 function text(value: unknown, label: string): string {
   if (typeof value !== 'string' || !value.trim()) throw new Error(`${label} 不能为空`);
@@ -64,6 +72,7 @@ export function validateResource(value: unknown, label = '资料'): Resource {
     source: text(data.source, `${label}来源`), type: type as Resource['type'],
     category: text(data.category, `${label}分类`), tags: tags(data.tags, `${label}标签`),
     addedAt: date(data.addedAt, `${label}收录日期`),
+    status: publicationStatus(data, label),
   };
 }
 export function parseArticle(raw: string, path: string): Article {
@@ -74,11 +83,18 @@ export function parseArticle(raw: string, path: string): Article {
   if (!['阅读指南', '知识文章', '手写题解'].includes(kind)) throw new Error(`${path} 的 kind 无效`);
   const order = data.order ?? 100;
   if (typeof order !== 'number' || !Number.isFinite(order)) throw new Error(`${path} 的 order 必须是数字`);
+  const quality = data.quality ?? 'incomplete';
+  if (quality !== 'complete' && quality !== 'incomplete') throw new Error(`${path} 的 quality 必须是 complete 或 incomplete`);
+  const sources = data.sources ?? [];
+  if (!Array.isArray(sources)) throw new Error(`${path} 的 sources 必须是 URL 数组`);
   return {
     id: identifier(data.id, `${path} ID`), title: text(data.title, `${path}标题`),
     category: text(data.category, `${path}分类`), description: text(data.description, `${path}简介`),
     kind: kind as Article['kind'], tags: tags(data.tags, `${path}标签`),
     addedAt: date(data.addedAt, `${path}日期`), order, content: text(match[2], `${path}正文`),
+    status: publicationStatus(data, path), quality,
+    sources: sources.map((value: unknown) => validateURL(value)),
+    technologyVersion: data.technologyVersion === undefined ? undefined : text(data.technologyVersion, `${path}技术版本`),
   };
 }
 export function validateLibrary(data: unknown, articles: Article[] = []): Resource[] {

@@ -7,6 +7,8 @@ kind: "手写题解"
 tags: ["JavaScript","算法","手写题"]
 addedAt: "2026-10-08"
 order: 103
+status: draft
+quality: incomplete
 ---
 
 ### 功能程序题

@@ -7,6 +7,8 @@ description: "从搜索输入场景开始，写出支持参数、this 和取消�
 tags: ["JavaScript", "手写题", "面试"]
 addedAt: "2026-10-08"
 order: 4
+status: published
+quality: complete
 ---
 
 ## 题目要求

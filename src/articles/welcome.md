@@ -7,6 +7,8 @@ description: "建立自己的知识体系，让每一次复习都有迹可循。
 tags: ["阅读指南"]
 addedAt: "2026-10-08"
 order: 0
+status: published
+quality: complete
 ---
 
 ## 写在开始之前

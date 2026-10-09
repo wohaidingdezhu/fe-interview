@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["TypeScript","类型系统","面试"]
 addedAt: "2026-10-08"
 order: 102
+status: draft
+quality: incomplete
 ---
 
 ## Q117｜TypeScript 和 JavaScript 的主要区别。

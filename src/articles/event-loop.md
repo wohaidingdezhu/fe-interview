@@ -7,6 +7,8 @@ description: "通过一道输出题，区分同步代码、微任务和定时器
 tags: ["JavaScript", "异步", "面试"]
 addedAt: "2026-10-08"
 order: 2
+status: published
+quality: complete
 ---
 
 ## 先预测输出

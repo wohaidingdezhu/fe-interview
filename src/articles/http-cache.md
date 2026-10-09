@@ -7,6 +7,8 @@ description: "沿着一次请求，理解新鲜度检查、条件请求与 304�
 tags: ["网络", "性能", "面试"]
 addedAt: "2026-10-08"
 order: 6
+status: published
+quality: complete
 ---
 
 ## 先理解两个阶段

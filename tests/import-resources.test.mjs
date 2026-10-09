@@ -31,6 +31,7 @@ test('批量导入可预览，跳过已有和同批 URL，正式导入支持幂�
   assert.equal(imported.status, 0, imported.stderr);
   const records = JSON.parse(await readFile(f.target, 'utf8'));
   assert.equal(records.length, 2); assert.equal(records[1].title, '新文章'); assert.deepEqual(records[1].tags, ['React', '性能']);
+  assert.equal(records[1].status, 'draft');
   assert.match(f.run(input).stdout, /新增 0 条，跳过重复 3 条/);
 });
 test('同批任何 URL 不合法时，不会写入之前解析成功的条目', async (t) => {

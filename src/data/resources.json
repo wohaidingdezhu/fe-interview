@@ -11,7 +11,8 @@
       "React",
       "基础"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-08",
+    "status": "published"
   },
   {
     "id": "react-state-guide",
@@ -26,7 +27,8 @@
       "状态",
       "面试"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-08",
+    "status": "published"
   },
   {
     "id": "mdn-js-guide",
@@ -40,7 +42,8 @@
       "JavaScript",
       "基础"
     ],
-    "addedAt": "2026-10-07"
+    "addedAt": "2026-10-07",
+    "status": "published"
   },
   {
     "id": "mdn-closures",
@@ -55,7 +58,8 @@
       "闭包",
       "面试"
     ],
-    "addedAt": "2026-10-07"
+    "addedAt": "2026-10-07",
+    "status": "published"
   },
   {
     "id": "mdn-cache",
@@ -70,7 +74,8 @@
       "性能",
       "面试"
     ],
-    "addedAt": "2026-10-06"
+    "addedAt": "2026-10-06",
+    "status": "published"
   },
   {
     "id": "vite-guide",
@@ -84,7 +89,8 @@
       "Vite",
       "工程化"
     ],
-    "addedAt": "2026-10-06"
+    "addedAt": "2026-10-06",
+    "status": "published"
   },
   {
     "id": "vite-repository",
@@ -98,7 +104,8 @@
       "Vite",
       "源码"
     ],
-    "addedAt": "2026-10-05"
+    "addedAt": "2026-10-05",
+    "status": "published"
   },
   {
     "id": "typescript-playground",
@@ -112,6 +119,7 @@
       "TypeScript",
       "工具"
     ],
-    "addedAt": "2026-10-05"
+    "addedAt": "2026-10-05",
+    "status": "published"
   }
 ]

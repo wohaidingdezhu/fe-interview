@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["MySQL","Redis","数据库"]
 addedAt: "2026-10-08"
 order: 114
+status: draft
+quality: incomplete
 ---
 
 ## Q356｜数据库范式

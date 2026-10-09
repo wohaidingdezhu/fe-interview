@@ -12,7 +12,7 @@ try {
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--dry-run') { options.dryRun = true; continue; }
     const key = args[i].replace(/^--/, '');
-    if (!['category', 'tags', 'type', 'source'].includes(key) || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`无效参数：${args[i]}`);
+    if (!['category', 'tags', 'type', 'source', 'status'].includes(key) || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`无效参数：${args[i]}`);
     options[key] = args[++i];
   }
   const raw = (await readFile(resolve(input), 'utf8')).replace(/^\uFEFF/, '').trim();
@@ -41,6 +41,7 @@ try {
       type: entry.type ?? options.type ?? '文章',
       tags: entry.tags ?? (options.tags ? options.tags.split(',').map((tag) => tag.trim()).filter(Boolean) : []),
       addedAt: entry.addedAt ?? new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' }),
+      status: entry.status ?? options.status ?? 'draft',
     }, `第 ${i + 1} 条资料`);
     seen.add(canonical); added.push(item);
   }

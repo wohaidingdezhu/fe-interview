@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["性能优化","缓存","渲染"]
 addedAt: "2026-10-08"
 order: 108
+status: draft
+quality: incomplete
 ---
 
 ## Q247｜性能优化相关的参考指标有哪些？

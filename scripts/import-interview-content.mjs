@@ -56,6 +56,8 @@ kind: ${JSON.stringify(kind)}
 tags: ${JSON.stringify(definition.tags)}
 addedAt: "2026-10-08"
 order: ${order}
+status: draft
+quality: incomplete
 ---
 
 ${body.trim()}

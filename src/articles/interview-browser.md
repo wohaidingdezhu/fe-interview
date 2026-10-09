@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["浏览器","V8","存储"]
 addedAt: "2026-10-08"
 order: 107
+status: draft
+quality: incomplete
 ---
 
 ## Q245｜V8 垃圾回收机制

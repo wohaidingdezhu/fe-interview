@@ -7,6 +7,8 @@ description: "理解渲染、状态更新与函数式更新之间的关系。"
 tags: ["React", "状态", "面试"]
 addedAt: "2026-10-08"
 order: 3
+status: published
+quality: complete
 ---
 
 ## 状态是一次渲染的快照

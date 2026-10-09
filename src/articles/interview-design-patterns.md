@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["设计模式","架构","面试"]
 addedAt: "2026-10-08"
 order: 109
+status: draft
+quality: incomplete
 ---
 
 ## Q261｜设计模式是什么

@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["React","Hooks","面试"]
 addedAt: "2026-10-08"
 order: 105
+status: draft
+quality: incomplete
 ---
 
 ## Q204｜React 中为什么要设计 Hook ，为了解决什么问题

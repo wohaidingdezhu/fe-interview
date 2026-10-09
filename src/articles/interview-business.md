@@ -7,6 +7,8 @@ kind: "知识文章"
 tags: ["业务场景","性能","并发控制"]
 addedAt: "2026-10-08"
 order: 116
+status: draft
+quality: incomplete
 ---
 
 ## Q397｜页面上有多个按钮，分别响应不同的点击事件，如何优化？

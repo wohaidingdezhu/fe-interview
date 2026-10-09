@@ -46,7 +46,7 @@ export function LibraryList({ params, navigate }: Props) {
     </section>
     <div className="list-summary"><span role="status">共找到 <strong>{result.total}</strong> {isNotes ? '篇笔记' : '条资料'}</span>{hasFilters && <button className="text-button" onClick={() => navigate(`?view=${isNotes ? 'notes' : 'resources'}`)}>清除筛选 ×</button>}<label>每页<select aria-label="每页条数" value={pageSize} onChange={(event) => update('size', event.target.value)}>{[6,12,24].map((size) => <option key={size} value={size}>{size} 条</option>)}</select></label></div>
     <div className="resource-list">{result.items.map((item) => <article key={item.id} className="resource-card">
-      <div className="resource-meta"><span className="pill">{item.type}</span><span>{item.category}</span><time dateTime={item.addedAt}>{item.addedAt}</time></div>
+      <div className="resource-meta"><span className="pill">{item.type}</span>{('status' in item && item.status === 'draft') && <span className="pill draft-label">草稿 · 仅本地预览</span>}<span>{item.category}</span><time dateTime={item.addedAt}>{item.addedAt}</time></div>
       <h2><a href={item.url || `?article=${item.id}`} target={item.url ? '_blank' : undefined} rel={item.url ? 'noopener noreferrer' : undefined} onClick={(event) => {
         if (!item.url && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); navigate(`?article=${item.id}`); }
       }}>{item.title}<span aria-hidden="true">{item.url ? '↗' : '→'}</span></a></h2>
