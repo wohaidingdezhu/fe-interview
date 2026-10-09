@@ -54,8 +54,16 @@ test('实际生产构建排除草稿正文、搜索数据、私人文件及草�
   await build({ root, configFile: false, base: './', plugins: [publicationPlugin()], logLevel: 'silent' });
   const assets = await readdir(join(root, 'dist/assets'));
   const code = (await Promise.all(assets.filter((file) => file.endsWith('.js')).map((file) => readFile(join(root, 'dist/assets', file), 'utf8')))).join('\n');
-  assert.match(code, /PUBLIC_BODY_SENTINEL/);
+  assert.doesNotMatch(code, /PUBLIC_BODY_SENTINEL/);
   assert.doesNotMatch(code, /DRAFT_BODY_SENTINEL|DRAFT_RESOURCE_SENTINEL|PRIVATE_NOTES_SENTINEL/);
+  const content = await readdir(join(root, 'dist/content'));
+  assert.equal(content.length, 1);
+  assert.match(await readFile(join(root, 'dist/content', content[0]), 'utf8'), /PUBLIC_BODY_SENTINEL/);
+  const search = await readdir(join(root, 'dist/search'));
+  assert.equal(search.length, 1);
+  const index = await readFile(join(root, 'dist/search', search[0]), 'utf8');
+  assert.match(index, /PUBLIC_BODY_SENTINEL/);
+  assert.doesNotMatch(index, /DRAFT_BODY_SENTINEL|DRAFT_RESOURCE_SENTINEL|PRIVATE_NOTES_SENTINEL/);
   assert.deepEqual(await readdir(join(root, 'dist/images')), ['public.png']);
   assert.equal(await readFile(join(root, 'dist/favicon.svg'), 'utf8'), '<svg/>');
 });

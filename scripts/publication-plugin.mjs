@@ -2,6 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { readLibrary } from './library.mjs';
 import { selectPublished, validateContent, imagePaths, localImagePath } from './publication.mjs';
+import { contentAssets } from './content-assets.mjs';
 
 // 在 Vite 模块图之外过滤源文件，草稿正文不会成为生产模块或静态资产。
 export function publicationPlugin() {
@@ -22,9 +23,20 @@ export function publicationPlugin() {
         const report = await validateContent(library, resolve(root, 'public'));
         if (report.errors.length) throw new Error(report.errors.join('\n'));
       }
-      return `export default ${JSON.stringify(production ? selectPublished(library) : library)};`;
+      const { catalog, assets } = contentAssets(production ? selectPublished(library) : library);
+      if (production) for (const asset of assets) this.emitFile({ type: 'asset', ...asset });
+      return `export default ${JSON.stringify(catalog)};`;
     },
     configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const path = new URL(request.url, 'http://localhost').pathname.replace(/^\//, '');
+        if (!/^(content|search)\/.+\.json$/.test(path)) return next();
+        try {
+          const asset = contentAssets(await readLibrary(root)).assets.find((asset) => asset.fileName === path);
+          if (!asset) { response.statusCode = 404; response.end('Content not found'); return; }
+          response.setHeader('Content-Type', 'application/json; charset=utf-8'); response.setHeader('Cache-Control', 'no-cache'); response.end(asset.source);
+        } catch (error) { next(error); }
+      });
       server.watcher.add([resolve(root, 'src/articles'), resolve(root, 'src/data/resources.json')]);
       const reload = (file) => {
         if (file.startsWith(resolve(root, 'src/articles') + '/') || file === resolve(root, 'src/data/resources.json')) {

@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 110
 status: draft
 quality: incomplete
+sources: ["https://www.kernel.org/doc/html/latest/"]
+technologyVersion: "操作系统通用概念；Unix/Linux 实现因版本而异"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://www.kernel.org/doc/html/latest/)。
+
 
 ## Q290｜0.1 + 0.2 为什么不等于 0.3 ？
 

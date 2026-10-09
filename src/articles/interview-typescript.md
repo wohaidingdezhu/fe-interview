@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 102
 status: draft
 quality: incomplete
+sources: ["https://www.typescriptlang.org/docs/handbook/intro.html"]
+technologyVersion: "TypeScript Handbook；版本相关功能需逐题核对"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://www.typescriptlang.org/docs/handbook/intro.html)。
+
 
 ## Q117｜TypeScript 和 JavaScript 的主要区别。
 

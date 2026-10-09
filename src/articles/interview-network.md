@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 111
 status: draft
 quality: incomplete
+sources: ["https://www.rfc-editor.org/rfc/rfc9110","https://www.rfc-editor.org/rfc/rfc9111","https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events"]
+technologyVersion: "HTTP RFC 9110/9111；浏览器 SSE"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://www.rfc-editor.org/rfc/rfc9110) · [参考 2](https://www.rfc-editor.org/rfc/rfc9111) · [参考 3](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)。
+
 
 ## Q293｜HTTP 请求方式
 
@@ -533,9 +540,22 @@ WebSocket是在应用层实现的协议。尽管WebSocket的握手过程使用�
 
 ## Q327｜Server-Sent Events (SSE)  示例代码
 
-**服务端代码：**
+SSE 是服务器向浏览器单向推送文本事件，客户端用 EventSource，服务端使用 text/event-stream，每条事件以空行结束。连接关闭必须清理定时器，代理还要避免缓冲。客户端可自动重连，业务若要续传需实现事件 ID 与 Last-Event-ID；原生 EventSource 不能任意添加认证请求头。
 
-**客户端代码：**
+```js
+// Node HTTP 示例；实际项目增加认证、限流和心跳
+import { createServer } from 'node:http';
+createServer((req, res) => {
+  if (req.url !== '/events') { res.writeHead(404).end(); return; }
+  res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no' });
+  res.write(': connected\n\n');
+  const timer = setInterval(() => res.write(`data: ${JSON.stringify({ time: Date.now() })}\n\n`), 2000);
+  res.on('close', () => clearInterval(timer));
+}).listen(3000);
+// 浏览器：const source = new EventSource('/events');
+// source.onmessage = event => console.log(JSON.parse(event.data));
+// 离开页面时 source.close();
+```
 
 ---
 

@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 114
 status: draft
 quality: incomplete
+sources: ["https://www.postgresql.org/docs/current/","https://dev.mysql.com/doc/"]
+technologyVersion: "数据库概念；具体数据库语法与版本需逐题确认"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://www.postgresql.org/docs/current/) · [参考 2](https://dev.mysql.com/doc/)。
+
 
 ## Q356｜数据库范式
 

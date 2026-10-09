@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 116
 status: draft
 quality: incomplete
+sources: ["https://developer.mozilla.org/en-US/docs/Web/API/Worker","https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"]
+technologyVersion: "现代浏览器；Worker 与请求池教学示例"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://developer.mozilla.org/en-US/docs/Web/API/Worker) · [参考 2](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)。
+
 
 ## Q397｜页面上有多个按钮，分别响应不同的点击事件，如何优化？
 
@@ -52,6 +59,21 @@ quality: incomplete
 
 ## Q400｜webWorker 优化 100000000 数组遍历
 
+不要在主线程先创建一亿个 JS 数字再复制给 Worker，这会产生巨大的分配、复制和内存峰值。可以在 Worker 内按范围直接计算，或通过 transfer 转移 TypedArray 的 ArrayBuffer。转移后发送端缓冲区不可继续使用；只返回汇总结果，避免再次传回全部数据。Worker 负责 CPU 任务，并不会自动减少算法复杂度。
+
+```js
+// sum.worker.js：仅计算范围内整数之和，不分配巨型数组
+self.onmessage = ({ data: count }) => {
+  let sum = 0; for (let i = 0; i < count; i++) sum += i;
+  self.postMessage(sum);
+};
+// 主线程，模块 Worker 的 URL 按实际工程配置
+const worker = new Worker(new URL('./sum.worker.js', import.meta.url), { type: 'module' });
+worker.onmessage = ({ data }) => { console.log(data); worker.terminate(); };
+worker.onerror = () => worker.terminate();
+worker.postMessage(100_000_000);
+```
+
 ---
 
 ## Q401｜requestIdleCallback 优化 100000000 数组遍历
@@ -70,8 +92,19 @@ requestIdleCallback 会在浏览器每帧剩余的空闲时间内执行
 
 ## Q403｜处理并发请求控制，同时最高并发 n 个请求，响应后逐个补充。
 
-- client 端代码
-- server 端测试代码
-- 效果
+并发数表示正在执行的任务数，不是一次发送一批然后统一等待。使用 Q125 的 worker 池，让每个任务在完成或失败后立即取下一项。客户端限流改善资源占用；服务端仍需独立的流量限制、幂等处理和资源配额，不能把客户端约束当作安全保证。
+
+```js
+// limitRequests 的完整实现见 Q125
+const results = await limitRequests(urls.map(url => async () => {
+  const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}), 4);
+```
+
+原导入配图（仅辅助参考，以文字说明和示例为准）：
 
 ![](./images/interview/大前端面试宝典-image-77.png)
+
+---

@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 105
 status: draft
 quality: incomplete
+sources: ["https://react.dev/reference/react/useState","https://react.dev/reference/react/useEffect","https://react.dev/learn/reusing-logic-with-custom-hooks"]
+technologyVersion: "React 18/19；客户端 Hook 语义"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://react.dev/reference/react/useState) · [参考 2](https://react.dev/reference/react/useEffect) · [参考 3](https://react.dev/learn/reusing-logic-with-custom-hooks)。
+
 
 ## Q204｜React 中为什么要设计 Hook ，为了解决什么问题
 
@@ -262,12 +269,48 @@ Flux架构的关键是单向数据流，当用户在View上执行操作时，Vie
 
 ## Q225｜如何使用 useState Hook 来管理状态
 
+useState 返回当前状态和更新函数。下一次状态依赖上一次值时，使用函数式更新；同一处理函数中的多次更新可能被合并。对象和数组应创建新引用，不直接修改原状态。Hook 必须在组件或自定义 Hook 的顶层调用，不能放在条件分支里。
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(value => value + 1)}>{count}</button>;
+}
+```
+
 ---
 
 ## Q226｜如何使用 useEffect Hook 执行副作用操作
 
+useEffect 用于把组件与外部系统同步，比如订阅或网络请求。依赖变化和卸载时运行清理，Effect 回调本身不要声明为 async；下面通过内部函数与 AbortController 取消过期请求，并避免旧响应写入当前状态。开发 StrictMode 会额外执行一次设置和清理，用来暴露不对称的副作用。
+
+```js
+useEffect(() => {
+  const controller = new AbortController(); let active = true;
+  async function load() {
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json(); if (active) setData(data);
+    } catch (error) { if (active) setError(error.message); }
+  }
+  load();
+  return () => { active = false; controller.abort(); };
+}, [url]);
+```
+
 ---
 
 ## Q227｜如何使用自定义Hook来共享逻辑
+
+自定义 Hook 共享可复用逻辑，并不会让多个调用共享同一份状态。命名以 use 开头，内部遵守 Hook 规则；两个组件各自调用 useCounter，会得到两个独立计数器。要共享数据还需把状态提升，或使用 Context、外部状态库等。
+
+```jsx
+function useCounter(initial = 0) {
+  const [count, setCount] = useState(initial);
+  const increment = () => setCount(value => value + 1);
+  return { count, increment };
+}
+```
 
 ---

@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 115
 status: draft
 quality: incomplete
+sources: ["https://modelcontextprotocol.io/docs/getting-started/intro","https://platform.openai.com/docs/overview"]
+technologyVersion: "工具快速迭代；原导入内容尚未逐题审核"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://modelcontextprotocol.io/docs/getting-started/intro) · [参考 2](https://platform.openai.com/docs/overview)。
+
 
 ## Q368｜LLM 是什么
 

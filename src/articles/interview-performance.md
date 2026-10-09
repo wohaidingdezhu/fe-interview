@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 108
 status: draft
 quality: incomplete
+sources: ["https://web.dev/articles/virtualize-long-lists-react-window","https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"]
+technologyVersion: "现代浏览器；具体优化需结合测量"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://web.dev/articles/virtualize-long-lists-react-window) · [参考 2](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)。
+
 
 ## Q247｜性能优化相关的参考指标有哪些？
 
@@ -251,8 +258,7 @@ quality: incomplete
 
 ## Q258｜列表无限滚动，页面逐渐卡顿，解决方案
 
-1. 分页
-2. 虚拟滚动（虚拟列表）
+无限滚动不等于可以无限保留 DOM 和数据。先用性能工具确认瓶颈，再用虚拟列表只渲染可见区域及少量缓冲；图片按需加载并固定尺寸；数据分段缓存并设置上限。加载更多可用 IntersectionObserver，防止重复请求，卸载时取消订阅和在途请求。虚拟列表要兼顾键盘导航、焦点、动态高度与滚动位置恢复，避免只是隐藏节点却仍保留全部成本。
 
 ---
 

@@ -1,0 +1,25 @@
+name: Check published links
+
+on:
+  schedule:
+    # 每周一北京时间 10:00；报告不阻断 Pages 发布。
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check:links
+      - name: Link report
+        run: cat .reports/links.md >> "$GITHUB_STEP_SUMMARY"

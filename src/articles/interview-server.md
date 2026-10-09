@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 113
 status: draft
 quality: incomplete
+sources: ["https://expressjs.com/en/resources/middleware/cors/","https://nginx.org/en/docs/http/ngx_http_proxy_module.html"]
+technologyVersion: "补充示例基于 Node、Express 5 与 Nginx HTTP proxy 模块"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://expressjs.com/en/resources/middleware/cors/) · [参考 2](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)。
+
 
 ## Q346｜nodejs 特点
 
@@ -31,6 +38,19 @@ quality: incomplete
 ---
 
 ## Q348｜nodejs 开放跨域白名单
+
+CORS 白名单在服务器检查请求 Origin，并对允许来源返回对应的 Access-Control-Allow-Origin。允许携带凭据时不能使用通配符 *，还要正确处理预检并设置 Vary:Origin。下面使用 Express 的 cors 中间件；无 Origin 的请求可继续处理，但 CORS 并不是服务端认证，恶意脚本和非浏览器客户端仍需身份与授权检查。
+
+```js
+import express from 'express'; import cors from 'cors';
+const app = express();
+const allowed = new Set(['https://example.com']);
+app.use(cors({
+  origin(origin, callback) { callback(null, !origin || allowed.has(origin)); },
+  credentials: true
+}));
+// 随后注册路由与身份验证
+```
 
 ---
 
@@ -119,9 +139,33 @@ quality: incomplete
 
 ## Q353｜nginx 配置
 
+Nginx 配置包含事件、HTTP、server 和 location 等层级。静态站点需要 listen、server_name、root 和 index；SPA 若使用 history 路由，可把不存在的路径回退到 index.html，静态资源或 API 应按需要单独返回 404。修改后先检查语法，再平滑重载。TLS、缓存与压缩需根据实际站点配置，不能直接把示例当作完整生产配置。
+
+```nginx
+server {
+  listen 80;
+  server_name example.com;
+  root /srv/www;
+  index index.html;
+  location / { try_files $uri $uri/ /index.html; }
+}
+```
+
 ---
 
 ## Q354｜nginx 配置代理转发，解决跨域问题
+
+前端请求与页面同源的 /api/，由 Nginx 转发到内部服务，浏览器就不需要对内部服务进行跨源请求。proxy_pass 带尾部斜杠时会用其 URI 替换匹配的 location 前缀，本例 /api/users 转为上游 /users；不带 URI 时通常保留 /api/users。保留原始主机和转发信息，身份认证仍由服务端实现。
+
+```nginx
+location /api/ {
+  proxy_pass http://127.0.0.1:3000/;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
 
 ---
 

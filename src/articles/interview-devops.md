@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 112
 status: draft
 quality: incomplete
+sources: ["https://git-scm.com/docs/gitignore","https://docs.github.com/en/actions"]
+technologyVersion: "Git 通用命令；CI 工具需以实际安装版本为准"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://git-scm.com/docs/gitignore) · [参考 2](https://docs.github.com/en/actions)。
+
 
 ## Q330｜设计文档规范
 
@@ -210,7 +217,7 @@ Git Flow 是一种流行的 Git 工作流程，专门用于协作开发和管理
 
 ## Q338｜本地工程配置文件，不需要被提交，如何处理
 
-添加配置到 .gitignore 文件中
+把本地配置放到不跟踪的独立文件，如 .env.local，在 .gitignore 中匹配，并提交不含秘密的 .env.example 供协作使用。已被 Git 跟踪的文件不会因加入 .gitignore 自动停止跟踪；确认后可只从索引移除，再保留本地副本。ignore 不会删除旧提交中的内容，若秘密已经提交，应先轮换凭据，再按团队流程处理历史。
 
 ---
 

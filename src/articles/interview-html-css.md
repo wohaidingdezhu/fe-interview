@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 100
 status: draft
 quality: incomplete
+sources: ["https://developer.mozilla.org/en-US/docs/Web/CSS","https://html.spec.whatwg.org/"]
+technologyVersion: "HTML Living Standard；现代 CSS，注意浏览器兼容性"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://developer.mozilla.org/en-US/docs/Web/CSS) · [参考 2](https://html.spec.whatwg.org/)。
+
 
 ## Q1｜什么是重绘，什么是回流？如何减少回流？
 
@@ -171,7 +178,12 @@ calc() 是 CSS 中的一个函数，用于动态计算样式属性的值。calc(
 
 ## Q8｜实现 一个固定长宽div 在屏幕上垂直水平居中
 
-\####
+给父容器设置至少一个视口高度，使用 Flex 的 justify-content 与 align-items 同时居中。固定长宽属于子元素；box-sizing:border-box 可让边框和内边距包含在指定尺寸内。移动浏览器可用 100dvh 跟随可见视口变化，并为旧浏览器保留 min-height:100vh。
+
+```css
+.page { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; align-items: center; }
+.box { width: 240px; height: 160px; box-sizing: border-box; }
+```
 
 ---
 
@@ -344,7 +356,12 @@ calc() 是 CSS 中的一个函数，用于动态计算样式属性的值。calc(
 
 ## Q17｜画一条 0.5px  的线
 
-\####
+CSS 像素不是物理像素，0.5px 在不同设备像素比和缩放下表现可能不同。常见方案是在定位好的容器中画 1px 高的伪元素，再用 scaleY(.5) 缩放；它不占额外布局高度。设备像素比为 2 时，半个 CSS 像素通常对应一个物理像素，不能保证所有设备都得到完全相同的清晰度。
+
+```css
+.divider { position: relative; }
+.divider::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #aaa; transform: scaleY(.5); transform-origin: bottom; }
+```
 
 ---
 
@@ -499,9 +516,22 @@ transition 和 animation 是CSS用于创建动画效果的两种不同的属性�
 
 ## Q27｜如何实现在某个容器中居中的？
 
+需要同时居中时，父容器用 display:grid 和 place-items:center，并保证容器有足够高度。只有水平居中且子元素宽度受限时，可用 margin-inline:auto。绝对定位的 50% 加 translate(-50%,-50%) 适合脱离文档流的覆盖元素，必须先给容器建立定位上下文。
+
+```css
+.container { display: grid; place-items: center; min-height: 300px; }
+```
+
 ---
 
 ## Q28｜如何改变一个 DOM 元素的字体颜色？
+
+字体颜色由 CSS 的 color 属性控制，可设置类，也可修改元素 style.color；background-color 改的是背景，不是文字。推荐通过切换类表达状态，避免大量内联样式。颜色应同时考虑深浅主题和可读性，不能只靠颜色传达错误或成功。
+
+```js
+element.classList.add('is-error'); // CSS: .is-error { color: #b42318; }
+element.style.color = '#334155'; // 简单动态场景
+```
 
 ---
 
@@ -655,6 +685,12 @@ CSS3中引入了许多新的伪类和伪元素，它们用于选择文档结构�
 ---
 
 ## Q37｜单行元素的文本省略号实现方式
+
+单行省略号需要同时具备受限宽度、禁止换行和隐藏溢出，再设置 text-overflow:ellipsis。Flex 或 Grid 子项常因默认最小宽度而不收缩，应加 min-width:0。省略只影响视觉展示，完整文字仍在 DOM 中，重要内容应允许查看全文。
+
+```css
+.title { min-width: 0; max-width: 20rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+```
 
 ---
 

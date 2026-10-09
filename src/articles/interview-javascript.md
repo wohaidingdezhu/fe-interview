@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 101
 status: draft
 quality: incomplete
+sources: ["https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference","https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"]
+technologyVersion: "现代 ECMAScript；事件循环示例针对浏览器"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference) · [参考 2](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)。
+
 
 ## Q40｜以下哪段代码运行效率更高（隐藏类）
 
@@ -70,8 +77,15 @@ quality: incomplete
 
 ## Q43｜强制类型转换、隐式类型转换
 
-- 强制类型转换
-- **隐式类型转换**
+显式转换通过 Number、String、Boolean 等表明意图；隐式转换发生在运算或比较中。加号既能加法也能连接字符串，减号通常要求数字。空数组和空对象都是 truthy，不能用 Boolean 判断容器是否为空。严格相等不做类型转换，通常更容易理解。
+
+```js
+Number('12'); // 12
+'12' + 1; // '121'
+'12' - 1; // 11
+Boolean([]); // true
+Number('oops'); // NaN
+```
 
 ---
 
@@ -207,9 +221,15 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q51｜变量提升 & 函数提升 (优先级)
 
-- var 在会变量提升
-- 优先级：函数提升 > 变量提升
-- 代码演变过程
+函数声明在其作用域初始化时绑定为函数；var 绑定初始化为 undefined，赋值仍发生在原来的执行位置。let/const 也建立词法绑定，但初始化前处于暂时性死区，访问会抛错。不要用“所有声明都搬到最上面”理解执行顺序；同名声明、严格模式和块级函数还会影响合法性。
+
+```js
+console.log(value); // undefined
+console.log(run()); // 1
+var value = 2;
+function run() { return 1; }
+// console.log(other); let other = 3; // ReferenceError
+```
 
 ---
 
@@ -277,21 +297,47 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q57｜事件循环进阶（1）
 
-根据上一个问题的思路，可逐步分析为拆分为以下步骤：
+原导入材料没有可执行代码，无法还原其具体输出。下面用可验证的新例子说明浏览器事件循环：先执行当前任务中的同步代码，再清空微任务队列，之后才有机会执行定时器任务。这里的输出次序为 A、D、C、B。
+
+```js
+console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
+```
 
 ---
 
 ## Q58｜事件循环进阶（2）
 
+原题没有保留代码，这里补一个独立示例。then 回调中新建的微任务会追加到队列尾部，而不是插到当前微任务后立即执行。当前任务结束后，输出依次为 A、B、C；微任务队列必须持续处理到空，过多微任务可能延迟绘制。
+
+```js
+queueMicrotask(() => { console.log('A'); queueMicrotask(() => console.log('C')); });
+queueMicrotask(() => console.log('B'));
+```
+
 ---
 
 ## Q59｜事件循环进阶（3）
+
+原题没有保留代码，以下为教学替代示例。async 函数会同步执行到第一个 await；即使等待已解决的 Promise，await 之后的代码也不会在同一同步栈内立即执行。输出为 A、C、B。是否先于其他微任务需根据注册顺序分析，不能笼统说 async 更快。
+
+```js
+async function run() { console.log('A'); await Promise.resolve(); console.log('B'); }
+run(); console.log('C');
+```
 
 ---
 
 ## Q60｜事件循环进阶（4）
 
-**解释：**
+原题没有保留代码，不能推测图片中输出。此例说明 Promise executor 在构造时同步执行，then 回调才进入微任务队列；setTimeout 是后续任务。输出为 A、D、C、B。浏览器和 Node 的调度阶段不同，本例仅针对浏览器，不把 Node 的 nextTick 等规则混入。
+
+```js
+new Promise(resolve => { console.log('A'); resolve(); }).then(() => console.log('C'));
+setTimeout(() => console.log('B'), 0); console.log('D');
+```
 
 ---
 
@@ -337,6 +383,8 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q64｜常用的 console 方法有哪些，JS 调试方法
 
+常见方法包括 log/info/warn/error、table、group/groupEnd、time/timeEnd、count、trace 和 assert。排查错误时可在开发者工具中设断点、条件断点和异常暂停，查看调用栈、作用域和网络请求。Source Map 将压缩代码映射回源码，但生产发布是否暴露源文件应按项目策略决定。console 输出对象可能是延迟查看，应保存需要对比的快照。
+
 ---
 
 ## Q65｜数组去重的方法
@@ -351,23 +399,44 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q66｜清空数组的方法
 
-- **方法一**
-- **方法二**
-- **方法三**
-- **方法四**
-- **方法五**
+arr.length=0 和 arr.splice(0) 都清空原数组，所有持有相同数组引用的变量都会看到变化。arr=[] 只是把当前变量指向新数组，不会清空旧数组，也不能赋值给 const 绑定。选择前先明确是否需要保留数组身份。
+
+```js
+const a = [1, 2]; const b = a; a.length = 0;
+console.log(b); // []
+let x = [1, 2]; const y = x; x = [];
+console.log(y); // [1, 2]
+```
 
 ---
 
 ## Q67｜JS 数组常见操作方式及方法
 
+push/pop 修改尾部，unshift/shift 修改头部，splice 修改任意区间；slice、map、filter 返回新数组。sort/reverse 会修改原数组，现代运行环境支持 toSorted/toReversed 等非修改版本，旧环境需要确认兼容性。find 返回第一个匹配元素，some/every 返回布尔值，includes 检查元素存在性；对象元素的相等通常比较引用。
+
 ---
 
 ## Q68｜JS 数组 reduce 方法的使用
 
+reduce 把多个元素累计成一个值，可以做求和、分组或索引。推荐明确提供初始值，避免空数组抛错以及首个元素被当作累积器带来的类型混乱。纯函数式复制累积对象可读但大量数据时可能反复分配，需要结合性能选择实现。
+
+```js
+const total = [1, 2, 3].reduce((sum, value) => sum + value, 0); // 6
+const grouped = rows.reduce((map, row) => {
+  (map[row.category] ??= []).push(row); return map;
+}, Object.create(null));
+```
+
 ---
 
 ## Q69｜如何遍历对象
+
+Object.keys/values/entries 遍历自身可枚举的字符串键，for...in 还可能遍历原型链上的可枚举字符串属性，应配合 Object.hasOwn。Reflect.ownKeys 返回全部自身字符串和 Symbol 键，包括不可枚举属性。遍历对象不能简单替换为 for...of，因为普通对象默认没有迭代器。
+
+```js
+for (const [key, value] of Object.entries(object)) console.log(key, value);
+for (const key of Reflect.ownKeys(object)) console.log(key);
+```
 
 ---
 
@@ -460,7 +529,12 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q76｜作用域链如何延长
 
-- **闭包**
+作用域由代码的词法结构确定，不是在运行时随意“延长”。闭包让函数在外层函数返回后仍能访问其词法环境中的绑定，可以理解为保留访问能力。with 和 eval 不是推荐手段，会增加可读性、优化和安全问题，严格模式还禁止 with。
+
+```js
+function counter() { let value = 0; return () => ++value; }
+const next = counter(); next(); next(); // 1、2
+```
 
 ---
 
@@ -531,9 +605,14 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q81｜如何绑定事件，解除事件
 
-**绑定事件：**
+addEventListener 可以注册多个监听器；removeEventListener 必须使用相同的事件类型、函数引用以及 capture 设置。重新写一个看似相同的匿名函数不是同一引用。支持的浏览器也可用 AbortController 一次解除一组监听器，适合组件卸载清理。
 
-**解除事件：**
+```js
+const controller = new AbortController();
+button.addEventListener('click', onClick, { signal: controller.signal });
+controller.abort(); // 解除监听
+function onClick() { console.log('clicked'); }
+```
 
 ---
 
@@ -642,6 +721,8 @@ ECMAScript是一种用于编写 JavaScript 的标准化脚本语言。下面是�
 
 ## Q88｜元素拖动实现方案
 
+普通位置拖动推荐 Pointer Events，完整示例见 Q129：按下时记录位置、设置指针捕获，移动时更新 transform 或定位属性，结束和取消时清理。拖放文件和跨容器数据交换更适合 HTML Drag and Drop。频繁移动应尽量用 transform 并合并绘制，避免每次移动都触发同步布局计算。
+
 ---
 
 ## Q89｜script 标签 async 和 defer 的区别
@@ -730,6 +811,12 @@ Promise 是 JavaScript 中处理异步操作的一种模式和对象，它提供
 
 ## Q95｜new 操作符内在逻辑
 
+普通构造过程可以概括为创建对象、把原型关联到构造函数 prototype、以该对象作为 this 调用构造函数，再依据返回值确定最终结果。若返回对象或函数，就使用返回值；返回基本值则保留创建的对象。手写 apply 版本无法调用 class，也不能完整模拟 new.target 等规则，真实动态构造应使用 Reflect.construct。
+
+```js
+const instance = Reflect.construct(Constructor, args);
+```
+
 ---
 
 ## Q96｜bind，apply，call 的区别，及内在实现
@@ -799,8 +886,17 @@ eval 函数具有潜在的危害，主要包括以下几个方面：
 
 ## Q100｜JS 监听对象属性的改变
 
-- **Object.defineProperty**
-- **Proxy**
+Object.defineProperty 可给特定属性设置 getter/setter；Proxy 可拦截对象的多种操作，包括赋值、删除和属性访问。代理只观察通过代理发生的操作，绕过代理直接改原对象不会通知。嵌套对象需要递归包装或按需包装；依赖收集还需要单独的 track/trigger 机制，参考 Q147。
+
+```js
+const observed = new Proxy({ count: 0 }, {
+  set(target, key, value, receiver) {
+    const old = target[key]; const ok = Reflect.set(target, key, value, receiver);
+    if (ok && !Object.is(old, value)) console.log(key, value);
+    return ok;
+  }
+});
+```
 
 ---
 
@@ -838,17 +934,44 @@ eval 函数具有潜在的危害，主要包括以下几个方面：
 
 ## Q104｜上下文与 this 指向
 
+普通函数的 this 主要由调用方式决定：obj.fn() 的接收者是 obj，call/apply/bind 可指定接收者，new 为构造调用创建接收者。独立调用在严格模式下 this 为 undefined。箭头函数不创建自己的 this，而是从定义位置的词法环境取得。对象把方法传给回调时会失去原接收者，应显式绑定或包一层函数。
+
 ---
 
 ## Q105｜上下文与 this 指向 （1）
+
+原导入内容没有完整代码，以下独立示例说明“方法被取出后丢失接收者”。obj.read() 返回 1；把 read 赋给变量再独立调用，在 ES module 的严格模式下 this 是 undefined，访问 this.value 会抛错。bind 返回固定接收者的新函数，不能依靠变量名字决定 this。
+
+```js
+const obj = { value: 1, read() { return this.value; } };
+const read = obj.read;
+obj.read(); // 1
+obj.read.bind(obj)(); // 1
+// read(); // 严格模式下 TypeError
+```
 
 ---
 
 ## Q106｜上下文与 this 指向（2）
 
+原题未保留完整代码，以下示例展示普通方法内创建的箭头函数继承方法调用时的 this。bind/call 无法改写箭头函数已经捕获的 this。若直接把箭头函数写成对象字面量属性，它捕获的是外层环境而不是该对象。
+
+```js
+const obj = { value: 2, make() { return () => this.value; } };
+const read = obj.make();
+read.call({ value: 9 }); // 2
+```
+
 ---
 
 ## Q107｜去除字符串首尾空格
+
+trim 返回去掉两端空白的新字符串，不修改原字符串；trimStart 与 trimEnd 分别处理一端。它处理规范中的空白和行终止符，不会删除字符串中间的空格，也不等同于去掉所有 Unicode 不可见字符。不要为此使用 replace(/\s/g, "")，那会同时改变中间内容。
+
+```js
+'  hello world
+'.trim(); // 'hello world'
+```
 
 ---
 
@@ -875,6 +998,15 @@ eval 函数具有潜在的危害，主要包括以下几个方面：
 ---
 
 ## Q110｜字符串转数字的方法
+
+Number 要求整体可转换，parseInt/parseFloat 可以解析开头的数值片段。parseInt 应明确进制；空字符串经 Number 转换为 0，而非法整体返回 NaN。用 Number.isNaN 判断结果是否是 NaN，用 Number.isSafeInteger 检查整数精度；超大整数可在合法输入下使用 BigInt。
+
+```js
+Number('12px'); // NaN
+parseInt('12px', 10); // 12
+parseFloat('3.5rem'); // 3.5
+Number(''); // 0
+```
 
 ---
 
@@ -939,5 +1071,13 @@ EcmaScript 中的所有参数都按值传递的。不可能按引用传递参数
 ---
 
 ## Q116｜console.log  被重写，重新获取的方法
+
+最可靠的做法是在被覆盖前保存已绑定的引用，例如 const log=console.log.bind(console)。如果原引用已经丢失，没有一个跨环境通用的“恢复原方法”接口；可以刷新隔离的开发页面，或在开发工具中检查覆盖来源。新 iframe 的 console 属于另一个 realm，受沙箱和跨源限制，也不应成为线上依赖。
+
+```js
+const originalLog = console.log.bind(console);
+console.log = () => {};
+originalLog("仍可输出");
+```
 
 ---

@@ -8,7 +8,7 @@ try {
   const directory = new URL('../.reports/', import.meta.url);
   await mkdir(directory, { recursive: true });
   await writeFile(new URL('content-quality.json', directory), `${JSON.stringify(report, null, 2)}\n`);
-  const lines = ['# 内容质量报告', '', `题目 ${report.summary.questions} 道；空答案 ${report.summary.empty} 道；短答案 ${report.summary.short} 道。`, '', '| 专题 | 状态 | 题号 | 问题 |', '| --- | --- | --- | --- |'];
+  const lines = ['# 内容质量报告', '', `题目 ${report.summary.questions} 道；空答案 ${report.summary.empty} 道；短答案 ${report.summary.short} 道。`, '', `公开 ${report.summary.publishedArticles} 篇笔记、${report.summary.publishedResources} 条资料；${report.summary.draftArticles} 篇草稿不进入线上发布。字数通过不代表已完成技术审核。`, '', '| 专题 | 状态 | 题号 | 问题 |', '| --- | --- | --- | --- |'];
   for (const topic of report.topics) for (const question of topic.questions.filter((item) => item.issue)) {
     lines.push(`| ${topic.id} | ${topic.status} | Q${question.number} | ${question.issue === 'empty' ? '无实质答案' : `短答案（${question.characters} 字符）`} |`);
   }

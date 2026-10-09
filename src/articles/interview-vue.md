@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 104
 status: draft
 quality: incomplete
+sources: ["https://vuejs.org/guide/essentials/event-handling.html","https://vuejs.org/guide/essentials/watchers.html","https://github.com/stackblitz/alien-signals/releases/tag/v2.0.0","https://github.com/vuejs/core"]
+technologyVersion: "Vue 3.5+；Alien Signals 说明参考 v2.0.0，Vue 内部实现需固定提交"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://vuejs.org/guide/essentials/event-handling.html) · [参考 2](https://vuejs.org/guide/essentials/watchers.html) · [参考 3](https://github.com/stackblitz/alien-signals/releases/tag/v2.0.0) · [参考 4](https://github.com/vuejs/core)。
+
 
 ## Q159｜Vue2 不能监听数组下标原因
 
@@ -103,6 +110,13 @@ quality: incomplete
 ---
 
 ## Q162｜vue 的常用修饰符
+
+事件修饰符包括 .stop、.prevent、.capture、.self、.once、.passive；按键修饰符可筛选 Enter 等，v-model 常见 .trim、.number、.lazy。修饰符顺序可能改变行为，.self.prevent 与 .prevent.self 不完全等价；不要同时使用 .passive 与 .prevent，因为被动监听器承诺不取消默认行为。
+
+```html
+<form @submit.prevent="save">…</form>
+<input v-model.trim="name" @keyup.enter="save" />
+```
 
 ---
 
@@ -221,6 +235,21 @@ quality: incomplete
 ---
 
 ## Q173｜Vue3  的最长递增子序列算法
+
+在 Vue keyed diff 的常见实现中，新序列记录对应旧节点位置；对需要移动的部分求最长严格递增子序列，子序列中的节点可保持相对位置，其余再移动。使用二分查找维护 tails 可以做到 O(n log n)，但 tails 本身不一定是最终子序列，需要保存前驱才能还原。下面是通用数值序列的长度实现，不是某版 Vue 源码的完整 getSequence；框架内部可能用 0 表示新节点并跳过它。
+
+```js
+function lisLength(values) {
+  const tails = [];
+  for (const value of values) {
+    let left = 0, right = tails.length;
+    while (left < right) { const mid = (left + right) >> 1; if (tails[mid] < value) left = mid + 1; else right = mid; }
+    tails[left] = value;
+  }
+  return tails.length;
+}
+lisLength([2, 1, 3, 5, 4]); // 3
+```
 
 ---
 
@@ -354,7 +383,13 @@ Object.defineProperty 是在 ES5 中引入的属性定义方法，用于对对�
 
 ## Q181｜watch 怎么深度监听对象变化
 
-设置deep: true来启用深度监听
+Vue 3 直接 watch 一个 reactive 对象通常会隐式深度监听；watch(() => state.user, callback) 则默认关注 getter 返回值的替换，需要 deep:true 才递归观察内部变化。深度修改时新旧值可能是同一个对象引用，不能据此推断修改前的快照。Vue 3.5+ 支持数字 deep 限制遍历深度，大对象更适合只监听需要的字段。
+
+```js
+const state = reactive({ user: { name: 'A' } });
+watch(() => state.user.name, (name, oldName) => console.log(name, oldName));
+watch(() => state.user, () => console.log('内部或整体变化'), { deep: true });
+```
 
 ---
 
@@ -404,8 +439,11 @@ Object.defineProperty 是在 ES5 中引入的属性定义方法，用于对对�
 
 ## Q185｜vue 要做权限管理该怎么做？如果控制到按钮级别的权限怎么做？
 
-- **路由级别的权限管理：**
-- **按钮级别权限**
+登录后从可信服务端获取权限标识，路由守卫按 meta 中的要求控制页面入口；按钮可用 v-if、组件封装或自定义指令按权限展示。前端控制只改善交互，不是安全边界，用户可修改客户端代码，因此每个 API、数据对象和敏感操作必须在服务端再次授权。退出、角色切换和权限刷新时应清理缓存，避免继续展示过期权限。
+
+```html
+<button v-if="permissions.has('article:edit')" @click="edit">编辑</button>
+```
 
 ---
 
@@ -580,6 +618,8 @@ signal 是响应式系统中的基本状态单元，每个 signal 包含了原�
 
 ## Q197｜Vue3.6 alien-signals - 依赖构建（手动实现）
 
+此题标题涉及 Vue 3.6 的内部实现，但必须对照具体提交；Alien Signals 自身版本与 Vue 版本不能简单等同。理解依赖构建可先学习 Q147 的教学模型：执行订阅者时设置 activeEffect，读取 signal 时把源与订阅者连接，执行结束后删除本轮未再读取的旧分支依赖。真实实现采用依赖链接结构减少分配，并处理嵌套订阅和清理，不能把 Map/Set 教学例当作源码复刻。参考作者仓库与 v2.0.0 发布说明，后续逐行分析需固定 commit。
+
 ---
 
 ## Q198｜Vue3.6 alien-signals - 数据信号传播
@@ -635,6 +675,10 @@ signal 是响应式系统中的基本状态单元，每个 signal 包含了原�
 
 ## Q200｜Vue3.6 alien-signals - 状态机
 
+以 Alien Signals v2.0.0 的发布说明及作者实现为参考，可把流程理解为 clean、pending、dirty 等标记的变化：写入源后传播可能失效，读取派生值时再检查依赖，必要时重新计算；结果未变化时可避免继续触发下游。实际标记可能并存，并不等于三个互斥枚举值。具体行为受版本、批处理和订阅者类型影响，不能仅由题目中的 Vue 3.6 名称确定源码状态机。
+
+原导入配图（仅辅助参考，以文字说明和示例为准）：
+
 ![](./images/interview/大前端面试宝典-image-46.png)
 
 ![](./images/interview/大前端面试宝典-image-45.png)
@@ -642,6 +686,16 @@ signal 是响应式系统中的基本状态单元，每个 signal 包含了原�
 ---
 
 ## Q201｜Vue3.6 alien-signals - 状态各种位运算
+
+位标记让一个整数同时保存多种状态。flags & MASK 检查某位，flags | MASK 设置某位，flags & ~MASK 清除某位，不能用 flags === MASK 判断组合状态。下面的常量仅为教学例子，并非 Alien Signals 的真实枚举数值；阅读框架源码时应对照固定版本的定义，还要区分位运算与逻辑运算。
+
+```js
+const DIRTY = 1 << 0, PENDING = 1 << 1;
+let flags = DIRTY | PENDING;
+Boolean(flags & DIRTY); // true
+flags &= ~DIRTY;
+Boolean(flags & DIRTY); // false
+```
 
 ---
 

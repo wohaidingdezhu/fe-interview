@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 107
 status: draft
 quality: incomplete
+sources: ["https://html.spec.whatwg.org/","https://developer.mozilla.org/en-US/docs/Web/API"]
+technologyVersion: "现代浏览器；各引擎实现细节仍需核对"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://html.spec.whatwg.org/) · [参考 2](https://developer.mozilla.org/en-US/docs/Web/API)。
+
 
 ## Q245｜V8 垃圾回收机制
 

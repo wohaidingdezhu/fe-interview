@@ -11,6 +11,7 @@ export type Article = {
   kind: '阅读指南' | '知识文章' | '手写题解'; tags: string[]; addedAt: string; order: number; content: string;
   status: PublicationStatus; quality: 'complete' | 'incomplete'; sources: string[]; technologyVersion?: string;
 };
+export type ArticleMetadata = Omit<Article, 'content'> & { contentLength: number; bodyPath: string };
 function record(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${label} 必须是对象`);
   return value as Record<string, unknown>;

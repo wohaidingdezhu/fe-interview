@@ -9,7 +9,14 @@ addedAt: "2026-10-08"
 order: 106
 status: draft
 quality: incomplete
+sources: ["https://webpack.js.org/api/loaders/","https://webpack.js.org/contribute/writing-a-plugin/"]
+technologyVersion: "补充示例基于 webpack 5；原导入工具内容仍待逐项核对"
 ---
+
+> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+
+补充参考资料：[参考 1](https://webpack.js.org/api/loaders/) · [参考 2](https://webpack.js.org/contribute/writing-a-plugin/)。
+
 
 ## Q228｜webpack 的作用
 
@@ -104,13 +111,37 @@ Plugin 用于执行构建过程中的各种任务和优化，扩展Webpack的功
 
 ## Q234｜写一个 loader
 
-**引用：webpack 配置**
+Loader 处理单个模块的源文本并返回转换结果，运行时可用 this.getOptions 读取选项，异步转换可用 this.async。以下是 webpack 5 的 CommonJS 教学 Loader，只前置注释，尚未生成精确 Source Map；真正修改语法时应使用解析器并传递或重建映射，而不是对复杂源码直接字符串替换。
+
+```js
+// comment-loader.cjs
+module.exports = function (source) {
+  this.cacheable(); const { label = 'compiled' } = this.getOptions();
+  const safeLabel = String(label).replace(/\*\//g, '* /').replace(/[\r\n]/g, ' ');
+  return `/* ${safeLabel} */\n${source}`;
+};
+```
 
 ---
 
 ## Q235｜写一个 Plugin
 
-**引用：webpack 配置**
+Plugin 通过 apply(compiler) 订阅构建生命周期。webpack 5 中向最终产物添加文件，可以在 thisCompilation 后使用 processAssets 和 emitAsset。插件应有稳定名称，避免每次构建泄漏全局监听；异步任务必须使用对应的异步 hook。
+
+```js
+// build-note-plugin.cjs
+class BuildNotePlugin {
+  apply(compiler) {
+    const name = 'BuildNotePlugin';
+    compiler.hooks.thisCompilation.tap(name, compilation => {
+      compilation.hooks.processAssets.tap({ name, stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL }, () => {
+        compilation.emitAsset('build-note.txt', new compiler.webpack.sources.RawSource('Build finished'));
+      });
+    });
+  }
+}
+module.exports = BuildNotePlugin;
+```
 
 ---
 
