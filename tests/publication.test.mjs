@@ -35,6 +35,55 @@ test('普通文章不能仅改状态发布空提纲，缺少来源或版本也�
     assert.equal(draft.errors.length, 0); assert.ok(draft.warnings.some(warning => expected.test(warning)));
   }
 });
+test('代码围栏中的示例题号不会把普通文章误识别为题库', async () => {
+  for (const fence of ['```', '````', '~~~']) {
+    const body = `这是一篇完整的 Markdown 使用说明，解释格式、使用步骤、可观察结果和常见错误边界。\n\n${fence}md\n## Q999｜示例标题\n示例正文\n${fence}`;
+    const article = parseArticle(markdown('note', body, 'status: published\nquality: complete'), 'note.md');
+    const library = { articles: [article], resources: [], questionPublication: {} };
+    assert.deepEqual(inspectQuestions(article), []);
+    assert.equal(selectPublished(library).articles[0].content, body);
+    const report = await validateContent(library, tmpdir());
+    assert.equal(report.summary.questions, 0); assert.equal(report.errors.length, 0);
+  }
+});
+test('真实题目中的示例题号不切断正文或改变逐题发布范围', () => {
+  const body = '## Q1｜公开说明\n这是经过审核的完整说明，解释实际问题、使用步骤、可观察结果和常见错误边界。\n\n```md\n## Q999｜示例标题\n```\n\n## Q2｜草稿说明\nDRAFT_SENTINEL';
+  const article = parseArticle(markdown('topic', body), 'topic.md');
+  const questionPublication = { Q1: { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: '测试环境', reviewedAt: '2026-10-09' } };
+  const questions = inspectQuestions(article);
+  assert.deepEqual(questions.map(question => question.number), [1, 2]);
+  assert.match(questions[0].body, /## Q999｜示例标题/);
+  const published = selectPublished({ articles: [article], resources: [], questionPublication });
+  assert.match(published.articles[0].content, /## Q999｜示例标题/);
+  assert.doesNotMatch(published.articles[0].content, /DRAFT_SENTINEL/);
+  const metadata = contentAssets(published).catalog.articles[0];
+  assert.equal(metadata.questionCount, 2); assert.equal(metadata.publishedQuestionCount, 1);
+});
+test('图片说明、引用定义和地址不计入答案字数，图片空题无法公开', async () => {
+  const alt = '这是一个很长的图片说明，它只是图片的替代文本，不能代替对题目的实质答案和原理解释';
+  const url = 'https://example.com/images/long-reference-without-any-written-answer.png';
+  const definition = `\n\n[answer]: ${url}\n[${alt}]: ${url}`;
+  const forms = [`![${alt}](${url})`, `![${alt}][answer]`, `![${alt}][]`, `![${alt}]`];
+  for (const form of forms) {
+    const article = parseArticle(markdown('topic', `## Q1｜概念说明\n答案：\n${form}${definition}`), 'topic.md');
+    const questionPublication = { Q1: { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: '测试环境', reviewedAt: '2026-10-09' } };
+    const library = { articles: [article], resources: [], questionPublication };
+    assert.equal(inspectQuestions(article)[0].characters, 0);
+    assert.ok(inspectQuestions(article)[0].issues.includes('empty'));
+    assert.throws(() => selectPublished(library), /empty/);
+    const report = await validateContent(library, tmpdir());
+    assert.equal(report.summary.empty, 1); assert.ok(report.errors.some(error => /Q1.*empty/.test(error)));
+    const draft = await validateContent({ ...library, questionPublication: {} }, tmpdir());
+    assert.equal(draft.errors.length, 0); assert.ok(draft.warnings.some(warning => /Q1.*empty/.test(warning)));
+  }
+});
+test('跨题图片引用不掩盖空答案，真实文字和实现代码仍被统计', () => {
+  const content = '## Q1｜草稿说明\n[shared]: https://example.com/images/long-reference-without-any-written-answer.png\n\n## Q2｜概念说明\n![很长的替代文本不能代表实际答案和原理说明，也不能作为完整度校验所需的实质文字内容][shared]\n\n## Q3｜实现一个函数\n```js\nfunction combineValues(firstValue, secondValue) { return firstValue + secondValue; }\n```';
+  const article = parseArticle(markdown('topic', content), 'topic.md');
+  const questions = inspectQuestions(article);
+  assert.equal(questions[1].characters, 0); assert.ok(questions[1].issues.includes('empty'));
+  assert.ok(questions[2].characters >= 30); assert.deepEqual(questions[2].issues, []);
+});
 test('跨草稿引用的图片和链接只保留公开题需要的定义，题目总数不丢失', () => {
   const topic = parseArticle(markdown('topic', '## Q1｜公开说明\n这是经过人工审核的完整说明，包含适用条件、使用边界、验证步骤和需要关注的错误情况。\n![流程][SHARED]\n[来源][source]\n\n## Q2｜草稿说明\nDRAFT_SENTINEL\n\n[shared]: ./images/public.png "流程图"\n[source]: https://example.com/public\n[unused]: https://example.com/DRAFT_URL_SENTINEL'), 'topic.md');
   const questionPublication = { Q1: { status: 'published', quality: 'complete', sources: ['https://example.com/public'], technologyVersion: '测试环境', reviewedAt: '2026-10-09' } };
@@ -118,7 +167,7 @@ test('实际生产构建排除草稿正文、搜索数据、私人文件及草�
   for (const directory of ['src/articles', 'src/data', 'public/images', '.private']) await mkdir(join(root, directory), { recursive: true });
   await writeFile(join(root, 'index.html'), '<div id="app"></div><script type="module" src="/main.js"></script>');
   await writeFile(join(root, 'main.js'), 'import library from "virtual:library"; document.getElementById("app").textContent=JSON.stringify(library);');
-  await writeFile(join(root, 'src/articles/public.md'), markdown('public', 'PUBLIC_BODY_SENTINEL 这是一篇完整的公开说明，解释实际问题、操作步骤、验证结果和使用边界。\n![公开图](./images/public.png)', 'status: published\nquality: complete'));
+  await writeFile(join(root, 'src/articles/public.md'), markdown('public', 'PUBLIC_BODY_SENTINEL 这是一篇完整的公开说明，解释实际问题、操作步骤、验证结果和使用边界。\n![公开图](./images/public.png)\n\n~~~md\n## Q999｜示例标题\n~~~', 'status: published\nquality: complete'));
   await writeFile(join(root, 'src/articles/draft.md'), markdown('draft', 'DRAFT_BODY_SENTINEL\n![草稿图](./images/draft.png)'));
   await writeFile(join(root, 'src/articles/partial.md'), markdown('partial', '## Q10｜已审核概念\nPUBLIC_QUESTION_SENTINEL 这是经过逐题审核的完整解释，包含适用条件、限制边界和异常情况。\n![逐题公开图][public-pic]\n\n## Q11｜未审核概念\nDRAFT_QUESTION_SENTINEL 这道题仍然处于草稿。\n![逐题草稿图][draft-pic]\n\n[public-pic]: ./images/question-public.png\n[draft-pic]: ./images/question-draft.png'));
   await writeFile(join(root, 'src/data/resources.json'), JSON.stringify([{ ...resource, id: 'public-resource', status: 'published' }, { ...resource, id: 'draft-resource', url: 'https://example.com/draft', title: 'DRAFT_RESOURCE_SENTINEL' }]));
@@ -138,6 +187,7 @@ test('实际生产构建排除草稿正文、搜索数据、私人文件及草�
   assert.equal(content.length, 2);
   const bodies = (await Promise.all(content.map((file) => readFile(join(root, 'dist/content', file), 'utf8')))).join('\n');
   assert.match(bodies, /PUBLIC_BODY_SENTINEL/); assert.match(bodies, /PUBLIC_QUESTION_SENTINEL/);
+  assert.match(bodies, /Q999｜示例标题/);
   assert.doesNotMatch(bodies, /DRAFT_QUESTION_SENTINEL/);
   const search = await readdir(join(root, 'dist/search'));
   assert.equal(search.length, 1);

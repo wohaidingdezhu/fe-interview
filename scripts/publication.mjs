@@ -1,27 +1,42 @@
 import { access } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
-import { markdownNodes, withoutDefinitions } from './markdown.mjs';
+import { parseMarkdown, markdownNodes, withoutDefinitions } from './markdown.mjs';
 
 const implementationPattern = /(^实现|手动实现|^手写|^封装|^编写|^写一个|^写出|^还原|用.+实现|CSS 实现|拖动实现|链式调用实现|内在实现|拓扑排序|笛卡尔积|并发任务控制|数组打平|深拷贝|柯里化|防抖|节流|截流|全排列|反转.*链表|二叉树.*遍历|链表.*中间节点)/i;
 const defaultQuestionPublication = Object.freeze({ status: 'draft', quality: 'incomplete', sources: [] });
 
 export function inspectQuestions(article) {
-  const headings = [...article.content.matchAll(/^## Q(\d+)｜([^\n]+)\n?/gm)];
-  return headings.map((match, index) => {
-    const start = match.index;
-    const end = headings[index + 1]?.index ?? article.content.length;
-    const body = article.content.slice(start + match[0].length, end).trim();
+  // 用整篇 Markdown 的语法树识别题目与引用，避免代码示例被拆成题目。
+  const tree = parseMarkdown(article.content);
+  const headings = tree.children.flatMap(node => {
+    if (node.type !== 'heading' || node.depth !== 2) return [];
+    const start = node.position.start.offset, bodyStart = node.position.end.offset;
+    const match = article.content.slice(start, bodyStart).match(/^## Q(\d+)｜([^\r\n]+)/);
+    return match ? [{ number: Number(match[1]), title: match[2], start, bodyStart }] : [];
+  });
+  return headings.map((heading, index) => {
+    const { start, bodyStart } = heading;
+    const end = headings[index + 1]?.start ?? article.content.length;
+    const body = article.content.slice(bodyStart, end).trim();
     const raw = article.content.slice(start, end).trim();
-    const answer = body.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/^#{1,6}.*$/gm, '')
-      .replace(/答案[：:]/g, '').replace(/```[^\n]*\n|```/g, '').replace(/[^\p{L}\p{N}]/gu, '');
-    const hasCode = /```[^\n]*\n[\s\S]*?```/.test(body);
+    const values = [];
+    let hasCode = false;
+    function visit(node) {
+      if (['heading', 'image', 'imageReference', 'definition'].includes(node.type)) return;
+      if (['text', 'inlineCode', 'code'].includes(node.type)) values.push(node.value);
+      if (node.type === 'code' && node.value.trim()) hasCode = true;
+      for (const child of node.children ?? []) visit(child);
+    }
+    // 图片替代文本和引用 URL 不算答案；保留实际文字与实现代码。
+    for (const node of tree.children) if (node.position.start.offset >= bodyStart && node.position.start.offset < end) visit(node);
+    const answer = values.join(' ').replace(/答案[：:]/g, '').replace(/[^\p{L}\p{N}]/gu, '');
     const issues = [];
     if (!answer.length) issues.push('empty');
     else if (answer.length < 30) issues.push('short');
-    if (implementationPattern.test(match[2]) && !hasCode) issues.push('missing-code');
+    if (implementationPattern.test(heading.title) && !hasCode) issues.push('missing-code');
     if (!hasCode && /(?:^|\n)\s*\*{0,2}定义[：:]/.test(body) && answer.length < 180) issues.push('definition-only');
     if (/(?:TODO|TBD|待补充|暂无答案)/i.test(body)) issues.push('placeholder');
-    return { number: Number(match[1]), title: match[2], body, raw, start, end, characters: answer.length,
+    return { number: heading.number, title: heading.title, body, raw, start, end, characters: answer.length,
       issues: [...new Set(issues)], issue: issues[0] ?? null };
   });
 }
