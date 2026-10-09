@@ -8,6 +8,7 @@ tags: ["JavaScript", "闭包", "面试"]
 aliases: ["词法作用域", "closure", "函数闭包"]
 related: ["debounce", "event-loop", "react-state"]
 addedAt: "2026-10-08"
+reviewedAt: "2026-10-09"
 order: 1
 status: published
 quality: complete

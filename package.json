@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "npm run validate:content && tsc -b && vite build",
+    "build": "npm run validate:content && npm run validate:snippets && tsc -b && vite build",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview --host 127.0.0.1",
     "validate:content": "node scripts/validate-content.mjs",
@@ -16,7 +16,9 @@
     "fetch:resource": "node scripts/fetch-resource.mjs",
     "import:resources": "node scripts/import-resources.mjs",
     "new:article": "node scripts/new-article.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "validate:snippets": "node scripts/validate-snippets.mjs",
+    "review:progress": "node scripts/review-progress.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

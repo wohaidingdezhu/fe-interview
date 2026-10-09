@@ -8,6 +8,7 @@ tags: ["网络", "性能", "面试"]
 aliases: ["强缓存", "协商缓存", "304 缓存"]
 related: ["chrome-devtools-workflow", "interview-network"]
 addedAt: "2026-10-08"
+reviewedAt: "2026-10-09"
 order: 6
 status: published
 quality: complete

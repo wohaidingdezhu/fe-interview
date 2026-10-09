@@ -11,14 +11,26 @@ export function contentAssets(library) {
     const source = JSON.stringify({ content });
     const bodyPath = assetPath(`content/${metadata.id}`, source);
     assets.push({ fileName: bodyPath, source });
-    return { ...metadata, contentLength: content.length, bodyPath,
-      questionCount: metadata.questionCount ?? questions.length, publishedQuestionCount };
+    const questionCount = metadata.questionCount ?? questions.length;
+    const completeTopic = questionCount > 0 && publishedQuestionCount === questionCount;
+    const dates = library.questionPublication === undefined ? [] : questions
+      .filter(question => questionPublicationFor(library, question.number).status === 'published')
+      .map(question => questionPublicationFor(library, question.number).reviewedAt).filter(Boolean).sort();
+    return { ...metadata, ...(completeTopic ? { status: 'published', quality: 'complete' } : {}),
+      ...(dates.length ? { reviewedAt: dates[0] } : {}), contentLength: content.length, bodyPath,
+      questionCount, publishedQuestionCount };
   });
-  const documents = library.articles.map((article) => ({ id: article.id, text:
-    `${article.title} ${article.category} ${article.tags.join(' ')} ${(article.aliases ?? []).join(' ')} ${article.description}\n${article.content}`
+  const plainText = content => content
       .replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-      .replace(/```[^\n]*\n|```/g, '').replace(/^#{1,6}\s*/gm, '').replace(/\s+/g, ' ').trim(),
-  }));
+      .replace(/```[^\n]*\n|```/g, '').replace(/^#{1,6}\s*/gm, '').replace(/\s+/g, ' ').trim();
+  const documents = library.articles.flatMap(article => {
+    const prefix = `${article.title} ${article.category} ${article.tags.join(' ')} ${(article.aliases ?? []).join(' ')} ${article.description}`;
+    const questions = inspectQuestions(article);
+    return questions.length ? questions.map(question => ({ id: article.id,
+      questionNumber: question.number, questionTitle: `Q${question.number}｜${question.title}`,
+      anchor: `q${question.number}`, text: plainText(`${prefix}\n${question.raw}`),
+    })) : [{ id: article.id, text: plainText(`${prefix}\n${article.content}`) }];
+  });
   const source = JSON.stringify(documents), searchPath = assetPath('search/index', source);
   assets.push({ fileName: searchPath, source });
   return { catalog: { articles, resources: library.resources, searchPath }, assets };

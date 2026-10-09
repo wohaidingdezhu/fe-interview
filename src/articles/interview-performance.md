@@ -6,270 +6,194 @@ description: "收录 Q247–Q260 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["性能优化","缓存","渲染"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 108
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://web.dev/articles/virtualize-long-lists-react-window","https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"]
 technologyVersion: "现代浏览器；具体优化需结合测量"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://web.dev/articles/virtualize-long-lists-react-window) · [参考 2](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)。
 
 
 ## Q247｜性能优化相关的参考指标有哪些？
 
-- **FP（First Paint）：** FP 表示浏览器首次绘制像素到屏幕上的时间，通常是指页面的第一个非白色像素点。它是评估页面渲染速度的重要指标。
-- **FCP（First Contentful Paint）：** FCP 是页面首次绘制任何有内容的像素到屏幕上的时间。它反映了页面内容开始呈现的时间点，对用户体验有重要影响。
-- **FMP（First Meaningful Paint）：** FMP 表示页面首次呈现有意义的内容到屏幕上的时间。它反映了用户认为页面有用的内容何时可见，是用户体验的重要组成部分。
-- **TTI（Time to Interactive）：** TTI 表示页面变得可交互的时间，即用户可以与页面进行交互的时间点。较短的 TTI 对于提供良好的用户体验至关重要。
-- **TTFB（Time to First Byte）：** TTFB 表示从发出请求到收到第一个字节响应的时间。它是服务器响应速度的度量，较短的 TTFB 通常意味着更快的页面加载速度。
-- **DCL（DOM Content Loaded）：** DCL 表示浏览器完成解析 DOM 树并完成加载页面的时间。它通常用于评估页面脚本的加载性能。
-- **CLS（Cumulative Layout Shift）：** CLS 衡量了页面上元素布局变化的累积效果。较低的 CLS 表示更稳定的页面布局，有助于提高用户体验。
-- **LCP（Largest Contentful Paint）：** LCP 表示页面上最大内容块（通常是图片或文本块）绘制到屏幕上的时间。它是评估页面内容加载速度的指标之一。
-- **CPU 和内存使用率：** 监测应用程序的 CPU 和内存使用率可以帮助识别性能问题和资源泄漏。
-- **请求次数和大小：** 查看页面加载时发出的请求次数和每个请求的大小，以识别优化网络请求的机会。
-- **渲染性能：** 监测页面的渲染性能，包括帧率（FPS）和渲染时间，以确保流畅的用户体验。
-- **加载时间：** 页面完全加载所需的总时间，包括网络请求、解析、渲染等过程。
-- **缓存命中率：** 检查缓存命中率，以确定是否有效地使用浏览器缓存来减少请求和加速页面加载。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+当前 Core Web Vitals 关注 LCP（加载）、INP（交互）和 CLS（视觉稳定性）；良好阈值分别为 ≤2.5 秒、≤200 毫秒、≤0.1，按实际访问的第 75 百分位评估，并区分移动端和桌面端。FID 已由 INP 取代。
+
+TTFB、FCP、长任务、请求耗时、JS 错误和业务可用时间辅助定位原因，不能把一次 Lighthouse 分数当全体用户体验。实验室测试用于可重复诊断，RUM 反映真实设备/网络分布；优化前后对齐版本、样本与统计口径。
+
+参考：[资料 1](https://web.dev/articles/vitals)。
 
 ---
 
 ## Q248｜performance 对象
 
-- timing: 返回一个包含页面加载性能信息的对象，包括各种时间戳，用于测量页面加载和资源加载的性能。
-- navigationStart: 表示浏览器开始导航的时间，通常为页面加载开始的时间。
-- unloadEventStart: 表示前一个页面卸载的开始时间。
-- unloadEventEnd: 表示前一个页面卸载的结束时间。
-- redirectStart: 表示重定向开始的时间，如果没有重定向则为 0。
-- redirectEnd: 表示重定向结束的时间，如果没有重定向则为 0。
-- fetchStart: 表示浏览器准备好使用 HTTP 请求来获取文档的时间。
-- domainLookupStart: 表示开始执行 DNS 查询的时间。
-- domainLookupEnd: 表示完成 DNS 查询的时间。
-- connectStart: 表示开始建立与服务器的连接的时间。
-- connectEnd: 表示与服务器的连接建立完成的时间。
-- requestStart: 表示浏览器向服务器发出请求的时间。
-- responseStart: 表示浏览器从服务器接收到第一个字节的时间。
-- responseEnd: 表示浏览器接收响应完成的时间。
-- domLoading: 表示开始解析页面 DOM 结构的时间。
-- domInteractive: 表示结束解析并开始加载子资源的时间。
-- domContentLoadedEventStart: 表示 DOMContentLoaded 事件开始的时间。
-- domContentLoadedEventEnd: 表示 DOMContentLoaded 事件结束的时间。
-- domComplete: 表示 DOM 解析完成的时间。
-- loadEventStart: 表示 load 事件开始的时间。
-- loadEventEnd: 表示 load 事件结束的时间。
-- navigation: 包含有关浏览器导航的信息，如重定向次数、导航类型等。
-- memory: 包含有关浏览器内存使用的信息，如内存限制、已分配内存等。
-- now(): 返回当前时间的高分辨率时间戳，通常用于性能测量。
-- mark(): 用于在代码中添加性能标记，以便测量特定代码块的性能。
-- measure(): 用于测量两个性能标记之间的时间间隔，以便进行性能分析。
-- getEntries(): 返回一个包含性能条目的数组，用于检索性能相关的信息。
-- getEntriesByName(): 返回一个包含特定名称的性能条目的数组。
-- clearMarks(): 用于清除性能标记。
-- clearMeasures(): 用于清除性能测量。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+Performance API 提供单调时钟与性能条目。performance.now() 适合测耗时；mark/measure 标记业务阶段；PerformanceObserver 持续观察支持的条目，导航和资源时序优先使用 PerformanceNavigationTiming/ResourceTiming，旧 performance.timing 已弃用。
+
+```js
+performance.mark("filter-start");
+const result = [1, 2, 3].filter(n => n > 1);
+performance.mark("filter-end");
+performance.measure("filter", "filter-start", "filter-end");
+console.log(result, performance.getEntriesByName("filter").at(-1).duration);
+performance.clearMarks("filter-start");
+performance.clearMarks("filter-end");
+performance.clearMeasures("filter");
+```
+
+极短代码的计时受精度、JIT 和噪声影响。跨域资源详细时序受 Timing-Allow-Origin 控制；观察器应按需断开并控制上报量。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Performance) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver)。
 
 ---
 
 ## Q249｜webpack 优化前端性能
 
-1. **代码分割：**使用Webpack的代码分割功能，将应用程序拆分为多个包，以实现按需加载。这减小了初始加载时间，并减少了首次加载时需要下载的数据量。
-2. **压缩代码：**使用Webpack的压缩插件来压缩JavaScript代码。压缩代码可以减小文件大小，加速加载时间。
-3. **Tree Shaking：**通过Webpack的Tree Shaking功能，可以消除未使用的代码，以减小生成的包的大小。
-4. **图片优化：**使用Webpack的图像加载器和插件，自动优化图像，包括压缩和格式转换，以减小图像文件的大小。
-5. **资源缓存：**使用Webpack的文件名哈希和输出文件分离，以便在构建时生成带有哈希的文件名，从而有效地利用浏览器缓存。
-6. **分割 CSS：**将CSS文件与JavaScript文件分离，以减小首次加载时的文件大小，或使用Webpack的MiniCssExtractPlugin。
-7. **CDN 加速：**将静态资源（如图片、字体、库等）托管到CDN上，以加速资源加载。
-8. **缓存策略：**使用Webpack的缓存策略插件来管理资源缓存，从而实现离线访问和更快的加载速度。
-9. **代码拆分：**将应用程序代码拆分为多个块，以便按需加载，减小首次加载时间，并加速应用程序的启动。
-10. **懒加载：**使用Webpack的懒加载机制，延迟加载不必要的代码，以提高初始加载速度。
-11. **预加载：**使用Webpack的预加载功能，提前加载可能在未来需要的资源，以提高用户体验。
-12. **分析工具：**使用Webpack的包分析工具，如Bundle Analyzer Plugin，来识别和解决包大小过大的问题。
-13. **CDN 切分块：**使用externals配置将常用的库（如React、Vue等）从包中排除，以便从CDN加载，减小包大小。
-14. **缓存管理：**配置Webpack以生成长期缓存的文件名，以便更好地利用浏览器缓存。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+webpack 层可通过生产模式、tree shaking、按需导入、合理 splitChunks、压缩与 contenthash 降低传输和重复下载。CSS 提取、图片尺寸/格式与字体裁剪也应按业务衡量。
+
+tree shaking 依赖静态分析及正确 sideEffects 标注，错误声明会删除必要副作用。压缩/缓存响应头和 CDN 由部署端提供，打包器不自动使资源离线可用。先分析产物与真实加载路径，避免把拆包后总量不变误认为首屏一定变快。
+
+参考：[资料 1](https://webpack.js.org/guides/tree-shaking/) · [资料 2](https://webpack.js.org/guides/code-splitting/)。
 
 ---
 
 ## Q250｜如何实现长缓存
 
-长缓存（Long-term caching）是一种前端性能优化策略，它旨在使浏览器能够缓存应用程序的静态资源（如JavaScript、CSS、图像等）更长的时间，以减少不必要的网络请求，加速页面加载速度，并减少带宽消耗。通过将资源文件的内容与它们的文件名关联，可以实现长缓存。通常，浏览器会根据资源文件的URL来判断是否从缓存中获取资源，因此如果资源文件的URL不变，浏览器就会继续使用缓存的资源，直到URL发生变化。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
 
-**落地方案：**
+对内容指纹命名的静态文件设置 Cache-Control: public, max-age=31536000, immutable，内容变化使用新 URL；入口 HTML 通常使用 no-cache 配合 ETag/Last-Modified 重新验证，让用户及时得到新文件引用。no-cache 允许存储但要求验证，no-store 才是不存储。
 
-1. 使用文件名哈希：Webpack可以生成包含哈希值的文件名，以确保每个文件在内容发生变化时具有不同的文件名。这样，当文件内容变化时，浏览器会重新下载该文件。
-2. 输出文件分离：将应用程序的代码与第三方库、样式表和其他资源文件分开打包成多个文件。这样，只有在发生变化时才需要重新下载应用程序代码，而其他资源可以长期缓存。
-3. 配置缓存控制：在服务器端配置HTTP响应头，以设置资源文件的缓存控制策略，包括Cache-Control和Expires等。这些头部指示浏览器缓存资源的时间。
-4. 版本号控制：将资源文件的版本号添加到URL中，以强制浏览器重新下载文件。例如：
-5. 使用文件指纹：生成资源文件的指纹（如MD5哈希），并将指纹添加到资源文件名中，以确保文件内容发生变化时URL也会变化。
+发布先上传新资产再切入口，并保留旧资产以支持已打开页面与回滚。无指纹文件不能随意标 immutable；用户私有响应不应被共享缓存。浏览器是否复用响应由缓存规则决定，不是“URL 不变就一直缓存”。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)。
 
 ---
 
 ## Q251｜要遍历 100000000 项的数组如何优化？
 
-- 数据预处理，以便在遍历中可以更快的访问到。
-- 减少不必要操作，只执行关键操作。
-- 分段处理，减少 cpu 瞬时压力，让数组进入快速模式，
-- webworker 并行处理（核心）
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+先减少工作量：服务端聚合、索引、分页、流式处理可能比换循环更有效。一亿个值还会产生显著内存和复制成本，应按类型估算容量，避免只优化 CPU。
+
+CPU 密集计算可放 Web Worker，让主线程保持交互；TypedArray 的 ArrayBuffer 可转移所有权减少复制，但原线程随后不能继续使用被转移的缓冲区。必须在主线程执行的任务可按时间预算切片并让出事件循环。切片不降低总复杂度，也不会把数组自动变为 V8 的某种“快速模式”。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) · [资料 2](https://web.dev/articles/optimize-long-tasks)。
 
 ---
 
 ## Q252｜延迟加载的方式有哪些？
 
-延迟加载（Lazy Loading）是一种用于优化网页性能的策略，可以推迟加载页面资源，以减少初始页面加载时间。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
 
-- **图片延迟加载：** 延迟加载页面中的图片是最常见的延迟加载策略。通过将<img>标签的src属性设置为占位图或空字符串，并使用data-src或类似属性存储实际图片的 URL，然后通过JavaScript在页面滚动或其他交互事件触发时将data-src的值设置为src，从而实现延迟加载。
-- **懒加载 JavaScript：** 如果页面包含大量 JavaScript 代码，可以将某些脚本标记为懒加载，以在页面加载后再异步加载它们。这可以通过<script>标签的async或defer属性来实现。
-- async属性表示脚本将在下载完成后异步执行，不会阻塞页面加载。
-- defer属性表示脚本将在页面解析完毕后，DOMContentLoaded 事件触发前执行，但不会阻塞页面渲染。
-- **按需加载（Conditional Loading）：** 根据用户行为或特定条件，延迟加载页面组件、模块或资源。例如，可以在用户点击按钮、滚动页面或打开特定菜单时加载额外内容。
-- **使用 Intersection Observer API：** Intersection Observer API 允许开发人员监视元素进入或离开视口，并在元素进入视口时触发加载。这是一种有效的图片和资源延迟加载方法。
-- **延迟加载 CSS 和字体：** 使用异步加载 CSS 或字体文件，以减少对初始渲染的影响。这可以通过在页面中插入 <link> 标签或使用 JavaScript 动态加载样式表实现。
-- **使用 Webpack、Webpack 懒加载插件等构建工具：** 如果您使用构建工具如 Webpack，可以使用相应的插件来实现按需加载和代码分割，以将应用程序拆分为较小的块，然后在需要时延迟加载这些块。
+懒加载是在接近使用时才请求资源：图片/iframe 可用 loading="lazy"，模块用动态 import，较复杂可见性判断用 IntersectionObserver。首屏关键内容和 LCP 图片应正常加载或适当提高优先级，避免延迟。
+
+async/defer 调整脚本执行与解析关系，脚本通常仍会立即下载，不能等同于按需加载。不要给 img 的 src 设置空字符串作为通用方案；使用真实地址和原生懒加载更简单。加载失败、骨架尺寸、取消与重试也属于方案的一部分。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Lazy_loading)。
 
 ---
 
 ## Q253｜图片懒加载和预加载的区别
 
-- **懒加载（Lazy Loading）：**
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
 
-一种延迟加载图片的策略，即在页面加载完成后，仅加载用户当前可见区域内的图片，而不加载页面上所有图片。这有助于减少初始页面加载时间和带宽使用。
+懒加载推迟非关键图片请求，减少首屏竞争；预加载提前获取很快就要使用的关键资源，降低发现延迟。懒加载可用 loading="lazy"；首屏关键图可考虑 link rel="preload" as="image" 或 fetchpriority。
 
-1. 在图片标签的 src 属性中使用占位图（如一张小的透明图片）。
-2. 检测用户滚动行为，当图片进入可视区域时，再将真正的图片 URL 赋值给 src 属性，触发图片加载。
+预加载必须与实际 URL、响应式候选和跨域模式匹配，否则可能重复下载；不要预加载整套图库。new Image().src 也能发起请求，但是否复用仍取决于缓存和请求匹配。两种策略按图片重要性分配，而不是全站只能选一种。
 
-- **预加载（Image Preloading）：**
-
-一种在页面加载过程中提前加载图片的策略，加速用户在页面上浏览时的图片加载，以提供更好的用户体验。
-
-1. 使用 JavaScript 创建 Image 对象并将图片 URL 赋值给 Image 对象的 src 属性，从而提前加载图片。
-2. 预加载图片可以用于轮播图、幻灯片等场景，确保用户切换到下一张图片时不需要等待加载。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload)。
 
 ---
 
 ## Q254｜加载大量图片优化方案
 
-1. **图片懒加载：**只加载可见区域内的图片，当用户滚动到图片时再加载。这可以通过监听滚动事件来实现。
-2. **图片延迟加载：**延迟加载非必要图片，例如，页面初次加载时只加载可见部分的图片，然后在后台加载其他图片，以加快初始加载速度。
-3. **图片压缩和优化：**确保图片文件大小尽可能小，以减少加载时间。您可以使用图像编辑工具来压缩图像，并选择适当的格式（例如，WebP 格式通常比JPEG更高效）。
-4. **图片懒加载占位符：**在图片加载前，可以使用占位符，例如loading动画或者低分辨率的预览图像。
-5. **图片切割：**将大图切成多个小图，只加载用户当前可见部分，根据用户的滚动动态加载更多部分。
-6. **图片CDN：**使用内容分发网络（CDN）来加速图像加载，将图像存储在距用户更近的服务器上。
-7. **建立图像缓存：**一旦图像加载完成，将其缓存到浏览器本地存储中，以便下次访问时能够更快地加载。
-8. **预加载：**在页面加载过程中，可以提前加载部分图片，可通过在页面底部添加一个 <img> 标签集合来实现。
-9. **响应式图片：**根据不同的屏幕大小和设备类型，加载不同尺寸的图片，以减少不必要的带宽消耗。
-10. **Web Workers并行加载：**使用Web Workers来并行加载多个图片，以加快加载速度。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+先按显示尺寸提供响应式图片 srcset/sizes，选择合适质量和 AVIF/WebP 等格式并保留兼容路径；设置 width/height 或 aspect-ratio 预留空间。首屏关键图优先，屏外图片懒加载，长列表用虚拟化限制 DOM 和解码内存。
+
+CDN 可做尺寸转换与缓存，注意缓存键与回源成本。并非文件越小就越好：解码时间、总像素、网络竞争也会影响体验。监测 LCP、CLS、失败率与滚动内存，及时释放不再需要的对象 URL。
+
+参考：[资料 1](https://web.dev/learn/images/)。
 
 ---
 
 ## Q255｜CDN 能加速访问资源的原因
 
-1. **靠近用户：**CDN网络通常由分布在全球不同地点的服务器组成。这些服务器通常位于距离用户更近的地方，以减少数据传输的距离和延迟。当用户请求内容，会自动选择最接近用户的服务器来提供内容，从而减少响应时间。
-2. **缓存内容：**CDN服务器通常会缓存静态内容，例如图像、CSS文件和JavaScript文件。当用户请求这些内容时，CDN可以直接提供缓存的副本，而不必从原始服务器重新获取，从而大大提高响应速度。
-3. **负载均衡：**CDN使用负载均衡技术来分发用户请求到多个服务器上。这可以防止单个服务器过载，确保高并发时的稳定性和性能。
-4. **减轻原始服务器压力：**CDN可以减轻原始服务器的负载，因为它会处理大部分请求，尤其是静态资源的请求。这使得原始服务器可以更好地处理动态内容和业务逻辑，从而提高整体性能。
-5. **抗DDoS攻击：**CDN提供了一层安全保护，可以过滤掉某些恶意流量和DDoS攻击。因为CDN服务器通常分布在多个地点，它们能够更有效地处理和减轻攻击。
-6. **改善可扩展性：**CDN可以根据需要自动扩展，以满足流量的增长，而不需要额外的服务器和基础设施投入。
-7. **快速全球分发：**CDN提供快速的全球内容分发，这对于跨国企业和国际用户尤为重要。CDN网络的全球分布意味着内容可以快速到达世界各地的用户。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+CDN 将可缓存内容放到离用户网络路径较近的边缘节点，通过路由调度、连接复用、缓存命中与回源优化降低延迟和源站负载。首次 miss 仍需回源，地理近也不一定网络快。
+
+效果依赖缓存键、TTL、命中率、地区覆盖与源站性能。鉴权、Cookie、Vary 和用户数据要正确配置，防止缓存串号。DNS 查询只是调度的一环，不能把 CDN 解释成单纯多台 DNS 服务器。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/CDN) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)。
 
 ---
 
 ## Q256｜浏览器的渲染过程，DOM 树和渲染树的区别。
 
-浏览器的渲染过程是将 HTML、CSS 和 JavaScript 转换为用户在浏览器窗口中看到的可视化页面的过程。这个过程涉及多个步骤，包括解析 HTML、构建 DOM 树、构建渲染树、计算布局和绘制等。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
 
-**渲染过程：**
+浏览器解析 HTML 构建 DOM，解析 CSS 得到样式规则，进行样式计算、布局、绘制与合成。资源发现、脚本执行和网络下载可交错发生，不是所有步骤只按一次直线顺序执行。
 
-1. **解析 HTML：** 浏览器从网络获取 HTML 文档，并开始解析它。这个过程涉及将 HTML 文档分解成一系列标签、文本和其他元素。
-2. **构建 DOM 树：** 在解析过程中，浏览器构建一个 Document Object Model（DOM）树，表示文档的结构。DOM 树是一个树状结构，其中每个 HTML 元素都表示为树的节点，包括元素、属性和文本内容。
-3. **构建渲染树：** 构建DOM树后，浏览器开始构建渲染树（Render Tree），也称为渲染对象模型（Render Object Model，简称ROM）。渲染树是与可视化内容相关的树状结构，其中包含了需要显示在屏幕上的元素和其样式信息。
-4. **样式计算：** 浏览器根据 DOM 树和外部 CSS 样式表计算每个元素的最终样式。
-5. **布局（Layout）：** 渲染树中的元素的尺寸和位置信息被计算，以确定它们在屏幕上的布局。
-6. **绘制（Painting）：** 最后，浏览器根据渲染树和布局信息绘制页面的每个元素。
-7. **合成（Compositing）：** 浏览器将绘制的结果合成成最终的页面图像，以显示在用户的浏览器窗口中。
+DOM 表示文档结构；用于布局/绘制的结构结合样式，可能省略 display:none，也包含伪元素等不直接对应 DOM 元素的盒。渲染树是教学概念，各引擎内部结构不同。读写布局交错可能强制刷新；transform/opacity 常能走合成优化，但应通过工具确认。
 
-**DOM 树和渲染树之间的主要区别在于：**
-
-- **DOM 树：** DOM 树表示文档的结构，包括所有 HTML 元素、属性和文本内容。它是一个抽象的树状结构，不包含样式信息，仅用于表示文档的逻辑结构。
-- **渲染树：** 渲染树包括 DOM 树中可视化渲染的部分，即将在屏幕上显示的元素和它们的样式信息。渲染树不包括不可见元素，如隐藏的元素或通过 CSS 隐藏的元素。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work)。
 
 ---
 
 ## Q257｜浏览器输入 URL 到页面加载显示完成全过程
 
-1. **DNS解析：**
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
 
-- 用户在浏览器中输入URL，浏览器开始解析域名（URL）并查找DNS缓存，以查找域名对应的IP地址。
-- 如果域名对应的IP地址未在本地DNS缓存中找到，浏览器将查询操作传递给操作系统的DNS解析器，操作系统将查询操作传递给本地域名服务器。
-- 本地域名服务器在自己的DNS缓存中查找域名对应的IP地址，如果找到则返回，否则继续查询更高级别的DNS服务器，直到找到IP地址。
+导航先处理 URL、历史/缓存/Service Worker 等路径，必要时解析 DNS、建立连接（HTTPS 涉及 TLS，HTTP/3 使用 QUIC），再发送请求。服务器处理并可能重定向，浏览器收到响应后流式解析 HTML、发现资源并执行相应脚本，进行样式、布局、绘制与合成。
 
-1. **建立TCP连接：**
+连接和 DNS 可能复用，缓存命中也不一定访问网络；defer、async、模块脚本影响执行时机。DOMContentLoaded 与 load 都不是“用户永远不会再看到变化”的标志，图片、字体、异步数据及客户端渲染还可能持续更新。用 Network、Navigation Timing 与 Performance 时间线验证实际路径。
 
-- 浏览器使用解析后的IP地址，尝试与Web服务器建立TCP连接。
-- 通过TCP三次握手，建立连接，确保浏览器和服务器之间可以互相通信。
-
-1. **发起HTTP请求：**
-
-- 一旦建立了TCP连接，浏览器通过HTTP协议发送HTTP请求，包含请求的资源、请求头、浏览器类型等等。
-
-1. **服务器处理请求：**
-
-- 服务器接收到HTTP请求，开始处理请求。
-- 服务器可能需要查询数据库，生成动态内容，或者从文件系统中读取静态资源。
-
-1. **服务器响应：**
-
-- 服务器处理完成后，返回HTTP响应，其中包含HTTP状态码、响应头信息、响应数据等。
-- 如果请求资源不存在或发生错误，服务器将返回相应的状态码。
-
-1. **接收HTML：**
-
-- 浏览器接收HTTP响应，并开始解析响应数据，查找HTML内容。
-
-1. **构建DOM树：**
-
-- 浏览器解析HTML内容，构建DOM（文档对象模型）树，表示页面的结构。
-
-1. **构建CSSOM树：**
-
-- 同时，浏览器开始解析CSS样式表，构建CSSOM（CSS对象模型）树，表示页面的样式信息。
-
-1. **渲染树构建：**
-
-- 浏览器将DOM树和CSSOM树结合起来，构建渲染树（Render Tree），表示页面的可见内容。
-
-1. **布局和绘制：**
-
-- 浏览器计算渲染树中每个元素的大小和位置，然后进行页面布局（layout）。
-- 最后，浏览器绘制页面上的每个元素，呈现给用户。
-
-1. **交互和JavaScript：**
-
-- 如果遇到了JavaScript代码，浏览器会执行JavaScript，可以修改DOM和CSSOM，以及处理用户交互。
-
-1. **完成页面加载：**
-
-- 当资源（包括嵌入的资源，样式表、脚本等）加载完成，浏览器会触发onload事件，表示页面加载完成。
-
-1. **页面渲染完成：**
-
-- 用户可以看到页面内容，页面渲染完成。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work)。
 
 ---
 
 ## Q258｜列表无限滚动，页面逐渐卡顿，解决方案
 
-无限滚动不等于可以无限保留 DOM 和数据。先用性能工具确认瓶颈，再用虚拟列表只渲染可见区域及少量缓冲；图片按需加载并固定尺寸；数据分段缓存并设置上限。加载更多可用 IntersectionObserver，防止重复请求，卸载时取消订阅和在途请求。虚拟列表要兼顾键盘导航、焦点、动态高度与滚动位置恢复，避免只是隐藏节点却仍保留全部成本。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+无限滚动不能无限保留 DOM 与数据。先检查节点数、图片解码、长任务和保留对象，再用虚拟列表只渲染视口及缓冲区域，缓存数据设上限，服务端分页避免一次拉全量。
+
+IntersectionObserver 可触发加载更多，但要有 loading/hasMore 与重复请求保护。卸载时取消请求和监听，恢复滚动时保留稳定 key 与测量结果。动态高度、焦点、键盘导航和辅助技术要纳入设计，单纯 display:none 不会释放数据和节点成本。
+
+参考：[资料 1](https://web.dev/articles/virtualize-long-lists-react-window)。
 
 ---
 
 ## Q259｜域名发散
 
-**PC时代产物：**以前，serve 的负载能力差，网速慢，设备性能，server 支撑不了大并发请求，为了避免服务器崩溃，浏览器要对并发链接上限有所限制，如果每个用户的并发链接上限不限制的话， 结果就是服务器极易崩溃，这样会导致另外的问题，如果一个页面同时请求多张图片是，图片需要分批请求，再渲染，性能和用户体验会很差，所以以前的PC时代对静态资源优化时，通常将静态资源分布在几个不同域，保证资源分域名存储，以提供最大并行度，让客户端加载静态资源更为迅速，从而提升用户体验，这个分散域名的过程，就叫**域名发散**。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+域名发散是把静态资源分布到多个域名，历史上常用于绕开 HTTP/1.1 浏览器每源连接数量限制、增加并行下载。它并非因为浏览器负责替所有服务器防止崩溃，也不限于 PC。
+
+代价是额外 DNS、TCP/TLS、Cookie/跨域和连接竞争。在 HTTP/2/3 多路复用环境下收益往往减少甚至倒退，应以实际连接瀑布和拥塞行为测试，不能沿用“域名越多越快”。
+
+参考：[资料 1](https://web.dev/articles/performance-http2)。
 
 ---
 
 ## Q260｜域名收敛
 
-**移动端时代产物：**在整个http请求过程中，DNS 解析这部分占比非常高，而当 DNS 解释占比高的情况下，更加需要把资源集中在一个域名下，使得后续可以使用混存结果，而非把域名发散，这个把过个域名下资源合并到同一个域名下的过程，就叫**域名收敛**。
+适用：Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3。
+
+域名收敛减少来源数量，以复用连接、降低 DNS 与握手成本，并更好利用 HTTP/2/3 多路复用。它不只适用于移动端，也不是“DNS 总是占主要耗时”的结论。
+
+仍可因 CDN、隔离、不携带 Cookie 或安全策略保留不同域名；某些条件下浏览器还支持连接合并。合理方案取决于证书、协议、资源优先级、缓存与网络质量，需观察实测数据。
+
+参考：[资料 1](https://web.dev/articles/performance-http2)。
 
 ---

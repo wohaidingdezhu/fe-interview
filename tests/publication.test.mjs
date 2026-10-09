@@ -197,3 +197,42 @@ test('实际生产构建排除草稿正文、搜索数据、私人文件及草�
   assert.deepEqual((await readdir(join(root, 'dist/images'))).sort(), ['public.png', 'question-public.png']);
   assert.equal(await readFile(join(root, 'dist/favicon.svg'), 'utf8'), '<svg/>');
 });
+
+test('全题完成的专题同步维护状态，部分完成仍保留草稿边界', () => {
+  const body = Array.from({ length: 9 }, (_, i) => `## Q${i + 1}｜概念说明\n这是完整的参考答案，包含适用条件、行为语义、限制和验证方式，便于实际学习和复查。`).join('\n\n');
+  const article = parseArticle(markdown('topic', body), 'topic.md');
+  const questionPublication = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`Q${i + 1}`, { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: 'v1', reviewedAt: '2026-10-09' }]));
+  const full = { articles: [article], resources: [], questionPublication };
+  const metadata = contentAssets(full).catalog.articles[0];
+  assert.equal(metadata.status, 'published'); assert.equal(metadata.quality, 'complete');
+  assert.equal(metadata.reviewedAt, '2026-10-09');
+  assert.equal(metadata.questionCount, 9); assert.equal(metadata.publishedQuestionCount, 9);
+  assert.doesNotMatch(selectPublished(full).articles[0].description, /其余|其他|草稿/);
+  const partial = { ...full, questionPublication: { ...questionPublication, Q9: { status: 'draft', quality: 'incomplete', sources: [] } } };
+  const local = contentAssets(partial).catalog.articles[0];
+  assert.equal(local.status, 'draft'); assert.equal(local.quality, 'incomplete');
+  assert.equal(local.publishedQuestionCount, 8);
+  const publicMetadata = contentAssets(selectPublished(partial)).catalog.articles[0];
+  assert.equal(publicMetadata.questionCount, 9); assert.equal(publicMetadata.publishedQuestionCount, 8);
+});
+test('题库使用逐题审核日期，正文更新后能提示过期复核', async () => {
+  const article = parseArticle(markdown('topic', '## Q1｜概念说明\n这是完整的参考答案，包含适用条件、行为语义、限制和验证方式，便于实际学习和复查。'), 'topic.md');
+  const questionPublication = { Q1: { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: 'v1', reviewedAt: '2026-10-09' } };
+  const library = { articles: [article], resources: [], questionPublication };
+  const report = await validateContent(library, tmpdir());
+  assert.equal(report.summary.missingReviewDates, 0);
+  assert.equal(report.summary.staleReviews, 0);
+  const changed = await validateContent({ ...library, articles: [{ ...article, updatedAt: '2026-10-10' }] }, tmpdir());
+  assert.equal(changed.summary.staleReviews, 1);
+  assert.ok(changed.warnings.some(warning => warning.includes('Q1') && warning.includes('重新复核')));
+});
+
+test('逐题发布只保留题目间一条分隔线，不改写代码中的横线', async () => {
+  const { markdownNodes } = await import('../scripts/markdown.mjs');
+  const body = '## Q1｜概念说明\n这是完整的参考答案，包含适用条件、行为语义、限制和验证方式，便于实际学习和复查。\n\n```text\n---\n```\n\n---\n\n## Q2｜另一个概念\n这是另一条完整答案，包含明确的原理解释、适用条件与边界说明，支持独立阅读。\n\n---\n';
+  const questionPublication = Object.fromEntries([1, 2].map(n => [`Q${n}`, { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: 'v1', reviewedAt: '2026-10-09' }]));
+  const library = selectPublished({ articles: [parseArticle(markdown('topic', body), 'topic.md')], resources: [], questionPublication });
+  const content = library.articles[0].content;
+  assert.equal(markdownNodes(content, ['thematicBreak']).length, 1);
+  assert.match(content, /```text\n---\n```/);
+});

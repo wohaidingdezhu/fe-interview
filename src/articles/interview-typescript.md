@@ -6,75 +6,73 @@ description: "收录 Q117–Q122 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["TypeScript","类型系统","面试"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 102
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://www.typescriptlang.org/docs/handbook/intro.html"]
-technologyVersion: "TypeScript Handbook；版本相关功能需逐题核对"
+technologyVersion: "TypeScript Handbook；类型检查与运行时边界见题解"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://www.typescriptlang.org/docs/handbook/intro.html)。
 
 
 ## Q117｜TypeScript 和 JavaScript 的主要区别。
 
-1. **静态类型检查：**
+适用：TypeScript 5.x/6.x 类型系统概念；运行时仍为 JavaScript。
 
-- **TypeScript：**是一种静态类型的编程语言，它在代码编译时期进行类型检查。这意味着开发者必须在编写代码时声明变量和函数返回值的类型。静态类型检查可以在代码运行之前发现潜在的错误。
-- **JavaScript：**是一种动态类型的脚本语言，它在运行时进行类型检查。这意味着变量的类型是在代码运行时自动确定的，而不需要在代码中显式声明。
+TypeScript 是 JavaScript 的带类型超集，增加静态类型系统、类型注解、接口、泛型等编译期能力。它大量依赖类型推断，并不要求每个变量都显式写类型。普通 TypeScript 通常经过 tsc、Babel、SWC 等移除类型语法后生成 JavaScript；类型默认在运行时不存在，不会自动校验接口响应或用户输入。
 
-1. **类型注解和接口：**
+JavaScript 本身是动态类型语言，也有 class、module、原型继承和现代工具链。浏览器/Node 是否“直接运行”与构建、模块和目标语法有关，不能简单等同于解释执行。TypeScript 的收益是更早发现类型不一致、增强编辑器重构和文档能力；代价包括配置、声明文件、编译时间，以及类型模型与运行时数据仍可能不一致。
 
-- **TypeScript：**提供了类型注解和接口等功能，允许开发者定义自己的类型，使得代码更加清晰和易于维护。
-- **JavaScript：**不支持类型注解和接口。它使用原型继承而不是传统的类继承。
-
-1. **编译：**
-
-- **TypeScript：**需要被编译成JavaScript才能在浏览器或Node.js环境中运行。
-- **JavaScript：**作为一种解释型语言，可以直接在浏览器或Node.js环境中运行，不需要编译过程。
-
-1. **工具支持：**
-
-- **TypeScript：**静态类型的特性，提供更强大的编辑器支持，例如自动完成、重构工具和更详细的错误提示。
-- **JavaScript：**虽然现代开发环境也提供了对JavaScript的广泛支持，但由于其动态类型的特性，这些支持通常不如TypeScript那样强大和精确。
-
-1. **生态系统和社区：**
-
-**TypeScript：**被许多大型项目和团队采用，特别是那些需要更严格的代码质量和可维护性的项目。
-
-**JavaScript：**有一个更大、更广泛的社区和生态系统，因为它是Web开发的基石，所有的网页都在使用它。
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html) · [资料 2](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)。
 
 ---
 
 ## Q118｜TS 定义变量类型的方法
 
-  类型注解（Type Annotations）： const name: string | undefined
+适用：TypeScript 当前 Handbook。
 
-  类型推断（Type Inference）：const name = "jack"
+主要方式是显式类型注解和类型推断：
+
+```ts
+const name: string | undefined = getName(); // 注解
+const count = 1;                            // 推断为字面量类型 1
+let total = 1;                              // 可重赋值，通常拓宽为 number
+const direction = 'left' as const;          // 保留字面量类型
+const config = { mode: 'dark' } satisfies Config; // 校验但尽量保留具体推断
+```
+
+还可通过接口/类型别名、泛型参数、函数返回类型、typeof/索引访问/条件类型等组合类型。类型断言 as T 不会做运行时转换，应在已掌握额外事实时使用，不能拿来绕过错误。
+
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) · [资料 2](https://www.typescriptlang.org/docs/handbook/type-inference.html)。
 
 ---
 
 ## Q119｜TypeScript  类型注解（Type Annotations）
 
-TypeScript提供的核心特性之一，旨在在编译时期捕获并防止类型相关的错误，从而提高代码的可靠性和可维护性。
+适用：TypeScript 当前 Handbook。
 
-1. **变量的类型注解**
+类型注解描述编译器应检查的静态类型，可用于变量、参数、返回值、对象属性、类成员等：
 
-你可以为变量指定类型，确保变量只能存储特定类型的值。
+```ts
+type User = { id: string; name?: string };
+function display(user: User): string {
+  return user.name ?? user.id;
+}
+```
 
-- **函数参数和返回值的类型注解**
+能可靠推断时不必重复注解；公共 API、复杂返回值和需要约束的边界更适合显式标注。注解不会生成运行时验证代码，外部 JSON 仍应使用 schema/类型守卫校验后再缩小 unknown。
 
-在函数中，你可以为参数和返回值指定类型。
-
-- **接口（Interface）和类型别名（Type Aliases）**
-
-TypeScript还允许使用接口或类型别名来定义对象的结构。
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)。
 
 ---
 
 ## Q120｜TypeScript 中的 类型别名 和 交叉类型
+
+适用：TypeScript 当前 Handbook。
 
 **类型别名（Type Aliases）**
 
@@ -82,11 +80,22 @@ TypeScript还允许使用接口或类型别名来定义对象的结构。
 
 **交叉类型（Intersection Types）**
 
-将多个类型合并为一个类型，这个新类型将具有所有成员类型的特性。这是通过使用 & 操作符来实现的。
+T & U 表示值必须同时满足 T 和 U 的要求，不是运行时对象合并。兼容属性会组合，冲突属性可能收窄为 never，导致没有可构造的值。
+
+```ts
+type Named = { name: string };
+type Timestamped = { updatedAt: Date };
+type RecordItem = Named & Timestamped;
+// { value: string } & { value: number } 的 value 为 never
+```
+
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types) · [资料 2](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-aliases)。
 
 ---
 
 ## Q121｜TypeScript 中的接口（Interfaces）和它们的用途。
+
+适用：TypeScript 当前 Handbook。
 
 接口（Interfaces）是一个非常强大的特性，用于定义对象的结构。接口可以指定一个对象应该有哪些属性以及这些属性的类型。它们是TypeScript进行静态类型检查的重要工具，尤其是在处理复杂数据结构时。接口不仅可以帮助你定义复杂类型，还能提高代码的可读性和维护性，确保在开发过程中使用一致的数据结构。
 
@@ -101,9 +110,15 @@ TypeScript还允许使用接口或类型别名来定义对象的结构。
 
 接口可以继承其他接口，这允许你从一个或多个基接口复制成员，创建出包含所有成员的新接口。
 
+接口只存在于类型检查阶段，不会自动生成运行时基类或校验器。implements 只检查实例侧契约，也不会把接口成员实现复制到类中。TypeScript 采用结构类型系统，通常只要对象形状兼容就能赋值，不要求显式声明 implements。
+
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/2/objects.html) · [资料 2](https://www.typescriptlang.org/docs/handbook/2/classes.html#implements-clauses)。
+
 ---
 
 ## Q122｜Typescript  接口（Interface）和类型别名（Type Aliases）  的区别
+
+适用：TypeScript 当前 Handbook。
 
 1. **扩展性：**
 
@@ -112,7 +127,7 @@ TypeScript还允许使用接口或类型别名来定义对象的结构。
 
 1. **使用场景：**
 
-- **接口：**主要用于定义对象的形状，特别适用于定义类的实现或对象字面量的结构。因为它们支持声明合并，接口非常适合定义公共的外部API的形状。
+- **接口：**主要用于可扩展的对象形状和类契约。声明合并适合库扩展，但应用内部同名声明也可能意外合并。
 - **类型别名：**更适用于定义类型的联合或元组，以及其他需要具体类型组合的场景。类型别名的灵活性更高，可以用来定义几乎任何类型。
 
 1. **声明合并：**
@@ -123,6 +138,10 @@ TypeScript还允许使用接口或类型别名来定义对象的结构。
 1. **继承与交叉类型：**
 
 - **接口：**可以通过 extends 关键字继承其他接口或类。
-- **类型别名：**可以通过 & 符号创建交叉类型，以组合现有的多种类型。
+- **类型别名：**可以通过 & 符号创建交叉类型，也可表达联合、元组、原始类型别名、映射/条件类型等非对象结构。
+
+两者都能描述多数对象形状，也都可递归引用。接口 extends 在属性冲突时通常直接报错，交叉类型可能把冲突属性变成 never；选择应根据是否需要声明合并、开放扩展和非对象类型表达，而不是性能口诀。
+
+参考：[资料 1](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces)。
 
 ---

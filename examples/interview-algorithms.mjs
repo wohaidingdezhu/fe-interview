@@ -97,7 +97,7 @@ export function debounce(fn, wait) {
 export function throttle(fn, wait) {
   if (typeof fn !== 'function') throw new TypeError('fn 必须是函数');
   if (!Number.isFinite(wait) || wait < 0) throw new RangeError('wait 必须是非负有限数字');
-  let last = 0, timer, context, args, result;
+  let last, timer, context, args, result;
   function invoke(time) {
     last = time;
     const currentContext = context, currentArgs = args;
@@ -106,7 +106,7 @@ export function throttle(fn, wait) {
     return result;
   }
   function throttled(...nextArgs) {
-    const now = Date.now(), remaining = wait - (now - last);
+    const now = Date.now(), remaining = last === undefined ? 0 : wait - (now - last);
     context = this; args = nextArgs;
     if (remaining <= 0 || remaining > wait) {
       if (timer !== undefined) clearTimeout(timer);
@@ -115,7 +115,7 @@ export function throttle(fn, wait) {
     if (timer === undefined) timer = setTimeout(() => invoke(Date.now()), remaining);
     return result;
   }
-  throttled.cancel = () => { if (timer !== undefined) clearTimeout(timer); last = 0; timer = context = args = undefined; };
+  throttled.cancel = () => { if (timer !== undefined) clearTimeout(timer); last = undefined; timer = context = args = undefined; };
   return throttled;
 }
 export function once(fn) {
@@ -124,6 +124,82 @@ export function once(fn) {
     if (!called) { called = true; try { value = fn.apply(this, args); } catch (error) { called = false; throw error; } }
     return value;
   };
+}
+export function fromCallback(register) {
+  if (typeof register !== 'function') return Promise.reject(new TypeError('register 必须是函数'));
+  return new Promise((resolve, reject) => {
+    try { register(resolve, reject); }
+    catch (error) { reject(error); }
+  });
+}
+export function setByPath(target, path, value) {
+  if (!target || typeof target !== 'object') throw new TypeError('target 必须是对象');
+  const parts = [];
+  if (Array.isArray(path)) {
+    for (const part of path) {
+      if (typeof part !== 'string' && typeof part !== 'number') throw new TypeError('路径段必须是字符串或数字');
+      parts.push(String(part));
+    }
+  } else {
+    if (typeof path !== 'string') throw new TypeError('path 必须是字符串或数组');
+    const token = /([\w$]+)|\[(?:"([^"\\]*)"|'([^'\\]*)'|(\d+))\]/y;
+    let position = 0, afterDot = false;
+    while (position < path.length) {
+      token.lastIndex = position;
+      const match = token.exec(path);
+      if (!match || (afterDot && match[1] === undefined)) throw new Error('路径语法错误');
+      parts.push(match[1] ?? match[2] ?? match[3] ?? match[4]);
+      position = token.lastIndex; afterDot = false;
+      if (position === path.length) break;
+      if (path[position] === '.') {
+        position++; afterDot = true;
+        if (position === path.length) throw new Error('路径语法错误');
+      } else if (path[position] !== '[') throw new Error('路径语法错误');
+    }
+  }
+  if (!parts.length) throw new Error('路径不能为空');
+  if (parts.some(part => !part)) throw new Error('路径段不能为空');
+  if (parts.some((part) => ['__proto__', 'prototype', 'constructor'].includes(part))) throw new Error('包含危险路径');
+  function ownValue(object, key) {
+    const descriptor = Object.getOwnPropertyDescriptor(object, key);
+    if (descriptor && !('value' in descriptor)) throw new TypeError('路径不支持访问器属性');
+    return descriptor?.value;
+  }
+  function write(object, key, next) {
+    ownValue(object, key);
+    Object.defineProperty(object, key, Object.hasOwn(object, key)
+      ? { value: next } : { value: next, writable: true, enumerable: true, configurable: true });
+  }
+  let current = target;
+  for (let index = 0; index < parts.length - 1; index++) {
+    const key = parts[index], next = parts[index + 1];
+    const nextIsIndex = /^(0|[1-9]\d*)$/.test(next) && Number(next) < 4294967295;
+    let child = ownValue(current, key);
+    if (child === undefined) { child = nextIsIndex ? [] : {}; write(current, key, child); }
+    else if (!child || typeof child !== 'object') throw new TypeError(`路径 ${parts.slice(0, index + 1).join('.')} 不是对象`);
+    current = child;
+  }
+  write(current, parts.at(-1), value);
+  return target;
+}
+export function permutations(values) {
+  const items = [...values], used = new Array(items.length).fill(false), result = [], current = [];
+  function visit() {
+    if (current.length === items.length) { result.push([...current]); return; }
+    const chosen = new Set();
+    for (let index = 0; index < items.length; index++) {
+      if (used[index] || chosen.has(items[index])) continue;
+      chosen.add(items[index]);
+      used[index] = true; current.push(items[index]); visit(); current.pop(); used[index] = false;
+    }
+  }
+  visit();
+  return result;
+}
+export function middleNode(head) {
+  let slow = head, fast = head;
+  while (fast?.next) { slow = slow.next; fast = fast.next.next; }
+  return slow;
 }
 export function myInstanceOf(value, Constructor) {
   if (typeof Constructor !== 'function' || !Constructor.prototype || typeof Constructor.prototype !== 'object') throw new TypeError('右侧需要具有对象原型的构造函数');

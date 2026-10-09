@@ -140,3 +140,6 @@ button.tag:hover, .tag.selected { border-color: #8eaf8f; color: #346d4e; backgro
   .console-lines { min-height:150px; max-height:220px; }
   .workbench-footer { display:grid; }
 }
+.question-anchor { display: block; height: 0; scroll-margin-top: 110px; }
+.article-body .question-permalink { margin-left: 12px; font-size: 12px; font-weight: 400; white-space: nowrap; }
+.question-result-link { display: inline-block; margin-bottom: 12px; font-size: 13px; line-height: 1.7; }

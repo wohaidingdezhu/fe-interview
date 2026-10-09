@@ -8,6 +8,7 @@ tags: ["JavaScript", "异步", "面试"]
 aliases: ["宏任务微任务", "异步执行顺序", "Event Loop"]
 related: ["closure", "debounce"]
 addedAt: "2026-10-08"
+reviewedAt: "2026-10-09"
 order: 2
 status: published
 quality: complete

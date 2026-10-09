@@ -11,7 +11,7 @@ addedAt: "2026-10-09"
 updatedAt: "2026-10-09"
 reviewedAt: "2026-10-09"
 order: 1000
-status: draft
+status: published
 quality: complete
 sources: ["https://developer.chrome.com/docs/devtools/","https://developer.chrome.com/docs/devtools/javascript/breakpoints/","https://developer.chrome.com/docs/devtools/network/","https://developer.chrome.com/docs/devtools/performance/","https://developer.chrome.com/docs/devtools/memory-problems/","https://developer.chrome.com/docs/devtools/remote-debugging/"]
 technologyVersion: "Chrome DevTools 稳定版；界面名称可能随 Chrome 更新调整"

@@ -6,136 +6,132 @@ description: "收录 Q228–Q244 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["Webpack","Vite","工程化"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 106
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://webpack.js.org/api/loaders/","https://webpack.js.org/contribute/writing-a-plugin/"]
-technologyVersion: "补充示例基于 webpack 5；原导入工具内容仍待逐项核对"
+technologyVersion: "补充示例基于 webpack 5；各题标注适用范围"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://webpack.js.org/api/loaders/) · [参考 2](https://webpack.js.org/contribute/writing-a-plugin/)。
 
 
 ## Q228｜webpack 的作用
 
-Webpack是一个现代的前端模块打包工具，它用于构建和优化Web应用程序的前端资源，包括JavaScript、CSS、图片、字体等。Webpack的主要目标是将项目的所有依赖项（模块、资源文件）打包到一个或多个最终的静态文件中，以便在浏览器中加载。改善前端开发的工作流程，提高代码的可维护性和性能，解决了模块化、资源管理、性能优化和自动化等多个关键问题。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+webpack 从入口解析依赖图，将 JavaScript 与经 loader/资源模块处理的 CSS、图片等组织成可部署产物。它提供代码分割、模块运行时、生产优化与开发 HMR，并不要求所有代码合成一个文件。
+
+语法降级、类型检查、HTTP 缓存和部署属于相邻环节，需分别配置 Babel、TypeScript、服务器等。性能应同时关注构建耗时与浏览器下载/执行成本。
+
+参考：[资料 1](https://webpack.js.org/concepts/)。
 
 ---
 
 ## Q229｜Webpack 的构建流程
 
-1. **读取配置文件：**Webpack首先会读取项目中的配置文件（通常是webpack.config.js），该配置文件包含了构建过程中的各种设置，如入口文件、输出目录、加载器（loaders）、插件（plugins）等。
-2. **解析入口文件：**Webpack会根据配置文件中定义的入口点（entry points）来解析应用程序的依赖关系。入口文件通常是应用程序的主要JavaScript文件，但也可以有多个入口点。
-3. **依赖解析：**Webpack分析入口文件和其依赖的模块，构建一个依赖关系图，以确定哪些模块依赖于其他模块，以及它们之间的依赖关系。
-4. **加载器处理：**Webpack使用加载器来处理不同类型的资源文件，如CSS、图片、字体等。加载器允许开发人员在构建过程中转换这些资源文件，以便将它们整合到最终的输出文件中。
-5. **插件处理：**Webpack提供了插件系统，插件用于执行各种任务，如代码压缩、资源优化、HTML生成、热模块替换（HMR）等。插件可以根据需要自定义Webpack的构建过程。
-6. **生成输出文件：**Webpack根据入口文件和依赖关系图生成一个或多个输出文件。这些输出文件包括JavaScript文件、CSS文件、图片、字体等资源文件。
-7. **优化和压缩：**Webpack可以进行各种优化，包括代码压缩、Tree Shaking、懒加载等，以减小包的大小并提高性能。
-8. **生成Source Maps：**Webpack可以生成Source Maps，以便在开发中进行调试。Source Maps是一种映射文件，将最终输出文件映射回原始源代码。
-9. **输出到指定目录：**最终的构建结果被输出到配置文件中指定的目录中，通常是一个名为"dist"的目录。输出文件的命名和目录结构也可以根据配置进行自定义。
-10. **完成构建过程：**Webpack构建过程完成后，它会生成构建报告，包括构建成功或失败的信息，输出文件的大小等统计信息。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+webpack 5 先规范化配置并创建 Compiler、注册插件；每次构建创建 Compilation，从入口解析模块，运行 loader 并分析依赖，递归构建模块图。随后优化模块与 chunk 图、生成代码和资源，在 processAssets 等阶段处理产物，最后输出并生成 stats。
+
+插件贯穿生命周期，而不是独立的某一个末尾步骤；压缩、source map、哈希也属于生成/处理资源的流程。watch 下 Compiler 可复用，多次 Compilation 代表不同构建；缓存复用不等于跳过所有依赖校验。
+
+参考：[资料 1](https://webpack.js.org/api/compiler-hooks/) · [资料 2](https://webpack.js.org/api/compilation-hooks/)。
 
 ---
 
 ## Q230｜Webpack 的热更新原理
 
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+开发服务器监听变化，webpack 增量编译生成热更新资源，客户端通过开发连接收到新构建信息，再由 HMR runtime 获取并应用更新。更新沿依赖图寻找 accept 边界，旧模块可通过 dispose 清理资源并保存必要状态。
+
+能否保留状态取决于框架集成和模块接受逻辑，HMR 不保证所有编辑都保留状态。找不到可接受边界、接口变化或错误时可能回退整页刷新。重复注册监听、未清理定时器会在热更新后放大问题。
+
 ![](./images/interview/大前端面试宝典-diagram-6.png)
 
-1. **监控文件变化：**Webpack的开发服务器会监控项目中所有的模块文件，包括：JS文件、CSS文件、模板文件等。
-2. **模块热替换：**当你在代码中做出更改并保存时，Webpack检测到文件变化，会首先通过热替换插件（Hot Module Replacement Plugin）生成新的模块代码。
-3. **构建更新的模块：**生成的新模块代码会被构建成一个独立的文件或数据块。
-4. **通知客户端：**Webpack开发服务器会将更新的模块代码的信息发送到浏览器。
-5. **浏览器端处理：**浏览器接收到更新的模块信息后，会在不刷新页面的情况下通过热替换运行时（Hot Module Replacement Runtime）替换相应的模块。
-6. **应用程序状态保持：**热更新还可以保持应用程序的状态。当修改代码不会丢失已有的数据、用户登录状态等。
-7. **回调处理：**允许在模块更新时执行自定义的回调函数，可以处理特定的逻辑，以确保模块更新后的正确性。
+参考：[资料 1](https://webpack.js.org/concepts/hot-module-replacement/)。
 
 ---
 
 ## Q231｜webpack 常用 Loader
 
-- **Babel Loader：**用于将新版JavaScript（如ES6+）转换为旧版JavaScript，以确保在不同浏览器中的兼容性。解决了不同JavaScript版本之间的问题。
-- **CSS Loader：**处理CSS文件，使其能够被打包到应用程序中。可以配合其他Loader（如style-loader）一起使用，以处理CSS的导入、模块化等问题。
-- **Style Loader：**将CSS样式加载到页面中，通常与CSS Loader一起使用。
-- **File Loader：**处理文件资源（如图片、字体等），将它们复制到输出目录，并返回文件路径。**URL Loader：**与File Loader类似，但可以将小文件转换为Base64编码的Data URL，以减小HTTP请求的数量。
-- **Sass/SCSS Loader：**处理Sass或SCSS样式文件，将它们转换为CSS，以便在浏览器中使用。
-- **Less Loader：**处理Less样式文件，将它们转换为CSS。
-- **PostCSS Loader：**通过PostCSS插件对CSS进行转换，以实现自动前缀、代码压缩、变量替换等任务。
-- **Image Loader：**处理图片文件，包括压缩、优化和Base64编码等操作。
-- **Vue Loader：**用于加载和解析Vue.js单文件组件，包括模板、脚本和样式。
-- **TypeScript Loader：**将TypeScript代码转换为JavaScript，使其可以在浏览器中运行。
-- **ESLint Loader：**与ESLint集成，用于在构建过程中进行代码质量检查，查找潜在的问题并确保代码规范。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+常见 loader 有 babel-loader（按目标转换 JS）、ts-loader（处理 TS）、css-loader（解析 CSS 依赖）、style-loader（开发时注入样式）、sass-loader/less-loader（预处理）、postcss-loader（运行 CSS 插件）、vue-loader（处理 SFC）。
+
+webpack 5 通常使用 asset/resource、asset/inline 等资产模块替代旧 file-loader/url-loader。eslint-loader 已弃用，检查可用独立 ESLint 或 eslint-webpack-plugin。语法转译不自动补齐所有运行时 API，也不必然执行类型检查，应明确每个工具职责。
+
+参考：[资料 1](https://webpack.js.org/loaders/) · [资料 2](https://webpack.js.org/guides/asset-modules/)。
 
 ---
 
 ## Q232｜webpack 常用 Plugin
 
-- **HtmlWebpackPlugin：**用于生成HTML文件，并自动引入打包后的JavaScript和CSS文件。它还支持模板，可以根据模板生成HTML，非常适合单页应用。
-- **MiniCssExtractPlugin：**用于提取CSS文件到单独的文件，而不是将CSS嵌入到JavaScript中，这有助于提高性能和代码可维护性。
-- **CleanWebpackPlugin：**用于在每次构建前清理输出目录，确保输出目录中不会残留旧的文件。
-- **CopyWebpackPlugin：**用于复制静态文件（如图片、字体等）到输出目录，以便在生产环境中引用。
-- **DefinePlugin：**允许你在代码中定义全局常量，用于在开发和生产环境中切换配置，例如设置API的不同地址。
-- **HotModuleReplacementPlugin：**用于启用Webpack的热模块替换（HMR）功能，允许在开发过程中实时查看代码更改的效果。
-- **ProvidePlugin：**用于在代码中自动加载模块，可以减少模块导入的代码，例如自动引入jQuery等。
-- **BundleAnalyzerPlugin：**用于分析构建输出的包大小，帮助识别和解决优化问题。
-- **FriendlyErrorsWebpackPlugin：**改善开发体验，提供更友好的构建错误信息，以便更容易定位问题。
-- **ESLintWebpackPlugin：**集成ESLint代码检查，用于在构建过程中检测和修复代码问题。
-- **stylelint-webpack-plugin：**用于集成stylelint，对CSS和Sass等样式文件进行代码检查。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+HtmlWebpackPlugin 生成入口 HTML，MiniCssExtractPlugin 提取 CSS，CopyWebpackPlugin 复制额外文件，DefinePlugin 做编译期替换，分析插件辅助查看产物。webpack 5 可用 output.clean 清理输出，不一定需要额外清理插件。
+
+DefinePlugin 替换值应正确编码，例如 JSON.stringify("production")；写入客户端 bundle 的环境变量可被访客读取，不能放密钥。插件应按具体版本兼容性选用，生产压缩也不必沿用旧 UglifyJSPlugin。
+
+参考：[资料 1](https://webpack.js.org/plugins/) · [资料 2](https://webpack.js.org/plugins/define-plugin/)。
 
 ---
 
 ## Q233｜Loader 和 Plugin 的区别
 
-Loader 用于处理资源文件，使其能够成为模块。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-Plugin 用于执行构建过程中的各种任务和优化，扩展Webpack的功能。
+loader 面向模块源内容转换，通过 module.rules 匹配资源；正常阶段通常按从右到左顺序执行，pitch 阶段另有规则。plugin 通过 apply(compiler) 注册生命周期钩子，能操作模块图、构建流程与最终资产。
 
-**Loader：**
+例如 sass-loader 把 Sass 转成 CSS，css-loader 处理 CSS 依赖；提取或生成构建资源的插件负责更大范围的协作。异步 loader 用 this.async，异步插件按 hook 类型使用 tapAsync/tapPromise，不能在同步 hook 中启动任务后直接返回。
 
-1. **作用：**Loader用于处理模块中的资源文件，将它们转换为Webpack可以理解的模块。
-2. **资源处理：**Loader处理各种资源文件，如JavaScript、CSS、图片、字体等，执行加载、转换、编译等任务。
-3. **模块级别：**Loader工作在模块级别，通常用于处理单个文件或模块，它们直接与模块的内容交互。
-4. **配置：**Loader通过module.rules进行配置，规定了哪些文件需要使用哪些Loader进行处理。
-5. **示例：**Babel Loader用于将ES6+ JavaScript转换为ES5，CSS Loader用于加载和处理CSS文件等。
-
-**Plugin：**
-
-1. **作用：**Plugin用于扩展Webpack的功能，执行各种自定义构建任务和优化。
-2. **构建过程控制：**Plugin可以介入Webpack的构建过程，在不同的生命周期阶段执行任务，如代码压缩、文件生成、HTML注入等。
-3. **应用级别：**Plugin工作在应用程序级别，可以操作整个构建过程，包括资源文件的加载和输出。
-4. **配置：**Plugin通过plugins进行配置，开发者可以根据需要添加不同的插件来扩展构建功能。
-5. **示例：**HtmlWebpackPlugin用于生成HTML文件，UglifyJSPlugin用于代码压缩等。
+参考：[资料 1](https://webpack.js.org/concepts/loaders/) · [资料 2](https://webpack.js.org/concepts/plugins/)。
 
 ---
 
 ## Q234｜写一个 loader
 
-Loader 处理单个模块的源文本并返回转换结果，运行时可用 this.getOptions 读取选项，异步转换可用 this.async。以下是 webpack 5 的 CommonJS 教学 Loader，只前置注释，尚未生成精确 Source Map；真正修改语法时应使用解析器并传递或重建映射，而不是对复杂源码直接字符串替换。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+下面是 webpack 5 的 CommonJS 教学 loader，读取选项并在源码前添加安全注释。写为普通函数以使用 loader context；项目为 ESM 时可将文件保存为 .cjs。
 
 ```js
 // comment-loader.cjs
 module.exports = function (source) {
-  this.cacheable(); const { label = 'compiled' } = this.getOptions();
-  const safeLabel = String(label).replace(/\*\//g, '* /').replace(/[\r\n]/g, ' ');
-  return `/* ${safeLabel} */\n${source}`;
+  this.cacheable();
+  const { label = "compiled" } = this.getOptions();
+  const safe = String(label).replace(/\*\//g, "* /").replace(/[\r\n\u2028\u2029]/g, " ");
+  return `/* ${safe} */\n${source}`;
 };
 ```
+
+配置时将 use 指向其绝对路径。该简例未生成精确 source map，也不处理 hashbang；真实语法变换应用解析器并维护映射。异步转换使用 this.async()，依赖额外文件需 addDependency 使缓存正确失效。
+
+参考：[资料 1](https://webpack.js.org/api/loaders/)。
 
 ---
 
 ## Q235｜写一个 Plugin
 
-Plugin 通过 apply(compiler) 订阅构建生命周期。webpack 5 中向最终产物添加文件，可以在 thisCompilation 后使用 processAssets 和 emitAsset。插件应有稳定名称，避免每次构建泄漏全局监听；异步任务必须使用对应的异步 hook。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+插件通过 apply 注册钩子；以下 webpack 5 示例在资源处理阶段生成一个文本资产。
 
 ```js
 // build-note-plugin.cjs
 class BuildNotePlugin {
   apply(compiler) {
-    const name = 'BuildNotePlugin';
+    const name = "BuildNotePlugin";
     compiler.hooks.thisCompilation.tap(name, compilation => {
-      compilation.hooks.processAssets.tap({ name, stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL }, () => {
-        compilation.emitAsset('build-note.txt', new compiler.webpack.sources.RawSource('Build finished'));
+      compilation.hooks.processAssets.tap({
+        name, stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+      }, () => {
+        compilation.emitAsset("build-note.txt",
+          new compiler.webpack.sources.RawSource("Build finished"));
       });
     });
   }
@@ -143,165 +139,131 @@ class BuildNotePlugin {
 module.exports = BuildNotePlugin;
 ```
 
+配置 plugins: [new BuildNotePlugin()]。名称用于标识注册者；异步任务选择支持 Promise 的钩子，watch 时每次 compilation 独立处理资产，避免全局监听累积。
+
+参考：[资料 1](https://webpack.js.org/contribute/writing-a-plugin/)。
+
 ---
 
 ## Q236｜Webpack 构建速度提升
 
-1. **升级Webpack版本：**使用最新版本的Webpack，因为每个新版本通常都会包含性能改进和优化。
-2. **使用持久缓存：**配置Webpack以生成长期缓存的文件名，在构建时只有修改过的文件需要重新构建。
-3. **配置最小的loader规则：**只使用必要的loader规则，避免不必要的文件处理，以减小构建时间。
-4. **使用HappyPack：**HappyPack是一个多线程Loader处理工具，可以加速构建过程。
-5. **使用thread-loader：**类似于HappyPack，thread-loader也可以将loader任务分发给多个线程。
-6. **使用DLL（动态链接库）：**将不经常更改的依赖库（如React、Vue等）打包为DLL，以减少构建时间。
-7. **使用缓存：**配置Webpack的缓存，以避免在每次构建时重新加载依赖。
-8. **减少模块数量：**优化项目，减少模块和依赖的数量，以减小构建时间。
-9. **Code Splitting：**使用Webpack的代码分割功能，以减小每次构建需要处理的模块数量。
-10. **优化loader：**选择高效的loader，或者编写自定义loader以提高处理速度。
-11. **优化插件：**选择和配置插件，确保它们不会导致构建速度变慢。
-12. **使用Tree Shaking：**启用Webpack的Tree Shaking功能，以删除未使用的代码，减小包的大小。
-13. **使用resolve配置：**通过Webpack的resolve配置来减小模块查找时间，提高构建速度。
-14. **开发模式和生产模式分离：**确保区分开发和生产构建模式，以避免不必要的开发工具和代码优化。
-15. **使用Webpack Dev Server：**可以提供热模块替换（HMR）和快速重构建。
-16. **分析工具：**使用Webpack Bundle Analyzer等分析工具来识别和解决包大小过大的问题。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+先测冷启动、缓存启动与增量更新，再定位解析、转译、压缩或插件耗时。webpack 5 可启用 filesystem cache，并把配置文件纳入 buildDependencies；持久化构建缓存与浏览器资源长缓存是两回事。
+
+缩小 loader include 范围、减少无用插件和昂贵 source map、按目标转译；并行 worker 有启动和通信成本，仅对足够重的工作有意义。HappyPack/DLL 等旧方案不应默认照搬。代码分割和 tree shaking 优化浏览器负载，未必缩短构建时间；升级前验证插件兼容与产物行为。
+
+参考：[资料 1](https://webpack.js.org/guides/build-performance/) · [资料 2](https://webpack.js.org/configuration/cache/)。
 
 ---
 
 ## Q237｜Webpack 神奇注释
 
-Webpack的"神奇注释"（Magic Comments）是一种特殊的注释语法，用于在Webpack打包过程中提供附加的指令和配置信息。这些注释以特殊的格式编写，并可以影响Webpack的行为。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-1. **Chunk名称注释：**用于动态导入的模块指定生成的Chunk文件的名称。
-2. **Chunk模式注释：**用于指定模块的加载模式，如"lazy"、"lazy-once"、"eager"等。
-3. **Chunk预取注释：**用于指定是否在空闲时预取模块。
-4. **Chunk预加载注释：**用于指定是否在当前模块加载后立即预加载模块。
+webpack 解析动态 import 的特殊注释来控制 chunk 名称、加载模式和资源提示；它们是构建器约定，不是 ECMAScript 标准。
 
-这些神奇注释可以在Webpack的动态导入中使用，以帮助控制Chunk的生成、加载模式和优化策略。
+```js
+const loadEditor = () => import(
+  /* webpackChunkName: "editor", webpackPrefetch: true */
+  "./editor.js"
+);
+```
+
+prefetch 通常提示未来导航可能需要，preload 更偏当前导航。它们可能竞争带宽，不应为所有模块添加。变量路径会产生上下文模块，应控制匹配范围；迁移到 Vite 等工具时不能假定注释仍具有相同效果。
+
+参考：[资料 1](https://webpack.js.org/api/module-methods/#magic-comments)。
 
 ---
 
 ## Q238｜webpack 分包案例
 
-**目的：**尽量按改动频率区分，利用浏览器缓存
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-1.  vendor: 第三方lib库，基本不会改动，除非依赖版本升级
-2. common: 业务组件代码的公共部分抽取出来，改动较少
-3. entry: 不同页面entry里业务组件代码的差异部分，会经常改动
+按路由或大功能用动态 import 建立分割点，再用 splitChunks 复用共享依赖。示例为 webpack 5 的配置片段：
+
+```js
+module.exports = {
+  mode: "production",
+  output: { filename: "[name].[contenthash].js", chunkFilename: "[name].[contenthash].js" },
+  optimization: { splitChunks: { chunks: "all" }, runtimeChunk: "single" },
+};
+```
+
+还需入口与实际动态导入才形成相应功能块。拆得过碎会增加请求和调度成本；拆出的文件若仍被入口同步依赖，也不等于实现按需加载。发布应保留旧版本 chunk 一段时间，防止打开中的页面加载失败。
+
+参考：[资料 1](https://webpack.js.org/guides/code-splitting/) · [资料 2](https://webpack.js.org/guides/caching/)。
 
 ---
 
 ## Q239｜Webpack 和 Vite 的区别
 
-**Webpack** 一个打包工具（对标 Rollup），静态构建，在项目工程化，依赖，打包，构建等过程发挥作用。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-**Vite** 是一个更上层的工具链方案，对标的是 （webpack + 针对 web 的常用配置 + webpack-dev-server）。旨在提供快速的开发体验，它使用ES模块（ES modules）和现代浏览器特性来实现即时开发，不需要预构建或编译。
+webpack 是高度可配置的模块打包器，开发通常通过内存构建和 HMR 提供资源。Vite 是包含开发服务器和生产构建的工具链，开发时利用原生 ESM、按需转换与依赖处理，缩小改动影响范围。
+
+必须区分版本：Vite 7 及此前常见说明是 esbuild 依赖预构建/转换与 Rollup 生产打包；Vite 8 统一采用 Rolldown，并引入 Oxc 工具链。不能再把当前 Vite 永久描述成“生产一定用 Rollup”。选择时看插件生态、存量配置、兼容目标与实测构建表现，不能只比较宣传倍数。
+
+参考：[资料 1](https://vite.dev/guide/why.html) · [资料 2](https://vite.dev/blog/announcing-vite8)。
 
 ---
 
 ## Q240｜Babel 的原理
 
-Babel是一个广泛使用的JavaScript编译工具，它的主要原理是将新版本的JavaScript代码（通常是ES6+）转换为向后兼容的JavaScript代码，以便在旧版JavaScript引擎上运行。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-**工作原理如下：**
+Babel 的主要流程是解析源码成 AST，插件遍历与变换节点，再生成代码和 source map。preset 是一组插件与配置的组合；preset-env 按目标环境选择需要的转换，不是总把所有语法降到 ES5。
 
-1. **解析（Parsing）：**Babel首先将输入的JavaScript代码解析成抽象语法树（AST）。AST是代码的抽象表示，它将代码分解成语法树节点，以便后续的分析和转换。
-2. **转换（Transformation）：**在AST的基础上，Babel执行一系列插件和转换器，对代码进行修改和转换。这些转换可以包括将新语法转换为旧语法、应用代码优化、插入Polyfill等。Babel的转换过程是插件驱动的，每个插件负责特定的转换任务。
-3. **生成（Code Generation）：**完成转换后，Babel将修改后的AST转换回JavaScript代码字符串。这个过程涉及将AST节点逐个还原为代码，以生成最终的代码输出。
+语法变换与运行时 API polyfill 不同，Promise、Array 方法等是否注入取决于明确配置及目标。Babel 可移除 TypeScript/Flow 类型语法，但不执行这些语言的完整类型检查，应另跑 tsc/Flow。过度转换和重复 helper 还会增大产物。
 
-Babel的主要功能是将现代JavaScript代码转换为ES5或更早版本的JavaScript，以确保它可以在不支持新语法的浏览器和JavaScript引擎上运行。这使开发人员能够利用新的语言功能而不担心向后兼容性问题。此外，Babel还可以执行其他任务，如模块转换、TypeScript支持、Flow类型检查等。Babel的插件系统允许开发人员创建自定义的转换和功能，以满足项目的需求。
+参考：[资料 1](https://babeljs.io/docs/) · [资料 2](https://babeljs.io/docs/babel-preset-typescript)。
 
 ---
 
 ## Q241｜模块化与组件化的区别
 
-**模块化：**
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-1. **重点：**模块化主要关注代码的组织和封装。它将代码分割成小的独立单元（模块），每个模块通常负责特定功能或任务。
-2. **应用领域：**模块化通常用于管理和组织JavaScript代码。它适用于将大型代码库分割为可管理的部分，以提高可维护性和可重用性。
-3. **特点：**模块化通过导入和导出语法来定义模块之间的依赖关系，例如CommonJS、ES6模块、AMD等。它通常在服务器端（Node.js）和客户端（浏览器）开发中都有应用。
+模块化按依赖和导出边界组织代码，例如一个解析器模块只暴露 parse；组件化按 UI 与行为边界组织可组合实例，例如一个有 props、事件和样式的搜索框。组件通常由一个或多个模块实现，二者可以同时使用。
 
-**组件化：**
+模块作用域与组件实例状态不是一回事：模块顶层变量会在同一模块实例内共享，组件内部状态通常按实例隔离。划分应围绕稳定接口和变化原因，避免组件直接依赖另一业务组件的内部细节。
 
-1. **重点：**组件化主要关注构建用户界面和交互。它将用户界面的不同部分拆分成可重用的组件，每个组件包含了特定的UI元素和交互逻辑。
-2. **应用领域：**组件化通常用于前端开发，特别是用于构建Web应用程序的用户界面。它有助于将界面分解为独立、可重用的部分，以提高开发效率和用户体验。
-3. **特点：**组件化通常使用组件库或框架（如React、Vue、Angular）来创建、组合和渲染可重用的UI组件。每个组件通常包含HTML模板、CSS样式和JavaScript代码，可以嵌套在应用程序的不同位置，以构建复杂的用户界面。
-
-综上所述，**模块化**主要关注代码的组织和封装，而**组件化**主要关注构建可重用的用户界面部分。虽然它们在某些方面有相似之处，但它们有不同的目标和应用领域。在实际项目中，通常会同时使用模块化和组件化的概念，以便更好地管理代码和开发用户界面。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) · [资料 2](https://react.dev/learn/thinking-in-react)。
 
 ---
 
 ## Q242｜CommonJS 与 ESM（ECMAScript Modules） 的区别
 
-CommonJS 模块通常用于服务器端（Node.js），在浏览器端需要使用工具进行转译或打包。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-ESM（ECMAScript Modules） 模块是浏览器原生支持的，可以直接在现代浏览器中使用，不需要额外的转译工具。
+CommonJS 用 require/module.exports，Node 常见路径中按需同步求值并缓存导出；ESM 的静态 import/export 支持链接阶段分析与活绑定，默认严格模式，也支持运行时 import()。不能说 ESM 完全不支持动态依赖。
 
-1. **加载时机**
+CJS 导出对象也可以共享引用，“CJS 全是值拷贝”不准确；ESM 导入绑定不能由导入方重赋值，但导出的对象仍可变。循环依赖两者都有边界，ESM 可能触发暂时性死区。Node 按 .mjs/.cjs/package.json type 和版本决定解析，现代 Node 部分 require(ESM) 互操作有条件限制，应避免只凭扩展名猜行为。
 
-- **CommonJS：**同步加载，模块在运行时（runtime）加载，并且是按需加载的，只有在需要时才会被加载。
-- **ESM：**静态加载的，模块在解析时加载，在代码执行之前就被加载，因此具有更早的加载时机。
-
-1. **依赖关系**
-
-- **CommonJS：**模块的依赖关系是动态的，意味着模块可以在运行时根据条件加载不同的依赖。
-- **ESM：**模块的依赖关系是静态的，依赖关系在模块加载之前就确定，不能根据条件改变依赖关系。
-
-1. **导出方式**
-
-- **CommonJS：**使用module.exports来导出模块，可以导出任意类型的值，包括函数、对象、类等。
-- **ESM：**使用export和import关键字来导出和导入模块。导出时需要明确指定导出的变量、函数或类，导入时也需要明确指定要导入的内容。
-
-1. **全局共享**
-
-- **CommonJS：**模块在每个模块中都有自己的作用域，不会污染全局作用域。
-- **ESM：**模块默认是严格模式（strict mode），变量不会污染全局作用域，模块内部的变量不被会提升。
-
-1. **静态分析**
-
-- **CommonJS：**模块的依赖关系无法在编译时静态分析，这对一些工具的性能和优化产生了挑战。
-- **ESM：**模块的依赖关系可以在编译时进行静态分析，这有助于提高性能和优化。
-
-1. **案例**
-
-- **CommonJS**
-- **ESM**
-
-CommonJS和ESM都用于模块化JavaScript，但它们在加载时机、依赖关系、导出方式、全局作用域等方面存在重要的区别。在浏览器端，ESM成为了官方的标准，而在服务器端（Node.js）仍然广泛使用CommonJS。选择哪种模块规范取决于你的项目需求和所支持的环境。如果需要在浏览器端使用ESM，请确保你的目标浏览器支持它，或者使用工具进行转译。
+参考：[资料 1](https://nodejs.org/api/esm.html) · [资料 2](https://nodejs.org/api/modules.html)。
 
 ---
 
 ## Q243｜关于服务端渲染（SSR）与客户端渲染（CSR）的理解
 
-1. 我们平常在浏览器页面，是有两种渲染方式的，一种是由浏览器渲染，叫 CSR，Client-Side Rendering，这也是绝大部分同学日常开发的模式。而另一种是方式则是由服务端渲染，Server-Side Rendering，简称 SSR。
-2. 我们日常的 CSR 渲染逻辑是后端返回一个空白 html，浏览器接收到这个 html 后，再执行 vue 的初始化相关事情，再请求各个接口获取数据，最后再把数据填充在页面上。而 SSR ，则是由服务端完成这一系列行为，构建好 vue，后端从数据库取出要渲染的数据并填充在页面上。这样一来，页面对 SEO 变得友好，而且减少很多页面请求数据的交互，首屏能更快的完成渲染。但又因为有更多的逻辑在渲染前完成，可能会导致白屏时间过长，服务器压力变大，页面跳转也需要频繁的刷新页面，体验不友好。
-3. 而在真实的开发中，不是非此即彼的，CSR 和 SSR 都有各自的优缺点，我自己的项目架构，往往是首屏服务器渲染，保证首页渲染速度，而次屏用浏览器渲染，保证用户体验。
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
+
+CSR 主要在浏览器执行组件生成 UI；SSR 先在服务端生成 HTML，再由浏览器接收、渲染并按需要 hydration 接管交互。两者均由浏览器最终绘制，不能把 SSR 理解为服务器替浏览器画出页面。
+
+SSR 可更早提供内容和元数据，但增加服务端计算、缓存和 hydration 一致性成本；不保证 TTFB 或交互一定更快。SSR 首屏后仍可客户端路由跳转，无需每次整页刷新。静态生成、流式 SSR 与局部 hydration 是可组合选择，按业务数据新鲜度、SEO 与部署成本评估。
+
+参考：[资料 1](https://vuejs.org/guide/scaling-up/ssr.html)。
 
 ---
 
 ## Q244｜单页面应用（SPA）与多页面应用（MPA）的优劣
 
-**定义：**
+适用：webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM。
 
-1. SPA 即为 [single page application](https://en.wikipedia.org/wiki/Single-page_application) 的缩写，意为单页面应用，不刷新页面，路由跳转是基于特定的实现（如 vue-router，react-router 等前端路由），而非原生浏览器的文档跳转（navigating across documents）
-2. MPA 即为 multiple page application 的缩写，意为多页面应用模型，与 SPA 对比最大的不同即是页面路由切换由原生浏览器文档跳转（navigating across documents）控制。跳转需刷新页面。
+SPA 通常在同一文档中进行客户端路由和状态更新，适合交互连续的应用；MPA 通过浏览器文档导航进入不同页面，天然利用独立页面边界。SPA/MPA 描述导航方式，SSR/CSR 描述生成方式，二者不是同一维度。
 
-**优点：**
+SPA 要处理首屏脚本量、深链接、错误恢复与滚动状态；MPA 要考虑跨页交互连续性。MPA 的共享资源可命中缓存，不是每次都重新下载；SPA 结合 SSR/预渲染也能支持 SEO。按页面性质选择或混合，避免“某模式一定更快”的结论。
 
-1. SEO友好：由于每个页面都是独立的，所以对搜索引擎更友好。
-2. 初始加载速度：通常，初次加载页面的速度比 SPA 快，因为只加载当前页面需要的资源。
-3. 简单的缩放：服务器端处理可以更容易地缩放应用，因为客户端只承担了少部分工作。
-
-**缺点：**
-
-1. 用户体验：每次页面跳转都会导致整个页面刷新，可能影响用户体验。
-2. 资源重复加载：在每个页面上，很多相同的资源（如样式表和脚本）可能需要被重复加载。
-3. 前后端耦合：SMA 通常涉及到前后端代码更紧密的耦合，可能使得开发和维护变得更复杂。
-
-**选择考虑因素：（需要根据具体需求和场景进行考虑，不是非此即彼）**
-
-- 项目规模和复杂性：对于复杂的交互式应用（如在线文档编辑器、社交网络等），SPA 可能是更好的选择。而对于简单的内容导向网站，SMA 可能更合适。
-- 用户体验需求：如果需要提供流畅的用户体验和复杂的客户端交互，SPA 更有优势。
-- 搜索引擎优化需求：如果 SEO 是关键考虑因素，SMA 或利用服务器端渲染的 SPA 可能更合适。
-- 开发资源和专长：SPA 需要前端框架的知识，而 SMA 可能更依赖于传统的服务器端技术。
-- 维护和更新：SPA 可以更容易地推送更新，因为大部分逻辑都在客户端。SMA 则可能需要更频繁地进行服务器端的更新。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/SPA) · [资料 2](https://web.dev/articles/rendering-on-the-web)。
 
 ---

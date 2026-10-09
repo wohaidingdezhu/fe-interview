@@ -8,6 +8,7 @@ tags: ["JavaScript", "手写题", "面试"]
 aliases: ["debounce", "搜索框防抖", "延迟执行"]
 related: ["closure", "event-loop"]
 addedAt: "2026-10-08"
+reviewedAt: "2026-10-09"
 order: 4
 status: published
 quality: complete

@@ -6,422 +6,468 @@ description: "收录 Q368–Q396 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["LLM","RAG","Agent"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 115
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://modelcontextprotocol.io/docs/getting-started/intro","https://platform.openai.com/docs/overview"]
-technologyVersion: "工具快速迭代；原导入内容尚未逐题审核"
+technologyVersion: "工具快速迭代；各题标注固定版本或文档核对日期"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://modelcontextprotocol.io/docs/getting-started/intro) · [参考 2](https://platform.openai.com/docs/overview)。
 
 
 ## Q368｜LLM 是什么
 
-LLM 是 “Large Language Model”，中文叫 大语言模型。一种基于深度学习的人工智能模型，通过学习海量文本数据，掌握语言规律，从而能够理解、生成、推理和总结自然语言。从语言中学出逻辑， 而不仅仅是会说话。参数是模型“语言理解和知识记忆”的核心。参数越多，几十亿到上千亿个参数，模型的理解和生成能力越强。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+LLM 是在大量数据上训练、具有较大参数规模的语言模型，常见自回归模型按上下文预测下一 token，再通过后训练改善指令遵循与任务表现。它可用于生成、总结、提取和辅助推理，但流畅输出不等于事实正确。
+
+能力取决于数据、训练目标、架构、推理预算与评估任务，不能说参数越多必然越强。知识更新、权限、工具执行与业务状态通常由外部系统提供；应对具体业务建立准确率、延迟、成本和拒答评估。
+
+参考：[资料 1](https://huggingface.co/learn/llm-course/chapter1/1)。
 
 ---
 
 ## Q369｜目前热门 LLM 大模型
 
-**OpenAI 系列**：GPT-4.1、GPT-5 是通用能力最强的代表，支持多模态、工具调用和长上下文，是企业级 AI 的首选。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**Claude 系列**（Anthropic）：以安全、逻辑一致和长文本能力著称，在写作、知识推理方面表现出色。
+常见模型生态包括 OpenAI GPT、Anthropic Claude、Google Gemini，以及 Meta Llama、Qwen、DeepSeek、Mistral、Gemma 等开放权重或不同授权模式的系列。具体在售型号与能力变化很快，应以供应商当前目录及许可为准，不把某个型号永久列为“最强”。
 
-**Gemini 系列**（Google）：主打多模态，结合搜索和视频理解能力。
+选型使用同一业务评测集，比较文本/多模态/工具能力、上下文、延迟、总成本、部署位置、数据政策与许可。开放权重不一定等于 OSI 意义的开源；长上下文上限也不代表其中信息能被同样可靠利用。
 
-**LLaMA 系列**（Meta）：最受欢迎的开源模型，广泛用于微调与本地部署，性能与开放性兼顾。
-
-**DeepSeek 系列**：强化推理与逻辑一致性，代表开源社区在数学和代码领域的突破。
-
-**Qwen 系列**（阿里）：中文表现最强的开源模型之一，适合国内业务与多轮对话场景。
-
-**Kimi 系列**（Moonshot）：主打超长上下文和文档理解，适合知识管理和阅读类应用。
-
-**Mistral / Phi / Gemma**：轻量高效，适合边缘部署与中小规模应用。
+参考：[资料 1](https://platform.openai.com/docs/models) · [资料 2](https://ai.google.dev/gemini-api/docs/models) · [资料 3](https://huggingface.co/models)。
 
 ---
 
 ## Q370｜问题：关于 AI 的名词解释
 
-- **Prompt（提示词）**
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-给大模型的输入指令，用来控制模型行为、回答风格或思维方式。
+Prompt 是模型输入的指令与上下文；token 是模型处理文本等内容的基本单位；embedding 将内容映射为向量表示。RAG 先检索资料再生成，微调则改变模型或适配器参数。
 
-Prompt 工程就是通过设计语言，让模型 “按你的逻辑思考”。
+Tool/function calling 让模型输出结构化工具请求，由运行时校验并执行；Agent 将模型、工具与状态反馈组织为目标导向流程。MCP 是由 Anthropic 在 2024 年推出的开放集成协议，描述应用与上下文/工具服务的通信。提示注入是不可信输入试图改变应用的指令边界，可能来自网页/文档等间接来源，不能仅靠关键词过滤解决。
 
-- **LLM（Large Language Model）**
-
-大语言模型，通过学习海量文本掌握语言规律，能理解、生成和推理自然语言。
-
-如： GPT、Claude、Qwen、Kimi、Gemini 等。
-
-- **RAG（Retrieval-Augmented Generation）**
-
-检索增强生成。先从向量数据库检索相关资料，再交给模型生成答案，
-
-可让模型“有依据可依”，减少幻觉。
-
-- **Fine-tuning（微调）**
-
-对已有模型进行二次训练，让它在特定领域表现更好。适合定制行业模型或个性化助手。
-
-- **Agent（智能体）**
-
-具备自主思考与行动能力的 AI 系统。能自己规划任务、调用工具、执行操作，是“AI 工程师”的雏形。
-
-- **Tool（工具函数）**
-
-模型在 Agent 模式中可调用的外部功能，比如查天气、调用接口、读数据库。
-
-- **Function Calling（函数调用）**
-
-模型输出 JSON，告诉你要调用哪个函数、传什么参数。是让模型“做事”的关键机制。
-
-- **MCP（Model Context Protocol）**
-
-OpenAI 推出的模型交互协议，让模型与 IDE、浏览器、文件系统直接通信，是下一代 AI 操作系统标准。
-
-- **Prompt Injection（提示注入）**
-
-攻击方式：用户在输入中嵌入恶意指令，让模型执行错误行为。工程上需过滤和权限控制。
-
-- **Embedding（向量嵌入）**
-
-把文本转成高维向量表示语义。在搜索、RAG、语义匹配中常用。
+参考：[资料 1](https://modelcontextprotocol.io/specification/2025-06-18/) · [资料 2](https://www.anthropic.com/news/model-context-protocol) · [资料 3](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q371｜关于全栈名词解释
 
-- **BFF（Backend For Frontend）**
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-前后端分离架构中，为前端量身定制的后端层，负责接口聚合、权限控制、Session 管理等。
+BFF 为特定前端聚合与适配后端能力；SSR 在服务端生成初始 HTML，仍由浏览器绘制并可能 hydration。Monorepo 把多个项目放在同一仓库，需明确包边界和构建依赖，不自动等于微服务。
 
-- **SSR（Server-Side Rendering）**
+CI 是持续整合验证；CD 可指持续交付或持续部署，前者保留发布决策，后者自动部署通过门禁的变更。容器封装用户空间依赖，仍受架构、内核与外部配置影响。解释名词时应说明它解决哪一层问题及代价。
 
-服务端渲染。页面由服务器生成 HTML 后再返回浏览器，提高首屏性能和 SEO 效果。
-
-- **Monorepo（单仓多包）**
-
-一种代码管理方式，把多个子项目统一放在一个仓库中，用 pnpm、TurboRepo 等工具统一构建与依赖。
-
-- **CI/CD（持续集成 / 持续部署）**
-
-自动化构建与发布流程：代码提交后自动测试、打包、部署。如： Jenkins、GitHub Actions、GitLab CI 等
-
-- **Docker / 容器化**
-
-把应用及其依赖封装进独立环境中运行。可实现“一次构建，到处运行”。
+参考：[资料 1](https://samnewman.io/patterns/architectural/bff/) · [资料 2](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/)。
 
 ---
 
 ## Q372｜大模型在 ToB 领域中应用的常见问题
 
-- LLM 泛知识，无法回答企业内部知识，譬如员工电话号码，部门规章制度，相关守则 等等。
-- LLM 会有致幻问题，有产生幻觉的可能，不适用于企业应用的正式环境。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**解决方案：**为模型外挂一个知识库，辅助 LLM 回答问题。 （RAG）
+企业应用常遇到内部知识缺失/过期、权限隔离、幻觉、成本延迟、数据泄漏、工具误调用及结果不可追踪等问题。RAG 可提供最新资料，但无法单独解决所有问题，更不能保证生成内容正确。
+
+从有明确验收标准的任务开始，检索时按身份过滤，回答引用可访问来源并允许证据不足时拒答。执行操作由服务端校验权限和参数，建立离线评测、线上监控与人工升级路径。是否适合生产取决于错误后果和控制措施，不是一概不可用。
 
 ![](./images/interview/大前端面试宝典-image-62.png)
+
+参考：[资料 1](https://www.anthropic.com/engineering/building-effective-agents) · [资料 2](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)。
 
 ---
 
 ## Q373｜LLM 出现幻觉（Hallucination）的深层原因是什么
 
-- **语言模型是概率模型，不是事实模型：**LLM 的本质是“预测下一个最可能的词”，不是在“查找真相”，而是在生成语言模式。当输入提示不明确或知识缺失时，会凭统计相关性“合理地编造”。
-- **训练数据中存在噪声和虚假样本：**大模型学习了互联网上的海量文本，而这些内容本身可能包含错误或臆测信息。模型学到这些偏差后，在回答中会自然复现。
-- **缺乏事实验证机制：**模型输出结果时不会自动校验真伪，也不会访问实时数据。在多轮推理中，错误会被“递进强化”——尤其是 Agent 模式下的反射循环，会放大错误逻辑。
-- **Prompt 上下文过短或缺乏约束：**当上下文被截断、知识片段不完整，模型会自动“补空缺”，生成符合语义但不符合事实的回答。
-- **任务模糊或目标歧义：**如果任务没有明确评价标准，模型会更倾向于填补内容空白，从而编造细节。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+幻觉指模型输出不受证据支持或与事实冲突的内容。训练目标通常优化 token 预测和偏好，并不直接等同逐项事实验证；训练资料噪声、知识缺口、上下文误读和检索错误都可能导致虚构。
+
+降低温度不能保证真实性，RAG 也可能检索错或被误引用。缓解应检查证据与引用、使用可验证工具、结构化输出、允许不确定，并对高影响任务增加验证。模型可通过工具获得实时信息，因此“LLM 永远不能联网”也不是系统层面的准确结论。
+
+参考：[资料 1](https://arxiv.org/abs/2311.05232) · [资料 2](https://platform.openai.com/docs/guides/evaluation-best-practices)。
 
 ---
 
 ## Q374｜RAG （检索增强生成）是什么？
 
-RAG（Retrieval-Augmented Generation）是当前企业级 AI 应用最核心的架构思路之一。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-让模型“具备最新知识”，而不依赖模型固有训练语料。
+RAG 把检索到的外部资料作为生成上下文，使模型可以利用训练后更新或私有的数据。检索可用关键词、向量、结构化查询或混合方案，不一定必须有向量数据库，也不需要先改变模型权重。
 
-1. **文档嵌入（Embedding）**
+基本路径是问题理解 → 检索与权限过滤 → 排序/裁剪 → 带证据生成 → 引用与验证。效果取决于资料质量、召回和生成忠实性，检索命中不代表答案必然正确，应分别评估召回率与答案质量。
 
-- 把知识库（PDF、Markdown、数据库内容等）切成小块（Chunk），
-- 然后用 Embedding Model（如 text-embedding-3-large 或 bge-m3）将文本转为高维向量。
-
-1. **向量检索（Vector Search）**
-
-- 用户提问时，将 Query 也转成向量。
-- 计算 Query 向量与文档向量的相似度。
-- 检索出最相关的若干段落。
-
-1. **增强生成（Augmented Generation）**
-
-- 把检索结果拼入 Prompt 的上下文中。
-- 交由 LLM 生成最终回答。
+参考：[资料 1](https://arxiv.org/abs/2005.11401) · [资料 2](https://platform.openai.com/docs/guides/retrieval)。
 
 ---
 
 ## Q375｜RAG（检索增强生成）的原理与工程实现方式。
 
-- **录入流程：**文档 -> 切片 -> 向量化处理 -> 存入向量数据库
-- **Agent 流程：**提问 -> 问题向量化 -> 语义检索（到向量数据库） -> 答案排序整理 -> LLM处理 -> 回答
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+入库阶段保留文档 ID、版本、权限和来源，解析清洗后按语义切块，建立关键词/向量索引；更新与删除必须同步索引。查询阶段先确定用户可访问范围，检索候选、重排并在 token 预算内拼装上下文，再生成带来源的回答。
+
+```text
+文档 -> 清洗/分块/元数据 -> 索引
+问题 + 身份 -> 权限过滤 -> 混合召回 -> 重排
+     -> 上下文预算 -> 模型生成 -> 引用/事实检查
+```
+
+调参看真实问题集，不凭感觉固定 chunk 大小或 top-k。还需处理重复资料、版本冲突、证据不足、注入文本及索引延迟；RAG 本身不要求 Agent 循环。
 
 ![](./images/interview/大前端面试宝典-image-76.png)
+
+参考：[资料 1](https://platform.openai.com/docs/guides/retrieval) · [资料 2](https://arxiv.org/abs/2005.11401)。
 
 ---
 
 ## Q376｜前端实现 LLM 的流式输出。
 
-使用 **Server-Sent Events (SSE)**：可参考本文档网络板块的 SSE 实现。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-这里介绍 OpenAI SDK ：
+前端通过自己的 BFF 请求模型流，供应商密钥只在服务端保存。下面约定 BFF 返回 SSE，data 为 {"delta":"文本"}，结束可发 [DONE]；真实供应商的事件类型应在 BFF 映射。不能把一次 reader.read() 当作一条完整事件或一个完整 UTF-8 字符。
 
-- 提供 stream: true 参数；
-- 每生成一段内容就通过 data: 推送到前端。
+```js
+async function consumeSSE(stream, onEvent, { maxEventChars = 1_000_000 } = {}) {
+  if (!Number.isSafeInteger(maxEventChars) || maxEventChars < 1) throw new RangeError('invalid event limit');
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let line = '', data = [], event = '', id = '', skipLF = false, size = 0;
+  function processLine() {
+    if (line === '') {
+      if (data.length) onEvent({ data: data.join('\n'), event: event || 'message', id });
+      data = []; event = ''; size = 0;
+    } else if (!line.startsWith(':')) {
+      const colon = line.indexOf(':');
+      const field = colon < 0 ? line : line.slice(0, colon);
+      let value = colon < 0 ? '' : line.slice(colon + 1);
+      if (value.startsWith(' ')) value = value.slice(1);
+      if (field === 'data') data.push(value);
+      else if (field === 'event') event = value;
+      else if (field === 'id' && !value.includes('\0')) id = value;
+    }
+    line = '';
+  }
+  function consume(text) {
+    for (const char of text) {
+      if (skipLF) { skipLF = false; if (char === '\n') continue; }
+      if (++size > maxEventChars) throw new RangeError('SSE event too large');
+      if (char === '\r') { processLine(); skipLF = true; }
+      else if (char === '\n') processLine();
+      else line += char;
+    }
+  }
+  let ended = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) { consume(decoder.decode()); ended = true; break; }
+      consume(decoder.decode(value, { stream: true }));
+    }
+    // SSE 只分发由空行结束的事件；EOF 不补发未完成事件。
+  } finally {
+    if (!ended) { try { await reader.cancel(); } catch { /* 保留原始失败 */ } }
+    reader.releaseLock();
+  }
+}
+```
+
+```js
+const controller = new AbortController();
+async function start(prompt, onDelta) {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }), signal: controller.signal,
+  });
+  if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
+  await consumeSSE(response.body, ({ data }) => {
+    if (data === "[DONE]") return;
+    const payload = JSON.parse(data);
+    if (typeof payload.delta !== "string") throw new TypeError("invalid delta");
+    onDelta(payload.delta);
+  });
+}
+// UI 调用 start(...).catch(...)；停止/卸载时 controller.abort()。
+```
+
+消费器处理跨块 UTF-8、CR/LF、连续 data 行与大小上限；回调是同步接口，不实现自动重连/retry。UI 应批量提交增量，避免每 token 重排；错误/结束状态单独展示，Markdown/HTML 渲染仍需防注入。
+
+参考：[资料 1](https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams)。
 
 ---
 
 ## Q377｜Function Calling 是什么
 
-Function Calling 是 OpenAI 提出的早期结构化调用机制。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**核心：**让模型可以“主动调用外部函数”，而不是只生成文本。
+Function calling/tool calling 是模型输出结构化工具名称和参数的能力，宿主应用据此决定是否执行外部能力，再把结果回传模型。不同供应商都有类似接口，不能把它等同模型直接运行任意本地函数。
+
+参数 schema 改善结构约束，但仍需服务端验证类型、范围、权限与业务状态；工具结果也是不可信数据。工具可以是本地函数或远程服务，语言并不被某个 SDK 限死。
+
+参考：[资料 1](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q378｜Function Calling 原理流程
 
-1. 开发者向模型注册函数定义（名称、参数 schema）。
-2. 模型推理后生成结构化 JSON（指明要调用哪个函数、参数是什么）。
-3. 开发者执行该函数，并把结果返回给模型，模型再继续生成答案。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+先注册允许的工具及参数 schema，再提交上下文；模型返回工具请求时，运行时验证工具名、参数、权限与预算，执行并按 call ID 回填结果，继续请求模型，直到得到答案或达到明确停止条件。
+
+```text
+用户请求 -> 模型 -> tool_call(name, arguments, call_id)
+                     -> 校验/授权 -> 执行 -> tool_result(call_id)
+                     -> 模型继续生成
+```
+
+并行调用只用于互不依赖的工具；超时、重试、幂等键和失败反馈应由程序管理。整个过程可自动编排，不需要每次由人手动中转 JSON。
+
+参考：[资料 1](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q379｜Function Calling 优缺点
 
-**优点：**
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-- 简单易用；
-- 提高模型可控性；
-- 支持多步对话任务执行。
+工具调用能把实时数据、精确计算和外部动作纳入模型工作流，并通过 schema 与调用 ID 改善可观测性。代价是额外往返、成本，以及错误参数、错误选工具、重复副作用和注入风险。
 
-**缺点：**
+它不保证语义正确或权限安全；供应商 API 格式也可能不同，需要适配层。但远程 HTTP 工具可跨语言复用，执行结果可由程序自动回传，不能说 function calling 天生不支持共享或必须人工中转。
 
-- 只能在模型调用时“注册函数”，不具备统一协议；
-- 不支持跨语言、跨模型的工具共享；
-- 无法标准化工具描述和安全权限控制；
-- 工具执行结果必须人工中转。
+参考：[资料 1](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q380｜MCP 是什么？
 
-MCP = Model Context Protocol）
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-它是 OpenAI 在 2024 年底正式推出的下一代 AI Agent 协议标准。
+MCP（Model Context Protocol）是由 Anthropic 于 2024 年推出的开放协议，用于统一 AI 应用连接工具、资源与提示模板的方式。它基于 JSON-RPC 描述生命周期、能力协商、发现与调用，使集成可被多个宿主复用。
 
-它是 Function Calling 的“体系化升级版”。
+MCP 不替代模型推理，也不是 function calling 的必然升级版。宿主常把 MCP 工具描述转换为模型工具定义；模型提出请求后再由客户端调用服务端。授权框架不等于所有工具天然安全，业务权限仍由宿主与服务端落实。
 
-定义一套 模型 ↔ 工具 ↔ 上下文 的标准通信协议，让模型具备“插件化操作系统”能力。
+参考：[资料 1](https://www.anthropic.com/news/model-context-protocol) · [资料 2](https://modelcontextprotocol.io/specification/2025-06-18/)。
 
 ---
 
 ## Q381｜MCP 的核心结构
 
-**Server（工具服务端）**：提供一组可用的工具（如文件读写、数据库、HTTP请求等）；
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**Client（模型或 IDE）**：通过协议访问 Server；
+MCP 采用 host-client-server 架构：host 是 AI 应用，负责模型、用户交互与策略；client 是宿主内对接某个服务端的协议连接；server 提供 tools、resources、prompts 等能力。Bridge 不是该规范要求的第三核心角色。
 
-**Bridge（中间层）**：负责转发、权限、上下文同步。
+初始化时协商协议版本和能力，再执行发现、读取或调用。本组固定说明 2025-06-18 版的 stdio 与 Streamable HTTP；后者可使用 SSE 承载流式消息。不要把早期 HTTP+SSE 传输名称与所有新版远程通信等同。
 
-**交互流程：**LLM -> MCP Client -> MCP Server（工具集）-> 外部资源
+参考：[资料 1](https://modelcontextprotocol.io/specification/2025-06-18/architecture) · [资料 2](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)。
 
 ---
 
 ## Q382｜Function Calling 与 MCP 实现差异
 
-**Function Calling 版本**
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-> 模型调用 getStockPrice('AAPL') 获取苹果股价：
+直接 function calling 时，应用把工具 schema 发给模型，并在工具请求后调用自己的函数/HTTP 服务。接入 MCP 时，应用先通过 tools/list 获取服务端工具，转换为模型需要的定义，再把选中的请求映射成 tools/call。
 
-**MCP 版本**
+```json
+{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"get_price","arguments":{"symbol":"AAPL"}}}
+```
 
-> 模型通过 MCP 直接访问股票工具服务：
+示例是假定该工具已存在且完成初始化后的协议消息。模型供应商的 call ID 与 MCP JSON-RPC id 属于不同层，需要宿主正确关联；两种方案都必须执行权限、参数和结果校验。
+
+参考：[资料 1](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) · [资料 2](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q383｜Function Calling 与 MCP 对比
 
-| **项目**   | **Function Calling** | **MCP** |
-|-|-|-|
-| **定义者** | OpenAI（2023） | OpenAI（2024，正式标准） |
-| **核心目标** | 模型调用外部函数 | 模型与外部环境标准化交互 |
-| **安全机制** | 开发者自管 | 协议内建权限系统 |
-| **语言兼容性** | 局限于 SDK | 任意语言（JSON-RPC） |
-| **工具发现**  | 静态注册 | 动态发现 / 热加载 |
-| **应用场景**   | 单模型任务执行 | 多Agent协作 / IDE集成 / 系统级控制 |
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+两者通常协作：function calling 约定模型如何提出工具请求，MCP 约定应用如何发现和访问外部能力。
+
+| 比较 | Function calling | MCP |
+| --- | --- | --- |
+| 边界 | 模型 API 与应用工具调度 | 宿主客户端与能力服务端 |
+| 描述 | 供应商定义的工具 schema | 标准化发现与工具/资源接口 |
+| 传输 | 随模型 API 交互，执行层自定 | 固定版本规定的 stdio/HTTP 等 |
+| 安全 | 应用验证权限与参数 | 协议授权加业务权限校验 |
+
+二者均可跨语言集成，均不自动保证调用安全。动态工具列表变化要按服务端能力通知处理，不等于无限制热加载任意代码。
+
+参考：[资料 1](https://modelcontextprotocol.io/specification/2025-06-18/architecture) · [资料 2](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) · [资料 3](https://platform.openai.com/docs/guides/function-calling)。
 
 ---
 
 ## Q384｜Agent 是什么
 
-Agent（智能体）在 AI 语境下，指的是一种具备自主决策能力的执行单元。不是简单的「调用模型」，而是围绕一个目标，能够感知环境、规划步骤、调用工具、执行行动并根据反馈调整策略的系统。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-Agent = **模型能力（大语言模型）** + **记忆** + **工具调用** + **状态感知与反馈循环** + **行动策略**
+Agent 在目标与环境反馈下使用模型选择动作、调用工具并更新状态，直到完成、失败或触及预算。固定工作流由程序决定大部分路径，Agent 给模型更多选择空间；实际系统常组合二者。
+
+长期记忆、多智能体和显式思维链都不是必备条件。工程上需明确可调用能力、状态持久化、停止条件、错误恢复及外部动作权限；自主程度越高，越需要可追踪执行与可验证结果。
+
+参考：[资料 1](https://www.anthropic.com/engineering/building-effective-agents)。
 
 ---
 
 ## Q385｜Agent Loop 是什么什么
 
-Agent Loop（循环反射机制） 是大模型在执行任务时不断进行 计划 → 执行 → 观察结果 → 再计划 的循环过程，不再是一次性输出答案，而是会根据每一步的执行结果决定下一步要做的事情。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**基本流程：**
+Agent loop 是“读取状态 → 模型决定下一步 → 校验并执行工具 → 记录观察 → 再决定”的控制循环。最终答案可以结束循环，但程序还需限制轮数、token、总时长与重复动作。
 
-- 用户提出一个任务，比如“查库存，不够就补货”。
-- Agent 首先生成一个计划（我应该先查库存）。
-- Agent 调用工具或 API 执行计划（比如请求库存接口）。
-- 得到执行结果后，模型会“反思”当前状态（库存低于阈值，需要继续执行下一步）。
-- 再次生成计划，比如调用下单接口。
-- 直到模型判断任务已经完成，才停止循环并给出最终回答。
+```text
+while 未完成 且 未超预算:
+    decision = model(context)
+    if decision 是最终回答: 返回回答
+    校验 decision 的工具、参数与授权
+    result = 在超时限制内执行工具
+    context += 关联调用 ID 的结果
+超预算时返回当前进度与停止原因
+```
 
-**LLM = 决策器，Tool = 手执行的工具，Loop = 自己驱动自己继续做事**
+外部副作用要幂等或记录已执行状态，不能因网络重试重复下单。观察内容必须与指令边界分开，不能让工具文本擅自改变授权。
+
+参考：[资料 1](https://www.anthropic.com/engineering/building-effective-agents)。
 
 ---
 
 ## Q386｜Agent Loop 常见问题与风险
 
-- **容易进入死循环：**模型可能一直在“再确认、再检查”，不停止，如不断重复 “确认库存” 这种无意义操作。
-- **Token 消耗极高：**每一次反射都要重新发送上下文，调用多轮 API，很快消耗大量 Token，造成巨大成本问题。
-- **错误行为会被放大：**如果第一次 Observation 理解错误，模型可能继续沿着错误方向一错再错。
-- **缺乏安全边界：**如果工具没有做白名单和参数校验，模型可能不加限制地执行敏感操作。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+循环常见风险有重复无进展调用、上下文膨胀、成本失控、错误结果连锁传播、工具超时与重复副作用。检索内容中的提示注入还可能诱导越权行动。
+
+用总预算、步骤上限、超时/退避、重复动作检测和检查点约束执行；记录调用 ID、输入输出摘要与状态，支持恢复与审计。把秘密和写权限限制在服务端边界，工具结果按数据处理。停止规则应报告真实进度，不能为满足循环次数宣称任务完成。
+
+参考：[资料 1](https://www.anthropic.com/engineering/building-effective-agents) · [资料 2](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)。
 
 ---
 
 ## Q387｜什么是模型微调（Fine-tuning）？
 
-Fine-tuning 是在预训练模型基础上，使用特定领域的数据再次训练，让模型在该领域表现更好。当于“教模型新知识”或“让模型形成固定风格”。重新训练部分或全部权重，使模型从数据中学习新模式。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+微调在预训练模型上用任务数据更新全部或部分参数，使输出行为、格式或领域任务表现更符合目标。它不是简单给模型外挂一份数据库，也不保证精确记住所有新知识。
+
+对频繁变化、需要来源与权限的知识，优先评估检索/工具；对稳定的行为模式可评估微调。先建立基线和独立评测集，关注过拟合、灾难性遗忘、数据许可及敏感信息泄漏，不能只看训练损失下降。
+
+参考：[资料 1](https://huggingface.co/docs/transformers/training)。
 
 ---
 
 ## Q388｜LLM 微调中常见的两种类型是什么？各适合什么场景？
 
-- **全参数微调（Full Fine-tuning）**
-- 调整模型全部参数。
-- 优点：效果最好。缺点：计算量大、成本高。
-- 适合：大型机构、科研或完全垂直场景（如法律、医学）。
-- **轻量微调（Parameter Efficient Fine-tuning, PEFT）**
-- 只调整少量参数，如 LoRA、QLoRA、Prefix-Tuning。
-- 优点：显著降低显存需求；缺点：泛化略弱。
-- 适合：中小团队做领域定制或角色微调。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+按可训练参数范围可分全参数微调与参数高效微调 PEFT。全参数更新全部权重，灵活但显存、优化器状态和存储成本更高；LoRA、adapter、prefix 等只训练部分新增/选定参数。
+
+这是一种分类维度，SFT/偏好优化则按训练目标分类，不能混成只有两种训练方法。全参不保证总优于 PEFT，PEFT 也不必然泛化更差；结果取决于任务、数据、预算和超参数。QLoRA 结合基础权重量化与 LoRA，不能说只是另一种模型架构。
+
+参考：[资料 1](https://huggingface.co/docs/peft/index) · [资料 2](https://arxiv.org/abs/2305.14314)。
 
 ---
 
 ## Q389｜LoRA 是如何实现高效微调的？
 
-LoRA（Low-Rank Adaptation）在原模型权重矩阵旁边插入两个低秩矩阵（A、B），在训练时只更新这两个小矩阵，原始权重冻结。相当于 W' = W + A × B这样显存消耗下降 90%+，训练速度提升数倍。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-LoRA 的核心思想是“用低维近似表达参数变化”。
+LoRA 冻结原矩阵 W，只训练低秩更新：W′ = W + (α/r)BA。若 W 为 d_out×d_in，B 为 d_out×r、A 为 r×d_in，训练参数从 d_out*d_in 降到 r*(d_out+d_in)，通常 r 远小于原维度。
+
+显存节省还受激活、基础权重、优化器与精度影响，不能统一承诺减少 90% 或固定倍数提速。部署可在条件允许时合并权重，或保留适配器；量化、多个适配器和不同目标层会影响合并与精度。
+
+参考：[资料 1](https://arxiv.org/abs/2106.09685) · [资料 2](https://huggingface.co/docs/peft/conceptual_guides/lora)。
 
 ---
 
 ## Q390｜微调一个 LLM 需要准备哪些数据？格式上有什么要求？
 
-- 指令数据（Instruction + Response）：模型学会根据任务指令输出结果。
-- 对话数据（Chat Format）：多轮上下文格式，适合聊天类模型。
-- 知识数据（Context + QA）：强化领域知识问答能力。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**注意事项：**
+准备覆盖真实任务分布的高质量输入/期望输出，并按训练方法组织：SFT 常用指令/对话，偏好优化常用选中与拒绝回答。格式按模型 chat template 与训练平台 schema 决定，不存在适用于所有平台的统一 JSON 字段。
 
-- 样本数量不求多，但要高质量、结构一致；
-- 去除噪声与矛盾样本；
-- 统一 token 长度与风格。
+```json
+{"messages":[{"role":"user","content":"将 hello 翻译为中文"},{"role":"assistant","content":"你好"}]}
+```
+
+这是聊天训练样本示意。按来源去重并拆分训练/验证/测试，避免同源泄漏；清除秘密、核对许可和标签一致性。无需强制所有样本长度相同，但要处理上下文上限、截断和 loss mask。
+
+参考：[资料 1](https://huggingface.co/docs/trl/sft_trainer)。
 
 ---
 
 ## Q391｜Dify 是什么？
 
-Dify 是一个开源的 AI 应用构建平台（AI App Builder），可以让开发者和非技术人员通过可视化界面快速搭建大模型应用。把 Prompt、变量、知识库、工作流、模型调用都组件化，无需从零写代码即可实现一个可用的 ChatBot、问答系统或业务助手。本质上，Dify 是连接“模型能力”和“业务场景”的中间层。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+Dify 是 AI 应用开发平台，提供模型接入、提示配置、知识检索、工作流/对话流、工具与应用发布等能力。可用云服务或按许可自托管，是否满足商业使用与多租户要求要查看对应版本 LICENSE。
+
+它降低编排成本，但不代替数据治理、业务授权、评测和运行保障。模型供应商、插件版本、密钥、向量库与网络环境都会影响结果，应记录部署版本与依赖配置，而不是认为可视化流程天然可靠。
+
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/getting-started/introduction) · [资料 2](https://github.com/langgenius/dify/blob/main/LICENSE)。
 
 ---
 
 ## Q392｜Dify 的 Workflow（工作流）是什么？
 
-Workflow 是 Dify 的核心功能之一，用于定义 AI 应用的执行流程。解决了单一 Prompt 无法处理复杂逻辑的问题， 让模型具备“多步决策”和“自动化任务执行”的能力。可以让模型在多个步骤中依次调用：
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-- 模型推理（LLM Node）
-- 外部 API（HTTP Node）
-- 条件判断（If/Else Node）
-- 工具执行（Tool Node）
-- 数据处理（Code Node）
+Workflow 用节点和连线定义输入、处理、分支、循环与输出；Chatflow 在此基础上提供多轮对话相关能力。LLM、代码、HTTP、知识检索与条件节点可组合，但每条执行路径都应有明确输出和失败策略。
+
+先定义变量 schema，再连接节点并用代表性输入调试，配置错误分支、重试与预算；发布前保存版本并做回归。节点能力会随 Dify 版本变化，应按当前部署说明，不把某个截图中的按钮名当稳定 API。
+
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow) · [资料 2](https://docs.dify.ai/en/cloud/use-dify/build/orchestrate-node)。
 
 ---
 
 ## Q393｜Dify 如何接入外部 API 或数据库？
 
-- HTTP 节点：在 Workflow 中可直接调用第三方 API；
-- 插件（Tool）机制：可自定义工具包，通过 REST 接口或函数实现；
-- Webhook 回调：可让外部系统触发 Dify 应用或获取执行结果；
-- SDK / API 调用：开发者可通过 Dify SDK 在代码中与应用通信。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+
+调用外部 API 可使用 HTTP Request 节点或工具插件，按需要设置方法、认证、参数与响应映射。接数据库通常通过受控后端 API 或明确支持的连接插件，不应把任意数据库凭据与生成 SQL 直接暴露给模型。
+
+外部系统调用 Dify 则走应用 API/Webhook 等已配置入口，这是相反方向。密钥存为秘密配置，限制目标网络与权限，设置超时、结果大小和重试幂等；失败应进入可观测错误分支。
+
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/nodes/http-request) · [资料 2](https://docs.dify.ai/en/cloud/use-dify/nodes/tools)。
 
 ---
 
 ## Q394｜Dify 的知识库（Knowledge Base）在 RAG 中起什么作用？
 
-Dify 的知识库是实现 RAG（检索增强生成）的关键模块。当用户上传文档、网页或文本时，Dify 会自动：
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-1. 分片（Chunking）：将文档拆成小块；
-2. 向量化（Embedding）：把文本转为向量；
-3. 语义检索（Retrieval）：根据用户问题查找最相关内容；
-4. 上下文拼接（Augmentation）：把检索结果加入 Prompt；
-5. 生成回答（Generation）：LLM 生成基于事实的回答。
+知识库负责文档解析、索引与检索配置，Knowledge Retrieval 节点根据 query 返回候选片段，后续 LLM 节点必须正确连接并引用这些结果作为上下文。上传文档并不代表每次生成都会自动使用它。
+
+按应用配置检索方式、top-k、阈值、重排和元数据过滤，检查引用来源与召回质量。知识更新、删除、租户权限及不可访问来源要同步处理；模型仍可能误读上下文，所以“有知识库就保证基于事实”不成立。
+
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/nodes/knowledge-retrieval)。
 
 ---
 
 ## Q395｜在 Dify 中，如何让一个应用支持多轮上下文对话？
 
-Dify 内部有 Session 管理机制，每次用户对话会自动维护上下文变量（Messages）。开发者可通过：
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-- 设置「对话记忆」开关；
-- 控制上下文保留的轮数；
-- 在 Prompt 中引用历史内容 {conversation_history}；
+多轮应用应使用支持会话的 Chatflow/聊天类型，API 调用时延续返回的 conversation_id，并在应用层绑定真实用户，避免跨用户串会话。LLM 节点还需按需求启用记忆/窗口，业务状态可放 conversation variables。
 
-来实现连续对话、上下文理解和逻辑衔接。这样用户可以和 AI 连续交流，不会“忘记前一句话”。
+会话存在不代表每个节点自动收到全部历史；上下文窗口与预算仍有限。不要虚构所有版本通用的 {conversation_history} 占位符，应从当前节点变量选择器/API 文档配置。Workflow 单次运行状态也不能直接当长期聊天记忆。
+
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/nodes/llm) · [资料 2](https://docs.dify.ai/en/cloud/use-dify/nodes/variable-assigner) · [资料 3](https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow)。
 
 ---
 
 ## Q396｜Dify 中 智能体 和 工作流 的关系
 
-智能体是执行任务的主体，而工作流是智能体执行任务的流程逻辑。智能体是谁来做，做什么，工作流是怎么做。智能体是AI的大脑，工作流是AI的行动路线。两者结合让 AI 真正落地成可控的业务流程。
+适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
 
-**智能体（Agent）**
+Workflow 主要由开发者预定义节点和控制流，Agent 在给定工具与约束下由模型决定调用步骤。Dify 可以在工作流中放 Agent 节点，形成固定业务流程中的一个动态子任务。
 
-是具备自主决策与调用能力的 AI 实体。它基于系统提示（System Prompt）、工具（Tools）和记忆机制来完成任务。你可以在 Dify 里配置一个 Agent，让它具备特定的知识库、角色和功能，比如“财务助理”或“产品顾问”。
+并非所有 Agent 都必须先有可视化工作流，也不是所有 Workflow 都是智能体。确定性步骤如参数校验、权限和持久化宜放受控节点；开放式检索/分析可交给 Agent，并设置工具范围、迭代预算、错误回退与输出 schema。
 
-**工作流（Workflow）**
-
-是一条任务执行链，用可视化节点描述任务的执行顺序。每个节点可以是一个模型调用、判断逻辑、API 请求、工具操作、甚至另一个 Agent 调用。工作流让任务执行可控、可调试、可复用。
-
-**工作流是智能体的执行骨架**
-
-智能体可以看作一个“驱动核心”，但如果要让它完成多步骤逻辑，就需要工作流定义步骤。
-
-- 智能体：理解用户意图；
-- 工作流：调用不同节点 → 检索知识库 → 调 API → 汇总输出。
-
-**智能体可以被工作流调用**
-
-在工作流中，一个节点可以是「Agent Node」，用于调用特定智能体执行子任务。
-
-比如一个“客服工作流”中可调用不同智能体：
-
-- FAQ 智能体 → 回答常见问题；
-- 工单智能体 → 记录或升级问题。
-
-**两者互补**
-
-- 工作流负责“逻辑控制、条件判断、执行顺序”；
-- 智能体负责“语言理解、推理、任务决策”。合起来就是“会思考 + 会执行”的完整自动化系统。
+参考：[资料 1](https://docs.dify.ai/en/cloud/use-dify/nodes/agent) · [资料 2](https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow)。
 
 ---

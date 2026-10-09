@@ -6,592 +6,548 @@ description: "收录 Q293–Q329 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["HTTP","TCP","网络安全"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 111
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://www.rfc-editor.org/rfc/rfc9110","https://www.rfc-editor.org/rfc/rfc9111","https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events"]
 technologyVersion: "HTTP RFC 9110/9111；浏览器 SSE"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://www.rfc-editor.org/rfc/rfc9110) · [参考 2](https://www.rfc-editor.org/rfc/rfc9111) · [参考 3](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)。
 
 
 ## Q293｜HTTP 请求方式
 
-1. GET：用于获取资源，通过URL传递参数，请求的结果会被缓存，可以被书签保存，不适合传输敏感信息。
-2. POST：用于提交数据，将数据放在请求体中发送给服务器，请求的结果不会被缓存。
-3. PUT：用于更新资源，将数据放在请求体中发送给服务器，通常用于更新整个资源。
-4. DELETE：用于删除资源，将数据放在请求体中发送给服务器，用于删除指定的资源。
-5. PATCH：用于部分更新资源，将数据放在请求体中发送给服务器，通常用于更新资源的部分属性。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+GET 读取资源，HEAD 获取对应头部，POST 让目标处理提交内容，PUT 创建/替换目标表示，PATCH 按补丁格式修改，DELETE 请求移除目标关联，OPTIONS 查询通信选项。方法表达语义，不是强制业务一定正确实现。
+
+GET/HEAD 等是安全方法，PUT/DELETE 按语义幂等；幂等指多次相同请求的预期服务端效果相同，不要求响应完全相同。POST 在满足条件时可缓存，GET 也不是一定缓存。GET/DELETE 请求体没有通用语义，不能任意假设所有服务器支持。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9110#section-9)。
 
 ---
 
 ## Q294｜Get / Post 的区别
 
-**区别：**
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. get 幂等，post 不是。（多次访问效果一样为幂等）
-2. get 能触发浏览器缓存，post 没有。
-3. get 能由浏览器自动发起（如 img-src，资源加载），post 不行。
-4. post 相对安全，一定程度上规避 CSRF 风险。
+GET 用于获取表示，按语义应安全且幂等；POST 用于处理提交内容，通常不保证幂等。URL 查询与请求体是参数表达方式，并非安全等级：POST 表单同样可能受到 CSRF，HTTPS 才提供传输加密。
 
-**相同：**
+GET 响应常可缓存，POST 也存在规范允许的缓存条件。HTTP 没有统一的 URL/请求体上限，浏览器、代理与服务器各有约束。敏感数据不宜放 URL，避免历史、日志和 Referer 暴露；请求体也仍需权限和日志脱敏。
 
-1. 都不安全，都是基于 http，明文传输。
-2. 参数并没有大小限制，是URL大小有限制，因为要保护服务器。 （chrom 2M，IE 2048）
-
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9110#section-9.3)。
 
 ---
 
 ## Q295｜RESTful 规范
 
-使用语义化的URL来表示资源的层级关系和操作，如/users表示用户资源，/users/{id}表示具体的用户。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. **资源：**将系统中的实体抽象为资源，每个资源都有一个唯一的标识符（URI）。
-2. **HTTP方法：**使用HTTP请求方式来操作资源，如GET、POST、PUT、DELETE等。
-3. **状态码：**使用HTTP状态码来表示请求的结果，如200表示成功，404表示资源不存在等。
-4. **无状态：**每个请求都是独立的，服务器不保存客户端的状态信息，客户端需要在请求中携带所有必要的信息。
+REST 是架构风格，包括客户端/服务器、无状态、可缓存、统一接口、分层系统等约束。用名词路径和 HTTP 方法组织资源是常见实践，但仅把 URL 写成 /users/1 不代表满足所有 REST 约束。
+
+无状态要求请求包含理解它所需的上下文，不代表服务器不能持久化资源或用户数据。接口还需明确分页、错误模型、并发更新、鉴权和幂等策略；统一接口原始约束包含超媒体驱动应用状态。
+
+参考：[资料 1](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)。
 
 ---
 
 ## Q296｜浏览器缓存（强缓存 / 协商缓存）
 
-若缓存生效，强缓存返回200，协商缓存返回 304 状态码。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**强缓存：**
+新鲜缓存可以直接复用已存响应，通常无需网络往返；DevTools 显示的 200/from memory cache 不代表服务器又发了一次 200。过期或要求验证时，可带 If-None-Match 或 If-Modified-Since 请求，未变化返回 304 后复用缓存正文，变化则返回新表示。
 
-- Cache-Control:  max-age=3600 （单位秒）
-- Expires:  new Date(Date.now() + 10 \* 1000).toUTCString()
+Cache-Control 优先于 Expires，ETag 条件通常优先于日期条件。no-cache 要求复用前验证，no-store 禁止存储；Vary、请求方法、授权和缓存键都会影响是否能复用。
 
-**协商缓存：**
-
-- ETag / If-None-Match
-- Last-Modified / If-Modified-Since
-
-**相关文章（万字长文）：**https://www.zhihu.com/question/318091919/answer/2376806633?utm_id=0
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9111) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)。
 
 ---
 
 ## Q297｜Cache-Control 的取值
 
-Cache-Control 指令可以单独或组合使用，以定义特定资源的缓存策略。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. no-store：禁止缓存。表示不应存储请求或响应的任何部分。
-2. no-cache：需要重新验证缓存。客户端需要向服务器发送一个请求来确认缓存的有效性。
-3. max-age=<seconds>：指定资源在缓存中的最大存储时间，单位为秒。
-4. s-maxage=<seconds>：类似于max-age，但仅适用于代理服务器缓存，而不适用于浏览器缓存。
-5. public：表示响应可以被任何缓存（包括代理服务器）缓存，即响应是公共资源。
-6. private：表示响应只能被浏览器缓存，不允许代理服务器缓存。适用于包含用户特定信息的响应。
-7. must-revalidate：表示客户端必须在使用已缓存的响应之前重新验证该响应的有效性。
-8. proxy-revalidate：类似于must-revalidate，但仅适用于代理服务器缓存。
-9. max-stale[=seconds]：表示客户端愿意接受已过期的响应，可指定最长过期时间（可选）。
-10. min-fresh=seconds：表示客户端希望获取一个在指定时间内不会过期的响应。
-11. immutable：指示响应不会随时间的推移而发生更改，适用于长期缓存的不变资源。
-12. no-transform：禁止代理服务器对响应进行任何形式的转换，例如，不要压缩或修改内容。
-13. only-if-cached：表示客户端只接受缓存的响应，不要向服务器发送请求。
+响应常用 max-age 控制新鲜期，s-maxage 指定共享缓存新鲜期；private 限制共享缓存存储，public 允许按规则共享。no-store 禁止存储，no-cache 允许存储但复用前必须成功验证。
+
+must-revalidate 约束过期后不得随意使用陈旧响应，不是每次新鲜命中都需验证；immutable 表示新鲜期内内容不变。stale-while-revalidate、stale-if-error 分别允许特定陈旧复用窗口。请求的 max-stale、min-fresh、only-if-cached 则是客户端偏好，不能与响应指令混为一谈。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)。
 
 ---
 
 ## Q298｜常见的 HTTP 状态码以及代表的意义
 
-- 200 OK：请求成功，服务器成功处理了请求。
-- 201 Created：请求已成功，并在服务器上创建了新的资源。
-- 204 No Content：服务器成功处理了请求，但没有返回任何内容。
-- 400 Bad Request：服务器无法理解请求的语法，请求有语法错误。
-- 401 Unauthorized：请求需要用户身份验证。
-- 403 Forbidden：服务器拒绝请求，没有权限访问。
-- 404 Not Found：请求的资源不存在。
-- 405 Method Not Allowed：请求方法不被允许。
-- 500 Internal Server Error：服务器内部错误，无法完成请求。
-- 502 Bad Gateway：服务器作为网关或代理，从上游服务器收到无效响应。
-- 503 Service Unavailable：服务器当前无法处理请求，通常由于过载或维护。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+2xx 表示成功：200 有相应结果，201 创建资源，204 无正文；3xx 表示重定向或缓存验证，例如 301/302/307/308 和 304。4xx 多为请求或权限条件问题，5xx 表示服务端未能满足有效请求。
+
+常见 400 参数/格式问题、401 缺少有效认证、403 拒绝访问、404 未找到、405 方法不允许、409 状态冲突、429 频率受限；500 内部错误、502 网关收到无效上游响应、503 暂不可用、504 网关等待超时。前端应保留具体状态并配合业务错误码，重试只针对合适且可安全重复的请求。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9110#section-15) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429)。
 
 ---
 
 ## Q299｜网络状态  301、302、303  有何区别？
 
-- **HTTP状态码301：**永久重定向。表示请求的资源已被永久移动到新的位置，将来任何新的请求都应使用新的URL。大多数浏览器会缓存这个重定向的URL，所以在下次访问旧的URL时，浏览器会直接跳转到新的URL，而不会再向服务器请求。
-- **HTTP状态码302：**临时重定向。表示请求的资源临时移动到新的位置，但未来的请求仍应使用原始的URL。浏览器通常不会缓存这个重定向的URL，所以每次访问旧的URL时，都会向服务器请求，然后服务器再返回新的URL。
-- **HTTP状态码303：**查看其他位置。表示请求的资源存在于另一个URL，应使用GET方法获取。这个状态码主要用于在执行POST、PUT等可能引起服务器状态变化的操作后，将客户端重定向到一个新的资源，避免用户刷新或重复提交表单。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+301 表示永久迁移，302 表示临时迁移；历史兼容允许客户端对部分 POST 重定向改用 GET，因此不能用它们保证保留方法与请求体。303 引导客户端到其他资源执行检索，通常使用 GET（HEAD 可保留）。
+
+需要保持方法/请求体时选择 307（临时）或 308（永久）。缓存取决于状态与缓存头，302 并非永远不可缓存，301 也不是必然永久不再请求。服务端 Location 必须避免不受控的开放重定向。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9110#section-15.4)。
 
 ---
 
 ## Q300｜400 和 401、403 状态码
 
-**400 Bad Request**
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-- 状态码说明：HTTP状态码400表示客户端发出的请求有语法错误，服务器无法理解或处理该请求。这可能是由于请求中的参数不正确、格式错误或其他语法问题导致的。
-- 常见原因：用户提供的数据格式不正确，请求缺少必需的参数，或请求中包含无效的字符等。
-- 示例情况：如果客户端发送的JSON请求格式不合法，服务器可能会返回400状态码来表示请求不符合预期的语法。
+400 表示请求存在客户端问题，例如格式非法；401 表示缺少有效认证凭证，规范要求带适当 WWW-Authenticate 挑战；403 表示服务器理解请求但拒绝满足。
 
-**401 Unauthorized**
+403 不保证用户一定已经登录，匿名请求也可能被策略拒绝。认证失败与资源权限不足应区分处理；为隐藏敏感资源是否存在，服务端也可按策略返回 404。不要遇到所有 4xx 都自动刷新 token 或重试。
 
-- 状态码说明：HTTP状态码401表示客户端的请求需要身份验证，但未提供有效的身份验证信息。这意味着客户端没有足够的权限来访问请求的资源，需要提供有效的凭证。
-- 常见原因：客户端未提供或提供了无效的身份验证令牌、用户名和密码等。
-- 示例情况：当尝试访问需要登录的Web页面或API端点时，服务器可能会返回401状态码，要求客户端提供有效的身份验证信息，如用户名和密码或访问令牌。
-
-**403 Forbidden**
-
-- 状态码说明：HTTP状态码403表示服务器理解了请求，但拒绝了请求，因为客户端没有访问所请求资源的权限。与401状态码不同，403状态码表示客户端已经提供了身份验证信息，但服务器拒绝了访问请求。
-- 常见原因：服务器认为客户端没有足够的权限来访问请求的资源，或者请求的资源被服务器配置为禁止访问。
-- 示例情况：如果用户尝试访问受限资源，而其权限不足以访问该资源，服务器可能会返回403状态码。
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9110#section-15.5)。
 
 ---
 
 ## Q301｜Http 和 Https 的区别
 
-主要的区别在于安全性和数据传输方式上，HTTPS比HTTP更加安全，适合用于保护网站用户的隐私和安全，如银行网站、电子商务网站等。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-- **安全性：**HTTP协议传输的数据都是未加密的，也就是明文的，因此使用HTTP协议传输的数据可以被任何抓包工具截取并查看。而HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，更为安全。
-- **数据传输方式：**HTTP协议的端口号是80，HTTPS协议的端口号是443。
-- **网址导航栏显示：**使用HTTP协议的网站导航栏显示的是"http://"，而使用HTTPS协议的网站导航栏显示的是"https://"。
-- **证书：**HTTPS需要到CA申请证书，一般免费证书较少，因而需要一定费用。
-- **网络速度：**HTTP协议比HTTPS协议快，因为HTTPS协议需要进行加密和解密的过程。
-- **SEO优化：**搜索引擎更倾向于把HTTPS网站排在更前面的位置，因为HTTPS更安全。
+HTTPS 是通过安全传输保护的 HTTP，现代主要使用 TLS，提供传输机密性、完整性与服务端身份认证。默认端口通常 HTTP 80、HTTPS 443，但可以自定义。TLS 不负责应用授权、输入安全或服务端数据加密。
+
+免费自动化证书已广泛使用，不能说 HTTPS 一定收费；握手有成本但连接复用、恢复及 HTTP/2/3 会影响整体表现，不能断言 HTTP 总是更快。证书信任与主机名校验必须正确，过时 SSL 不应继续作为部署方案。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/HTTPS) · [资料 2](https://www.rfc-editor.org/rfc/rfc8446)。
 
 ---
 
 ## Q302｜描述一下 HTTPS 的加密过程
 
-**连接过程：**
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. client ->  :443 -> 生成 client-random -> server
-2. server -> 返回 证书（公钥） + server-random -> client
-3. client: 验证证书 + 生成premastersecret
-4. client: 公钥加密(premastersecret) -> server
-5. server: 私钥解密(premastersecret)
-6. 两端通过 client-random + server-random + premastersecret => mastersecret 进行对称加密通讯。
+以 TLS 1.3 的证书认证与临时 (EC)DHE 握手为例：客户端发送支持参数和 key share，服务端选择参数并提供 key share，双方派生握手密钥；服务端发送证书、签名证明和 Finished，客户端验证信任链、主机名和握手完整性后完成握手，再使用派生的流量密钥保护应用数据。
+
+公钥签名用于认证，密钥协商用于建立共享秘密，应用数据使用带认证的对称加密。TLS 1.3 已移除旧 RSA 密钥传输；“客户端用证书公钥加密 premastersecret”只适合解释旧握手，不能套到所有 HTTPS。共享秘密不会以明文传给窃听者；0-RTT 恢复有重放边界。下方原配图如展示 RSA 流程，应作为历史方案对照。
 
 ![](./images/interview/大前端面试宝典-diagram-7.png)
 
-**整体：**
-
-- 建立链接时：公钥 + 私钥 => 非对称加密的，
-- 后续数据传输：mastersecret 对称加密
-- 为什么安全：每一步劫持，都只能截取 mastersecret，没法解密，只能透传，转发。有效保护通讯数据。
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc8446#section-2)。
 
 ---
 
 ## Q303｜Cookie 为了解决什么问题
 
-**定义：**Cookie是一种存储在用户浏览器中的小文件，用于存储网站的一些信息。通过Cookie，服务器可以识别用户并保持会话状态，实现会话保持。用户再次访问网站时，浏览器会将Cookie发送给服务器，以便服务器可以识别用户并提供个性化的服务，存储上限为 4KB。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**解决问题：**Cookie诞生的主要目的是为了解决HTTP协议的无状态性问题。HTTP协议是一种无状态的协议，即服务器无法识别不同的用户或跟踪用户的状态。这导致了一些问题，比如无法保持用户的登录状态、无法跟踪用户的购物车内容等。
+Cookie 是由浏览器保存并在满足域、路径、安全、SameSite 等条件时自动随请求发送的状态数据。服务端通常用 Set-Cookie 设置，后续从 Cookie 请求头读取，因此可把多个独立 HTTP 请求关联到同一会话。
+
+HTTP 无状态不等于不能识别用户，Cookie 只是承载标识的一种机制。单 Cookie 与总数量存在浏览器限制，约 4 KB 只能作为经验边界而非全部平台统一容量；会话 Cookie 也可能随浏览器会话恢复保留。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)。
 
 ---
 
 ## Q304｜Cookie 和 Session 的区别
 
-Cookie（HTTP Cookie）和 Session（会话）都是用于在 Web 应用程序中维护状态和用户身份的两种不同机制：
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-- **存储位置：**
-- **Cookie：**Cookie是存储在客户端（通常是用户的浏览器）中的小段文本数据。浏览器会在每次请求中自动发送Cookie到服务器，以便服务器可以识别用户。
-- **Session：**Session数据通常存储在服务器上，而不是在客户端。服务器为每个用户创建一个唯一的会话，然后在服务器上存储会话数据。
-- **持久性：**
-- **Cookie：**Cookie可以具有持久性，可以设置过期时间。如果没有设置过期时间，Cookie将成为会话Cookie，存在于用户关闭浏览器前的会话期间。
-- **Session：**会话数据通常存在于用户活动的会话期间，一旦会话结束（用户退出登录或关闭浏览器），会话数据通常会被删除。
-- **安全性：**
-- **Cookie：**Cookie数据存储在客户端，可能会被用户篡改或窃取。因此，敏感信息通常不应存储在Cookie中，或者应该进行加密。
-- **Session：**Session数据存储在服务器上，客户端不可见，因此通常更安全，特别适合存储敏感信息。
-- **服务器负担：**
-- **Cookie：**服务器不需要维护Cookie的状态，因为它们存储在客户端。每次请求中都包含Cookie，服务器只需要验证Cookie的有效性。
-- **Session：**服务器需要维护会话数据，这可能会增加服务器的负担，尤其是在大型应用程序中。
-- **跨多个页面：**
-- **Cookie：**Cookie可以被跨多个页面和不同子域共享，这使得它们适用于用户跟踪和跨多个页面的数据传递。
-- **Session：**会话数据通常只在单个会话期间可用，而不容易在不同会话之间共享。
-- **无需登录状态：**
-- **Cookie：**Cookie可以在用户未登录的情况下使用，例如用于购物车或用户首选项。
-- **Session：**会话通常与用户的身份验证和登录状态相关，需要用户登录后才能创建和访问会话。
+Cookie 是客户端存储和传输机制，Session 是应用会话状态模型；常见组合是 Cookie 保存随机 session ID，服务端数据库/缓存保存会话数据。两者不是互斥方案，也都可用于未登录的购物车。
+
+关闭浏览器不保证服务端 Session 立即删除，通常靠过期、注销和回收策略；浏览器恢复功能也可能恢复会话 Cookie。认证后应轮换会话标识，并设置 Secure、HttpOnly、SameSite，服务端校验过期与权限。HttpOnly 限制脚本读取，不阻止浏览器携带 Cookie 发请求。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) · [资料 2](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)。
 
 ---
 
 ## Q305｜TCP（传输控制协议）和 UDP（用户数据报协议）的区别
 
-两种常用的传输层协议，用于在网络中传输数据。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**TCP：**一种面向连接的协议，提供可靠的数据传输。它通过三次握手建立连接，保证数据的完整性和顺序性。TCP使用流控制、拥塞控制和错误检测等机制来确保数据的可靠传输。它适用于需要可靠传输的应用，如文件传输、电子邮件和网页浏览等。
+TCP 提供连接上的可靠、有序字节流、流量与拥塞控制，不保留应用消息边界；应用需要自己做长度或分隔帧协议。UDP 提供数据报，保留报文边界，但本身不保证交付、顺序、去重或重传。
 
-**UDP：**一种无连接的协议，提供不可靠的数据传输。它不需要建立连接，直接将数据包发送给目标地址。UDP没有流控制和拥塞控制机制，也不保证数据的完整性和顺序性。UDP适用于实时性要求较高的应用，如音频、视频和实时游戏等。
+UDP 并非“没有校验所以数据随便损坏”，它有校验和规则，可靠性和拥塞控制可由上层协议实现。QUIC 就建立在 UDP 上并提供可靠流等能力。选择协议应看实时性、丢包处理、连接环境和应用协议，而不是简单认为 UDP 总更快。
 
-总结来说，TCP提供可靠的、面向连接的数据传输，适用于对数据完整性和顺序性要求较高的应用；而UDP提供不可靠的、无连接的数据传输，适用于实时性要求较高的应用。选择使用TCP还是UDP取决于应用的需求和特点。
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9293) · [资料 2](https://www.rfc-editor.org/rfc/rfc768)。
 
 ---
 
 ## Q306｜TCP 三次握手
 
-- **第一次握手（SYN）：**发送方首先向接收方发送一个SYN（同步）标志的TCP包，该包包含一个随机生成的初始序列号（ISN）。这表示发送方希望建立一个连接，并且指定了一个用于数据传输的起始序号。
-- **第二次握手（SYN + ACK）：**接收方接收到发送方的SYN包后，它会回应一个带有SYN和ACK（确认）标志的TCP包。这个响应包不仅确认了接收到的SYN，还包含了接收方的初始序列号。这两个序列号表示了双方用于传输数据的初始顺序。
-- **第三次握手（ACK）：**最后，发送方接收到接收方的响应后，它会发送一个带有ACK标志的TCP包，表示对接收方的响应已经收到。至此，连接建立完成，双方可以开始进行数据传输。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+典型 TCP 建连：客户端发 SYN，序号 x；服务端发 SYN+ACK，序号 y、确认 x+1；客户端发 ACK，确认 y+1。SYN 消耗一个序号，双方由此同步初始序号并确认各方向的可达性。
+
+第三个 ACK 可以携带数据；丢包时按状态和定时器重传。握手不是应用身份认证，也不能单靠三次交换防御所有攻击。TCP 同时打开等情况需要按状态机分析，普通三步描述只是最常见路径。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9293#section-3.5)。
 
 ---
 
 ## Q307｜如果 TCP 变成二次握手会导致的问题
 
-如果变为二次握手，即客户端发送SYN请求后，服务器直接发送ACK响应，省略了服务器的SYN+ACK响应。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**会导致以下问题：**
+如果只保留 SYN 与 SYN+ACK 两次交换，服务端无法确认客户端收到自己的 SYN 和初始序号。延迟到达的旧 SYN 可能使服务端创建客户端并不想建立的连接，占用资源并造成双方状态不一致。
 
-1. 服务器无法确认客户端是否收到服务器的SYN+ACK响应，客户端发送SYN请求后可能会关闭连接或丢失数据包。
-2. 客户端无法得知服务器的初始序列号，无法正确确认服务器的ACK响应。
+第三次 ACK 确认服务端序号，帮助抵御旧重复连接发起的混淆。不能把“两次握手”定义成删掉 SYN+ACK 又保留它的内容；讨论应明确保留哪两个报文。即使有三次握手，半连接资源仍需 SYN cookies、限流等机制保护。
 
-因此，将TCP三次握手变为二次握手会导致连接建立的不可靠性，可能会出现连接无法建立或数据传输错误的情况。三次握手的设计可以确保双方都能确认对方的状态和序列号，从而建立可靠的连接。
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9293#section-3.5)。
 
 ---
 
 ## Q308｜TCP 的四次挥手
 
-1. 客户端发送终止请求（FIN）给服务器。
-2. 服务器确认收到客户端的终止请求，发送确认（ACK）。
-3. 服务器发送剩余数据给客户端，并发送终止请求（FIN）给客户端。
-4. 客户端确认服务器的终止请求，发送确认（ACK）。
-5. 连接终止完成。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+TCP 是全双工，两个方向分别关闭：主动方发 FIN，对端 ACK；对端发送完自己的数据后再发 FIN，主动方 ACK。FIN 表示该方向不再发送数据，接收方向仍可继续，这就是半关闭。
+
+ACK 和 FIN 可合并，所以抓包不一定恰好四个报文。典型主动关闭方进入 TIME_WAIT，以便重发最后 ACK 并让旧报文在网络中消退；对端先进入 CLOSE_WAIT 等待应用关闭。RST 是异常终止路径，应与正常关闭区分。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9293#section-3.6)。
 
 ---
 
 ## Q309｜描述一下 TCP 的拥塞控制
 
-网络传输过程中，某段时间如果网络中某一资源的需求超过了该资源所能提供的可用部分，网络性能就会变坏，这种情况就叫做**网络拥塞，**为解决这个问题，TCP中使用了四种拥塞控制算法
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. 慢开始
-2. 拥塞避免
-3. 快重传
-4. 快恢复
+拥塞控制限制发送方给网络施加的负荷，流量控制则保护接收端缓冲区；实际可发送量同时受拥塞窗口和接收窗口等约束。经典 Reno 教学包括慢启动、拥塞避免、快速重传与快速恢复。
+
+慢启动按确认反馈扩张窗口，拥塞避免更谨慎增长，丢包/超时或 ECN 信号会影响调整。现代实现还可能用 CUBIC、BBR 等，不能说所有 TCP 固定只有同一套四算法。优化应看 RTT、丢包、吞吐和排队时延，不只是盲目增大窗口。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc5681)。
 
 ---
 
 ## Q310｜什么是跨域？如何解决？
 
-在 Web 应用程序中，一个网页的代码试图向不同源（即不同的域名、协议或端口）发起 HTTP 请求。浏览器的同源策略（Same-Origin Policy）限制了跨域请求，以保护用户的安全性和隐私。同源策略要求网页只能与同一源的资源进行交互，而不允许与不同源的资源直接交互。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**解决方法：**
+浏览器的源通常由协议、主机和端口组成，任一不同即跨源。同源策略主要限制脚本读取跨源敏感数据，并不禁止所有跨源发送、嵌入与导航。
 
-- Nginx 充当代理服务器，分发请求到目标服务器。
-- Nodejs 同域部署页面，搭建 BFF 层，服务对服务请求。
-- 服务器端配置CORS策略，可以允许指定源（域名、协议、端口）的请求  Access-Control-Allow-Origin。
-- Iframe 通讯，通过在主页面嵌入一个隐藏的 iframe，将目标页面加载到 iframe 中，并通过在主页面和 iframe 页面之间使用 postMessage() 方法进行消息传递，从而实现跨域的数据交换。
+API 共享可由服务端配置 CORS，或通过同源 BFF/反向代理；postMessage 用于合作窗口通信并校验 origin/source。带凭据 CORS 必须明确允许源并配置 credentials，不能用星号冒充授权。mode: "no-cors" 只得到不透明响应，不能让前端读取任意跨源数据。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)。
 
 ---
 
 ## Q311｜同源策略具体限制的具体内容
 
-- **DOM访问限制：**不同源的网页不能直接访问彼此的DOM元素，包括读取和修改。这意味着一个网页无法通过JavaScript获取另一个网页的内容，除非目标网页明确授权。
-- **Cookie限制：**同源策略阻止网页访问不属于自己源的Cookie。Cookie是用于在客户端存储和传输信息的机制，同源策略确保Cookie只能由创建它的源访问。
-- **XMLHttpRequest限制：**XMLHttpRequest（XHR）是用于在网页和服务器之间进行异步数据交换的技术。同源策略禁止不同源的网页通过XHR请求发送或接收数据。
-- **跨文档消息限制：**同源策略限制不同源的窗口或帧之间通过postMessage()方法进行通信。这可以防止恶意网页滥用通信渠道。
-- **脚本限制：**不同源的脚本文件（如JavaScript）不能相互引用和执行。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+同源策略限制跨源 DOM/窗口访问、Web Storage 等数据访问，以及 fetch/XHR 对响应的读取。图片、经典脚本、样式、表单和导航有各自允许规则，因此不是“跨源脚本都不能执行”。
+
+postMessage 是被允许的跨源通信机制，接收方要验证来源、窗口和数据结构。Cookie 按域/路径/Secure/SameSite 等规则处理，不按端口隔离，不能直接套用源三元组。CORS 授权响应读取也不等于服务端业务鉴权。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)。
 
 ---
 
 ## Q312｜发起请求是浏览器做了什么。
 
-- **发送请求头：**浏览器向目标服务器发送一个请求，其中包含了请求方法（GET、POST等）和请求的URL。检查同源策略，浏览器会检查目标URL是否符合同源策略。它会比较目标URL的协议、主机和端口号与当前网页的协议、主机和端口号是否一致。如果不一致，就会触发跨域请求。
-- **发送跨域请求：**如果目标URL与当前网页不同源，浏览器会发送一个跨域请求。跨域请求通常是一个HTTP OPTIONS 预检请求（preflight request），用于检查目标服务器是否允许跨域请求。
-- **服务器处理预检请求：**目标服务器接收到预检请求后，会进行一系列的处理。它会检查请求中的一些特定头部信息，如Origin和Access-Control-Request-Method，来验证是否允许跨域请求。
-- **发送响应头：**如果服务器允许跨域请求，它会在响应中添加一些特定的头部信息，如Access-Control-Allow-Origin和Access-Control-Allow-Methods。这些头部信息告诉浏览器该请求是被允许的。
-- **检查响应头：**浏览器接收到服务器的响应后，会检查响应中的头部信息。它会查看Access-Control-Allow-Origin头部，判断是否允许当前网页进行跨域请求。
-- **处理响应数据：**如果服务器允许跨域请求，浏览器会将响应数据返回给发起请求的网页。否则，浏览器将拒绝访问响应数据，并在控制台中报错。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+浏览器依据 URL、请求模式、凭据、缓存与安全策略构造请求。需要时进行 CORS 预检，成功后才发实际请求；满足简单请求条件或命中预检缓存时不一定有 OPTIONS。Service Worker、HTTP 缓存和连接复用还会改变实际网络路径。
+
+传输后浏览器按 CORS 等规则决定脚本是否可读取响应。某些跨源请求已到服务器并产生影响，但脚本仍看不到响应，所以 CORS 失败不能证明业务动作没发生。诊断需同时看 Network、服务端日志与具体错误。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) · [资料 2](https://fetch.spec.whatwg.org/)。
 
 ---
 
 ## Q313｜XSS 攻击是什么？
 
-攻击者通过**注入恶意脚本代码**来利用应用程序的漏洞，从而在用户的浏览器中执行恶意操作。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-XSS攻击通常分为**三种**类型：存储型（Stored）、反射型（Reflected）和DOM型（DOM-based）。
+XSS 是不可信数据被当作可执行内容进入页面，导致攻击者代码在受害站点上下文运行。存储/反射描述数据如何到达，DOM 型强调客户端源到危险 sink 的路径，三者不是完全互斥分类。
 
-**存储型XSS攻击：**
+防护首先使用 textContent 或框架默认文本转义；确需富文本时用成熟白名单清洗器，URL 还需限制协议，禁止将输入放入脚本和危险 HTML sink。CSP/Trusted Types 可作纵深防护，不能替代输出上下文处理。HttpOnly 可防止直接读取会话 Cookie，但 XSS 仍可能代用户执行操作。
 
-攻击者将恶意脚本代码上传到目标网站的服务器上，通常是在用户评论、留言板或用户生成的内容中。当其他用户访问包含恶意代码的页面时，他们的浏览器会执行这些代码。
-
-**案例1：**攻击者在一个论坛网站上发表了一个包含恶意脚本的评论。其他用户访问这个评论时，恶意脚本会被执行，窃取他们的会话cookie并发送到攻击者的服务器上。
-
-**反射型XSS攻击：**
-
-**案例：**攻击者将恶意脚本包含在URL中，然后诱使用户点击该URL。当用户打开URL时，恶意脚本会在用户的浏览器中执行，执行一些恶意操作。
-
-**DOM型XSS攻击：**
-
-**案例：**在一个社交媒体应用程序中，攻击者在用户输入框中输入恶意脚本，当其他用户查看这个帖子时，恶意脚本会在其浏览器中执行。
-
-1. 用户输入：
-2. 显示在页面上的内容：
-
-- **防范措施：**
-- **输入验证和过滤：**对于用户输入的数据，应进行验证和过滤。仅允许预期的、安全的字符和内容通过，拒绝包含特殊字符的输入。
-- **转义输出：**在将用户输入的数据插入到HTML、JavaScript或其他上下文中之前，务必对其进行适当的转义。这可以防止浏览器解释用户输入的内容为可执行代码。
-- **使用安全的编程框架和库：**许多现代编程框架和库提供内置的XSS防护机制，例如React的JSX转义、Angular的DOM安全性、Vue的模板转义等。使用这些工具可以大大降低XSS攻击的风险。
-- **设置HTTP头部：**使用Content Security Policy（CSP）等HTTP头部来限制哪些资源可以加载和执行。CSP可以帮助阻止不受信任的脚本和内容加载。
-- **最小化权限：**确保应用程序在运行时具有最小的权限。避免在JavaScript中使用特权模式，并限制对敏感操作和数据的访问。
-- **教育和培训：**开发团队需要受过培训，了解XSS攻击的工作原理以及如何预防它们。员工的安全意识教育也非常重要。
-- **安全漏洞扫描和审计：**定期对应用程序进行安全漏洞扫描和代码审计，以及时发现并修复潜在的XSS漏洞。
-- **更新和维护依赖项：**确保应用程序使用的所有框架、库和插件都是最新版本，并及时应用安全更新。
+参考：[资料 1](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)。
 
 ---
 
 ## Q314｜SQL 注入
 
-SQL注入攻击 - 假设有一个网页上的登录表单，该表单将用户提供的用户名和密码与数据库中的数据进行比较以进行身份验证。通常，身份验证的 SQL 查询可能如下所示：
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-在这种情况下，由于 '1'='1' 总是为真，攻击者可以绕过身份验证，因为系统将返回匹配的用户。
+SQL 注入发生在把外部输入拼入 SQL 语法，输入改变原查询结构。首选参数化查询，使数据与语句结构分离，而不是仅替换引号。
+
+```js
+// mysql2/promise；connection 已建立，userId 是待绑定数据
+const [rows] = await connection.execute(
+  "SELECT id, name FROM users WHERE id = ?", [userId]
+);
+```
+
+表名、列名和排序方向通常不能作为值占位符绑定，应映射到固定允许列表；同时校验类型、使用最小数据库权限并避免向客户端暴露 SQL 错误。ORM 的原始查询拼接也可能引入注入。
+
+参考：[资料 1](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)。
 
 ---
 
 ## Q315｜DDoS 攻击
 
-DDoS（分布式拒绝服务）**通过大量的请求或流量来超载目标服务器**，使其无法正常响应合法用户的请求。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-DDoS攻击通常涉及到多个攻击源，这些攻击源可以是由攻击者控制的大量僵尸计算机或恶意程序感染的计算机，这些计算机一起发送大量请求或流量。攻击源的分布性使得识别和应对攻击更加困难。
+DDoS 利用分布式流量耗尽带宽、连接状态或应用资源，既可发生在网络层，也可通过昂贵 HTTP 请求消耗数据库/CPU。流量多不一定是攻击，应结合来源分布、行为、错误和资源指标判断。
 
-**DDoS 攻击可以采用不同的形式：**
+防护包括上游清洗/CDN、连接与请求限额、WAF、缓存、超时和负载降级，并保护源站不被绕过。应用单机限流无法解决上游链路已被打满的问题；规则还要避免误伤共享出口的真实用户，建立可观测与恢复流程。
 
-1. **HTTP Flood：**攻击者发送大量HTTP请求到目标服务器，以消耗服务器资源和带宽。这种攻击通常针对Web应用程序。
-2. **UDP Flood：**攻击者发送大量UDP数据包到目标服务器，以耗尽服务器的处理能力。UDP Flood攻击通常更难检测，因为UDP是面向无连接的协议。
-3. **SYN/ACK Flood：**攻击者发送大量伪造的TCP连接请求（SYN），但不会完成TCP握手过程。这会占用服务器的资源，使其无法处理合法请求。
-4. **ICMP Flood：**攻击者发送大量的ICMP回显请求（Ping请求），以超载目标服务器。这种攻击通常被称为Ping洪泛攻击。
-5. **DNS Amplification：**攻击者向未经授权的开放DNS服务器发送DNS查询请求，将大量响应引导到目标服务器，使其超载。
-
-DDoS攻击的目的可以是多种多样的，包括恶意破坏、勒索尝试、竞争对手恶意竞争、政治动机等。
-
-为了应对DDoS攻击，组织和网络管理员通常会采取防御策略，如使用防火墙、入侵检测系统（IDS）和内容分发网络（CDN），以帮助过滤和减轻攻击流量。此外，云服务提供商通常提供DDoS保护服务，帮助客户缓解DDoS攻击。
+参考：[资料 1](https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html)。
 
 ---
 
 ## Q316｜CSRF 攻击
 
-CSRF（Cross-Site Request Forgery，跨站点请求伪造）**利用用户已经登录的凭据**来**执行敏感操作**，而用户并不知情。这可能包括更改密码、修改电子邮件地址、进行资金转账等，具体取决于受攻击的应用程序的功能。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**以下是一个简化的CSRF攻击示例：**
+CSRF 利用浏览器自动携带目标站点凭据，诱导用户发起其未授权的状态修改请求。攻击者不必读到响应，POST 表单也可构成攻击；CORS 和 HttpOnly 不能单独阻止。
 
-1. 用户登录到银行网站并保持会话处于活动状态，他们在浏览网页时访问了一个恶意网站。
-2. 恶意网站上包含以下HTML代码：
-3. 这个图片的URL看似是一个图片，但实际上是向银行网站发出了一个转账请求。
-4. 用户的浏览器会自动加载这个图片，由于用户仍然在银行网站上保持登录状态，浏览器会发送带有用户凭据的请求到银行网站，从而执行了转账操作。
+采用与会话绑定的 CSRF token 或规范的签名双提交方案，校验 Origin/Fetch Metadata，合理设置 SameSite，并避免 GET 修改状态。跨站登录等合法流程需要评估 Cookie 策略。服务端仍需认证和资源级授权；XSS 可能绕过许多 CSRF 防护，应同时治理。
 
-**防范措施：**
-
-1. **使用CSRF令牌：**在每个用户请求中包括一个CSRF令牌，该令牌是服务器生成的随机值。服务器会验证每个请求中的令牌是否匹配，如果不匹配则拒绝请求。
-2. **同源策略：**浏览器实施同源策略，限制了跨域请求的执行。开发人员应该使用CORS（跨源资源共享）策略来明确定义哪些跨域请求是允许的。
-3. **使用HTTP Only Cookie：**将敏感凭据存储在HTTP Only Cookie中，这样它们不能通过JavaScript访问。这可以减少CSRF攻击的风险。
-4. **不要使用GET请求进行敏感操作：**尤其是不要使用GET请求来执行状态更改或敏感操作，因为GET请求容易受到CSRF攻击。
-5. **检查来源头（Origin Header）：**服务器可以检查请求的来源头，确保它来自合法的源。
+参考：[资料 1](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)。
 
 ---
 
 ## Q317｜Ajax 的定义及优缺点
 
-Ajax（Asynchronous JavaScript and XML）是一种用于在后台与服务器进行异步通信的技术。它使用JavaScript和XML（现在通常使用JSON）来传输数据，而无需刷新整个页面。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**优点：**
+Ajax 描述浏览器通过脚本异步交换数据并局部更新页面的方式，历史名称包含 XML，实际可用 JSON、文本等，常用 fetch 或 XMLHttpRequest。它减少整页导航但不自动降低总流量或保证页面更快。
 
-1. **异步通信：**Ajax允许在后台与服务器进行异步通信，可以在不刷新整个页面的情况下更新部分页面内容，提供更好的用户体验。
-2. **减少带宽使用：**由于只更新部分页面内容，而不是整个页面，因此可以减少对服务器和网络带宽的需求。
-3. **提高页面加载速度：**通过异步加载数据，可以提高页面加载速度，减少用户等待时间。
-4. **支持多种数据格式：**Ajax不仅支持XML，还支持JSON等多种数据格式，使数据的传输更加灵活和高效。
+跨源可通过 CORS 合法访问，并非“不支持跨域”。异步页面需处理加载、错误、竞态、取消、历史/焦点及可访问性；SEO 是否受影响取决于内容呈现与抓取方式，必要时结合 SSR/预渲染。
 
-**缺点：**
-
-1. **对搜索引擎不友好：**搜索引擎很难获取到完整的页面内容，影响页面的搜索引擎优化（SEO）。
-2. **不支持跨域请求：**浏览器同源策略限制，Ajax请求通常只能发送到与当前页面同源的服务器，不支持跨域请求。
-3. **安全性问题：**如果不正确处理Ajax请求，可能会导致安全漏洞，如 XSS 和 CSRF 等。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/AJAX)。
 
 ---
 
 ## Q318｜XMLHttpRequest 对象用法
 
-XMLHttpReques t对象是用于在后台与服务器进行异步通信的核心对象之一。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-在上面的代码中，首先创建一个XMLHttpRequest对象，然后注册一个onload回调函数，在请求完成时调用。在回调函数中，可以根据请求的状态码判断请求是否成功，并处理返回的数据或错误信息。最后，使用open方法设置请求的类型（GET、POST等）、URL和异步标志，使用send方法发送请求。
+XHR 用 open 初始化，设置响应类型、头部和事件后 send。load 仅表示传输完成，必须检查 HTTP 状态；error、timeout、abort 分别处理网络、超时与取消。
 
-**一些常用的方法和属性：**
+```js
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "/api/users", true);
+xhr.responseType = "json";
+xhr.timeout = 5000;
+xhr.onload = () => {
+  if (xhr.status >= 200 && xhr.status < 300) console.log(xhr.response);
+  else console.error(`HTTP ${xhr.status}`);
+};
+xhr.onerror = () => console.error("网络或 CORS 错误");
+xhr.ontimeout = () => console.error("超时");
+xhr.onabort = () => console.log("已取消");
+xhr.send();
+```
 
-- open(method, url, async)：设置请求的类型、URL和异步标志。
-- send(data)：发送请求，并可选地传递数据。
-- abort()：取消当前请求。
-- setRequestHeader(name, value)：设置请求头信息。
-- getResponseHeader(name)：获取指定名称的响应头信息。
-- getAllResponseHeaders()：获取所有响应头信息。
-- status：获取请求的状态码。
-- statusText：获取请求的状态文本。
-- responseText：获取响应的文本内容。
-- responseXML：获取响应的XML文档对象。
+可调用 xhr.abort() 取消；JSON responseType 下不要读取 responseText。同步 XHR 会阻塞主线程，不应在页面逻辑中使用。
 
-**注意：**XMLHttpRequest 对象的使用方式可能因浏览器而异，某些浏览器可能不支持某些方法或属性。因此，在使用XMLHttpRequest 对象时，需要注意兼容性问题，并根据具体需求选择合适的方法和属性。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)。
 
 ---
 
 ## Q319｜封装一个 ajax 请求方法
 
-**注意：**Axios 的本质也是对 XMLHttpRequest 进行封装。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+封装 XMLHttpRequest 时至少要统一成功状态、网络错误、超时、取消、请求头和响应类型。不要把所有非 200 状态都当成网络错误：只要请求到达服务器，HTTP 状态应保留给调用方判断。下面约定只有 2xx resolve，其他状态 reject，并支持 AbortSignal。
+
+```js
+function request(url, options = {}) {
+  const { method = 'GET', headers = {}, body = null, timeout = 10000,
+    responseType = 'json', signal } = options;
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) { reject(new DOMException('请求已取消', 'AbortError')); return; }
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.timeout = timeout;
+    xhr.responseType = responseType;
+    for (const [name, value] of Object.entries(headers)) xhr.setRequestHeader(name, value);
+    const abort = () => xhr.abort();
+    const cleanup = () => signal?.removeEventListener('abort', abort);
+    signal?.addEventListener('abort', abort, { once: true });
+    xhr.onload = () => {
+      cleanup();
+      const result = { status: xhr.status, data: xhr.response, headers: xhr.getAllResponseHeaders() };
+      if (xhr.status >= 200 && xhr.status < 300) resolve(result);
+      else reject(Object.assign(new Error(`HTTP ${xhr.status}`), result));
+    };
+    xhr.onerror = () => { cleanup(); reject(new TypeError('网络错误')); };
+    xhr.ontimeout = () => { cleanup(); reject(new Error(`请求超时：${timeout}ms`)); };
+    xhr.onabort = () => { cleanup(); reject(new DOMException('请求已取消', 'AbortError')); };
+    try { xhr.send(body); } catch (error) { cleanup(); reject(error); }
+  });
+}
+```
+
+```js
+const controller = new AbortController();
+request('/api/users', { signal: controller.signal }).then(({ data }) => console.log(data));
+// controller.abort();
+```
+
+传 JSON 时由调用方同时执行 JSON.stringify，并设置 Content-Type。上传 FormData 时不要手动设置 multipart/form-data，否则浏览器无法自动补 boundary。Axios 不只是“简单 XHR 包装”，还提供配置合并、拦截器、适配器、转换和兼容层等能力。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)。
 
 ---
 
 ## Q320｜Fetch API
 
-**背景：**
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. **起初提案：**Fetch API最早是由WHATWG提出的，旨在改进和取代XMLHttpRequest，以提供更强大、现代和一致的方式进行网络请求。
-2. **标准草案：**Fetch API的标准化工作得到了广泛支持，于2014年成为Web标准的一部分。它首先出现在WHATWG的"Fetch Living Standard"（规范草案）中。
-3. **W3C标准化：**后来，Fetch API作为Fetch标准被W3C采纳，并成为W3C的"Fetch Living Standard"。这个标准于2017年成为W3C的推荐标准，这意味着它成为了Web开发的正式标准。
+Fetch 是 WHATWG Fetch Living Standard 定义的请求 API，返回 Promise<Response>，并与 Headers、Request、流和 AbortSignal 配合。HTTP 404/500 通常仍 resolve，网络/CORS/取消等失败才 reject，所以要主动检查 ok/status。
 
-**调用方法：**
+```js
+async function getJson(url, signal) {
+  const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.status === 204 ? null : response.json();
+}
+```
+
+正文通常只能消费一次，JSON 解析也可能失败。默认凭据策略为 same-origin，跨源携带 Cookie 需要客户端与服务端共同配置；no-cors 无法获得任意可读响应。
+
+参考：[资料 1](https://fetch.spec.whatwg.org/) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)。
 
 ---
 
 ## Q321｜fetch 与 XMLHttpRequest 的区别
 
-- **API 设计：**
-- XMLHttpRequest 是早期的技术，它使用回调函数来处理请求和响应，使其代码结构相对复杂。
-- Fetch API 使用基于 Promise 的 API，更现代、直观和易于使用。它支持使用 async/await 来处理异步操作，使代码更清晰。
-- **语法：**
-- XMLHttpRequest 使用了一种事件驱动的编程模型，通过设置回调函数来处理请求的各个阶段，如 onload、onerror、onreadystatechange 等。
-- Fetch API 使用 Promise 对象，通过链式的 .then() 和 .catch() 方法来处理请求和响应。这种方式更容易理解和维护。
-- **请求和响应：**
-- XMLHttpRequest 使用单独的对象来表示请求和响应，你需要分别创建 XMLHttpRequest 对象和 XMLHttpResponse 对象。
-- Fetch API 使用 Request 和 Response 对象，更一致和易于操作，这两种对象都遵循同样的标准。
-- **跨域请求：**
-- XMLHttpRequest 需要在服务器端进行额外的配置来处理跨域请求，而且在某些情况下，需要使用 JSONP 等技巧来绕过同源策略。
-- Fetch API 默认支持跨域请求，可以通过 CORS 头部来控制跨域访问。
-- **错误处理：**
-- XMLHttpRequest 的错误处理通常涉及检查 status 和 readyState 属性，以及使用回调函数来处理错误情况。
-- Fetch API 使用 Promise 链中的 .catch() 方法来处理错误，这使错误处理更一致和清晰。
-- **取消请求：**
-- XMLHttpRequest 不提供原生的取消请求的机制，但你可以通过中断请求来模拟取消。
-- Fetch API 支持 AbortController 对象，用于取消请求。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+fetch 使用 Promise 与 Request/Response，便于流式读取和 Service Worker；XHR 是事件驱动对象，支持 timeout、abort 和成熟的上传 progress。XHR 不需要另建一个“XMLHttpResponse”对象。
+
+两者都受 CORS 约束，都可取消：XHR 用 abort，fetch 用 AbortController。两者 HTTP 错误都需检查状态。fetch 支持响应流，但浏览器上传进度不能直接照搬 XHR 的事件 API；根据兼容目标、进度与现有封装选择，不能以“现代 API 自动解决跨域”作理由。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)。
 
 ---
 
 ## Q322｜请求会发送2次的原因
 
-1. **Preflight Requests (CORS)：**跨源资源共享（CORS）是一种安全机制，用于控制在不同源（域名、协议、端口）之间的资源请求。当你通过Fetch API向另一个域名发出跨源请求时，浏览器会自动进行CORS预检请求，也称为预检请求（preflight requests）。这是为了确定服务器是否接受跨源请求，以及哪些HTTP方法和头部字段是允许的。预检请求是OPTIONS方法的请求，这意味着你的浏览器首先发送一个OPTIONS请求，然后才发送实际的GET或POST请求。因此，你会看到两个请求。
-2. **Redirects (重定向)：**如果服务器返回一个HTTP重定向响应（例如，状态码为302或307），浏览器将首先向新的重定向目标URL发出一个请求，然后才会继续原始请求。这也可能导致看到两个请求，一个是重定向请求，另一个是最终目标请求。
-3. **程序错误或重复调用：**在你的JavaScript代码中，有时会发生意外的重复调用Fetch API的情况，例如在某个事件处理程序中多次触发Fetch请求。这将导致多个请求被发送。
-4. **浏览器预加载和预解析：**现代浏览器可能会在背后执行一些资源的预加载和预解析操作，以提高性能。这可能导致浏览器发送额外的请求。这些请求通常不会在开发者控制范围之内。
-5. **浏览器插件或扩展：**有时，浏览器插件或扩展可能会触发Fetch请求。这可能会导致你看到不同于你的网站代码所发出的请求。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+先查看两条记录的 method、status、Initiator 与时间：OPTIONS 加实际请求通常是预检；3xx 后到 Location 的请求是重定向；两个相同业务请求则可能来自重复监听、重试、Effect 依赖或开发 StrictMode。
+
+预检不是每个跨源请求必有，也可能命中预检缓存；重定向顺序是先原 URL 再目标 URL。用请求 ID 和服务端日志确认是否真正重复执行业务，修复重复触发并为不可重复操作设置服务端幂等，不能简单屏蔽第二条请求。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) · [资料 2](https://react.dev/reference/react/StrictMode)。
 
 ---
 
 ## Q323｜websocket
 
-WebSocket是在应用层实现的协议。尽管WebSocket的握手过程使用了HTTP协议，但一旦握手成功，WebSocket连接会升级为全双工的通信通道，不再遵循HTTP协议的规则。在握手成功后，WebSocket协议会在应用层上定义消息格式和通信规则，通过TCP协议在传输层上进行数据传输。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-因此，WebSocket是在应用层实现的协议，它建立在传输层的TCP协议之上，使用HTTP协议进行握手，然后在建立的TCP连接上实现全双工的通信。在应用层上，WebSocket定义了一种标准的消息格式和通信规则，使得客户端和服务器可以通过发送和接收WebSocket消息来进行实时的双向通信。
+WebSocket 提供持久连接上的双向消息通信，适合交互频繁的聊天或协作。浏览器 API 通过 open/message/error/close 处理生命周期，可发送文本与二进制；HTTP/1.1 常见握手通过 Upgrade，HTTP/2 等有不同扩展机制。
 
-**客户端：**
+生产中需鉴权、Origin 检查、心跳、重连退避、消息序号与积压限制；连接建立不等于会话永不过期。浏览器 WebSocket 缺少自动背压，应监测 bufferedAmount 并限流，避免消息队列占满内存。
 
-**服务端：**
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) · [资料 2](https://www.rfc-editor.org/rfc/rfc6455)。
 
 ---
 
 ## Q324｜WebSocket 建立连接的过程
 
-1. **客户端发起 HTTP 握手请求：**客户端首先向服务器发起一个标准的 HTTP 请求，这个请求包含了一些特定的头部，用于请求建立 WebSocket 连接。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-- GET /chat HTTP/1.1：请求的路径和协议版本。
-- Host: server.example.com：服务器的主机名。
-- Upgrade: websocket：表示请求协议升级到 WebSocket。
-- Connection: Upgrade：表示希望升级连接。
-- Sec-WebSocket-Key：Base64 编码的随机密钥，服务器用于生成响应中的Sec-WebSocket-Accept 。
-- Sec-WebSocket-Version：WebSocket 协议版本，当前版本是 13。
-- **服务器响应 HTTP 握手请求：**如果服务器支持 WebSocket 并同意升级连接，则会返回一个 101 Switching Protocols 状态码的响应，表示协议切换成功。
-- 101 Switching Protocols：状态码表示协议切换。
-- Upgrade: websocket：确认升级到 WebSocket 协议。
-- Connection: Upgrade：确认连接升级。
-- Sec-WebSocket-Accept：服务器基于客户端提供的 Sec-WebSocket-Key 计算得到值，保证握手安全。
-- **WebSocket 连接建立**
+HTTP/1.1 握手由客户端发送 GET、Upgrade: websocket、Connection: Upgrade、Sec-WebSocket-Key 和版本等头；服务端校验后返回 101 与计算出的 Sec-WebSocket-Accept，随后双方交换 WebSocket 帧。wss 在此之外使用 TLS。
 
-在服务器响应成功后，客户端和服务器之间的 HTTP 连接就升级为 WebSocket 连接，从此可以进行全双工的实时通信。此时，HTTP 头部已经不再使用，取而代之的是 WebSocket 数据帧。
+Accept 是基于随机 key 与固定 GUID 的握手确认，不是用户认证或数据加密。服务端必须检查 Origin 与会话权限。HTTP/2 扩展 CONNECT 不使用完全相同的 101/Upgrade 流程，所以应明确这里描述的是 HTTP/1.1。
 
-- **连接关闭：**WebSocket 连接可以由客户端或服务器任意一方关闭。关闭连接时，发送一个控制帧表示关闭请求，连接将以有序的方式关闭。
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc6455#section-4) · [资料 2](https://www.rfc-editor.org/rfc/rfc8441)。
 
 ---
 
 ## Q325｜Websocket 支持传输的数据格式
 
-1. **文本数据 (Text Data)：** UTF-8 编码的字符串形式传输的。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-- **二进制数据 (Binary Data)：**二进制数据可以有多种形式，包括 ArrayBuffer 和 Blob（在浏览器环境中）。可用于传输复杂的二进制数据，如文件、图像、音视频等。
+WebSocket 协议有文本消息和二进制消息，文本必须是有效 UTF-8；JSON 是应用选择的文本编码，不是独立帧类型。浏览器 send 可接收字符串、Blob、ArrayBuffer 或视图，接收二进制用 binaryType 选择 Blob/ArrayBuffer。
+
+消息可能在传输中分片，应用还要规定 schema、版本、长度限制和校验。不要把 WebSocket 帧边界与 TCP 数据包边界等同，也不能假定收到的任意文本都是合法 JSON。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send) · [资料 2](https://www.rfc-editor.org/rfc/rfc6455#section-5)。
 
 ---
 
 ## Q326｜Server-Sent Events (SSE)
 
-服务器向浏览器推送实时更新数据的技术。通过使用标准 HTTP 协议和一个持久的连接将事件数据从服务器发送到客户端。适用于需要在客户端实时显示来自服务器的更新信息的应用场景，如实时通知、新闻推送、股票价格更新等。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-**主要特点：**
+SSE 用 HTTP 响应持续发送 UTF-8 text/event-stream 文本，事件由空行分隔，支持 data、event、id、retry 等字段。EventSource 提供接收和自动重连，id/Last-Event-ID 可辅助服务端实现断点续传，但不会自动持久保存消息。
 
-1. **单向通信：**服务器可以向客户端推送数据，但客户端不能通过同一连接发送数据回服务器。
-2. **基于 HTTP：**SSE 使用 HTTP 协议
-3. **自动重连：**如果连接断开，浏览器会自动尝试重新连接
+同一连接主要是服务端向客户端，客户端发送可另用 HTTP。代理缓冲、压缩、超时与心跳会影响实时性；原生 EventSource 主要发 GET，不能任意设置 Authorization 头，需按鉴权需求选择 Cookie 或 fetch 流式方案。
 
-**工作原理**
-
-1. **服务器端：**服务器通过 HTTP 响应头 Content-Type: text/event-stream 明确这是一个事件流。
-2. **客户端：**客户端创建一个 EventSource 对象，监听来自服务器的事件，并根据接收到的数据更新 UI。
-
-**适用场景**
-
-- **实时通知：**如聊天消息、系统通知等。
-- **实时更新：**如新闻推送、股票价格更新等。
-- **数据监控：**如服务器状态监控、日志实时显示等。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)。
 
 ---
 
 ## Q327｜Server-Sent Events (SSE)  示例代码
 
-SSE 是服务器向浏览器单向推送文本事件，客户端用 EventSource，服务端使用 text/event-stream，每条事件以空行结束。连接关闭必须清理定时器，代理还要避免缓冲。客户端可自动重连，业务若要续传需实现事件 ID 与 Last-Event-ID；原生 EventSource 不能任意添加认证请求头。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+下面用 Node HTTP 提供同源 SSE，每两秒推送一次时间；浏览器侧需要从同源页面访问或配置对应代理。它只演示传输，不提供鉴权、历史重放或业务确认。
 
 ```js
-// Node HTTP 示例；实际项目增加认证、限流和心跳
-import { createServer } from 'node:http';
+import { createServer } from "node:http";
 createServer((req, res) => {
-  if (req.url !== '/events') { res.writeHead(404).end(); return; }
-  res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no' });
-  res.write(': connected\n\n');
-  const timer = setInterval(() => res.write(`data: ${JSON.stringify({ time: Date.now() })}\n\n`), 2000);
-  res.on('close', () => clearInterval(timer));
+  if (req.url !== "/events" || req.method !== "GET") { res.writeHead(404).end(); return; }
+  res.writeHead(200, { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "X-Accel-Buffering": "no" });
+  res.write(": connected\n\n");
+  const timer = setInterval(() => {
+    // 客户端过慢则断开，避免无限积压；EventSource 会尝试重连。
+    if (!res.write(`data: ${JSON.stringify({ time: Date.now() })}\n\n`)) {
+      clearInterval(timer);
+      res.end();
+    }
+  }, 2000);
+  res.on("close", () => clearInterval(timer));
 }).listen(3000);
-// 浏览器：const source = new EventSource('/events');
-// source.onmessage = event => console.log(JSON.parse(event.data));
-// 离开页面时 source.close();
 ```
+
+```js
+const source = new EventSource("/events");
+source.onmessage = event => console.log(JSON.parse(event.data));
+// 组件卸载时调用 source.close()；事件负载应按业务 schema 校验。
+```
+
+Nginx 等中间层需关闭该路由响应缓冲并配置足够的读超时，客户端重连要结合事件 ID 才能实现可靠续传。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) · [资料 2](https://nodejs.org/api/http.html)。
 
 ---
 
 ## Q328｜SSE 与 websocket 区别
 
-**Server-Sent Events (SSE)：**
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
 
-1. **单向通信：**SSE 是单向通信，服务器可以推送数据到客户端，但客户端不能通过同一个连接发送数据到服务器。
-2. **协议：**SSE 使用的是 HTTP 协议，特别是 HTTP/1.1 的事件流 (EventStream) 格式。
-3. **连接保持：**SSE 也保持一个持久化的连接，但它是基于 HTTP 协议的，适合需要从服务器向客户端推送实时更新的应用，如新闻推送、实时股票价格等。
-4. **数据格式：**SSE 只能发送文本数据，且是以事件流的形式发送。
-5. **简单性：**SSE 的实现较为简单，只需要服务器不断发送事件数据到客户端。
+SSE 基于 HTTP 响应流发送文本，服务端单向推送，EventSource 内置重连和事件 ID 机制；WebSocket 提供双向文本/二进制消息，重连与应用确认通常自己实现。SSE 也可运行在 HTTP/2，不限定 HTTP/1.1。
 
-**WebSocket：**
+通知、日志和模型输出常适合 SSE；高频双向协作可选 WebSocket。两者都需处理代理、鉴权、心跳、流控和连接数，SSE 的自动重连不代表消息恰好一次，WebSocket 也不天然比所有 HTTP 流更省资源。
 
-1. **双向通信：**WebSocket 允许双向通信。客户端和服务器都可以随时发送数据，而不需要客户端发起请求。
-2. **协议：**WebSocket 是一个独立的协议，从 HTTP 协议开始，但一旦连接建立，就切换到 WebSocket 协议。
-3. **连接保持：**WebSocket 建立的是一个持久化的连接，适合需要频繁交换数据的应用，如在线聊天、实时游戏等。
-4. **数据格式：**WebSocket 可以发送任意格式的数据（文本或二进制）。
-5. **复杂度：**WebSocket 的实现相对复杂，需要处理连接的建立、保持和关闭等过程。
-
-**选型：**
-
-- SSE 更适合单向数据流、需要实时更新的场景，如实时通知系统、社交媒体更新、新闻推送等。
-- WebSocket 更适合需要双向通信、高频率数据交换的场景，如实时聊天应用、多人在线游戏等。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)。
 
 ---
 
 ## Q329｜http2.0
 
-- **多路复用（Multiplexing）：**HTTP/2允许在单个连接上同时发送多个请求和响应，而不需要等待一个请求的响应才能发送下一个请求。这显著提高了数据传输的效率，减少了延迟，尤其对于复杂的网页来说效果明显。
-- **头部压缩（Header Compression）：**HTTP/2使用了HPACK算法对HTTP头部进行压缩，减少了头部信息传输的开销。这有助于减少数据传输量，尤其是在移动网络和高延迟网络上。
-- **服务器推送（Server Push）：**HTTP/2允许服务器在客户端请求之前主动将资源推送给客户端。这可以提前发送可能需要的资源，减少了客户端请求的往返次数，从而改善了性能。
-- **二进制协议：**HTTP/2采用了二进制协议，与HTTP/1.1的文本协议不同。这使得协议的解析更加高效，因为计算机更容易处理二进制数据。
-- **流控制（Flow Control）：**HTTP/2引入了流控制机制，可以防止一个流的数据拥塞整个连接，确保各个流能够公平竞争连接的带宽。
-- **优先级（Priority）：**HTTP/2允许请求和响应设置优先级，以确保关键资源优先加载。
-- **安全性：**虽然HTTP/2本身并不要求使用加密，但现实中绝大多数HTTP/2连接都是通过TLS/SSL加密的，以提供更高的安全性。
+适用：HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE。
+
+HTTP/2 在一个 TCP 连接中用二进制帧多路复用多个流，使用 HPACK 压缩头部，并提供连接/流级别流量控制。它保留 HTTP 方法、状态和语义，改变主要是传输表达。
+
+它缓解 HTTP/1.1 应用层排队，但 TCP 丢包仍可能阻塞整个连接的交付；HTTP/3 用 QUIC 的独立流减少这类跨流阻塞。流控不自动保证公平，优先级是协作提示。Server Push 虽在协议中存在，浏览器支持已收缩，不能当成通用前端优化默认启用；现代浏览器的 HTTP/2 通常经 TLS 协商。
+
+参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9113) · [资料 2](https://developer.chrome.com/blog/removing-push)。
 
 ---

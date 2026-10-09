@@ -63,3 +63,57 @@ test('树构建、Unicode 窗口、阶梯计数、链表与三种遍历', () => 
   const tail = { value: 2, next: null }, head = { value: 1, next: tail }; assert.equal(example.reverseList(head), tail); assert.equal(tail.next, head);
   const tree = { value: 2, left: { value: 1 }, right: { value: 3 } }; assert.deepEqual(example.traverseTree(tree), [1, 2, 3]); assert.deepEqual(example.traverseTree(tree, 'pre'), [2, 1, 3]); assert.deepEqual(example.traverseTree(tree, 'post'), [1, 3, 2]);
 });
+test('回调转 Promise、路径赋值、全排列和链表中点处理边界', async () => {
+  assert.equal(await example.fromCallback((resolve) => resolve(42)), 42);
+  await assert.rejects(example.fromCallback(() => { throw new Error('失败'); }), /失败/);
+  const target = {};
+  assert.equal(example.setByPath(target, 'user.items[0].name', 'Ada'), target);
+  assert.deepEqual(target, { user: { items: [{ name: 'Ada' }] } });
+  assert.throws(() => example.setByPath({}, '__proto__.polluted', true), /危险路径/);
+  assert.deepEqual(example.permutations([1, 1, 2]), [[1, 1, 2], [1, 2, 1], [2, 1, 1]]);
+  const fourth = { value: 4, next: null }, third = { value: 3, next: fourth }, second = { value: 2, next: third }, first = { value: 1, next: second };
+  assert.equal(example.middleNode(first), third); assert.equal(example.middleNode(null), null);
+});
+
+test('路径赋值只操作自有数据并保留括号中的完整字段名', async t => {
+  await t.test('继承的对象不被修改', () => {
+    const prototype = { settings: { theme: 'old' } };
+    const target = Object.create(prototype);
+    example.setByPath(target, 'settings.theme', 'new');
+    assert.equal(prototype.settings.theme, 'old');
+    assert.equal(Object.hasOwn(target, 'settings'), true);
+    assert.equal(target.settings.theme, 'new');
+  });
+  await t.test('引号括号里的点不是路径分隔符', () => {
+    const target = {};
+    example.setByPath(target, 'a["x.y"].name', 'Ada');
+    assert.deepEqual(target, { a: { 'x.y': { name: 'Ada' } } });
+  });
+  await t.test('非法路径拒绝且不产生字段', () => {
+    for (const path of ['a..b', 'a[', '.a', 'a.', 'a[]']) {
+      const target = {};
+      assert.throws(() => example.setByPath(target, path, 1));
+      assert.deepEqual(target, {});
+    }
+  });
+});
+test('唯一排列按值去重并保持不同类型的身份', () => {
+  assert.equal(example.permutations([NaN, NaN, 1]).length, 3);
+  assert.equal(example.permutations([1, '1', 1]).length, 3);
+  assert.deepEqual(example.permutations([]), [[]]);
+  const shared = {};
+  assert.equal(example.permutations([shared, shared, {}]).length, 3);
+});
+test('节流在零时钟首调和取消后都立即执行', t => {
+  t.mock.timers.enable({ apis: ['Date', 'setTimeout'], now: 0 });
+  const calls = [];
+  const throttled = example.throttle(value => calls.push(value), 20);
+  throttled('first');
+  assert.deepEqual(calls, ['first']);
+  throttled('pending');
+  t.mock.timers.tick(20);
+  assert.deepEqual(calls, ['first', 'pending']);
+  throttled.cancel();
+  throttled('again');
+  assert.deepEqual(calls, ['first', 'pending', 'again']);
+});

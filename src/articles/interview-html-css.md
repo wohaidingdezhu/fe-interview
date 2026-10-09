@@ -6,88 +6,79 @@ description: "收录 Q1–Q39 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["HTML","CSS","面试"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 100
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://developer.mozilla.org/en-US/docs/Web/CSS","https://html.spec.whatwg.org/"]
 technologyVersion: "HTML Living Standard；现代 CSS，注意浏览器兼容性"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://developer.mozilla.org/en-US/docs/Web/CSS) · [参考 2](https://html.spec.whatwg.org/)。
 
 
 ## Q1｜什么是重绘，什么是回流？如何减少回流？
 
-重绘是指当元素样式发生改变，但不影响其布局的情况下，浏览器重新绘制元素的过程。例如，修改元素的背景颜色、字体颜色等。
+适用：现代浏览器渲染流水线。
 
-- **重绘（Repaint）：**
+浏览器渲染大致经过样式计算、布局（Layout）、绘制（Paint）与合成（Composite）。传统说法中的“回流”通常指重新布局：元素几何信息或文档结构变化后，浏览器需要重新计算受影响节点的尺寸和位置；“重绘”指布局不变，但像素外观需要重新绘制。transform、opacity 等变化在满足条件时可能只进入合成阶段，既不布局也不重新绘制，但是否分层由浏览器决定。
 
-回流是指当元素的布局属性发生改变，需要重新计算元素在页面中的布局位置时，浏览器重新进行布局的过程。例如，修改元素的宽度、高度、位置等。
+减少代价的核心不是追求“零回流”，而是避免布局抖动和无意义的大范围更新：
 
-- **回流（Reflow）：**
-- 回流的成本比重绘高得多，因为它涉及重新计算元素的几何属性和页面布局。而重绘只需要重新绘制已计算好的元素样式。
-- **如何减少：**
-- **使用 CSS 动画代替 JavaScript 动画**：CSS 动画利用 GPU 加速，在性能方面通常比 JavaScript 动画更高效。使用 CSS 的 transform 和 opacity 属性来创建动画效果，而不是改变元素的布局属性，如宽度、高度等。
-- **使用 translate3d 开启硬件加速**：将元素的位移属性设置为 translate3d(0, 0, 0)，可以强制使用 GPU 加速。这有助于避免回流，并提高动画的流畅度。
-- **避免频繁操作影响布局的样式属性**：当需要对元素进行多次样式修改时，可以考虑将这些修改合并为一次操作。通过添加/移除 CSS 类来一次性改变多个样式属性，而不是逐个修改。
-- **使用 requestAnimationFrame**：通过使用 requestAnimationFrame 方法调度动画帧，可以确保动画在浏览器的重绘周期内执行，从而避免不必要的回流。这种方式可确保动画在最佳时间点进行渲染。
-- **使用文档片段（Document Fragment）**：当需要向 DOM 中插入大量新元素时，可以先将这些元素添加到文档片段中，然后再将整个文档片段一次性插入到 DOM 中。这样做可以减少回流次数。(虚拟 dom vue 的方式)
-- **让元素脱离文档流：**position:absolute **/** position:fixed **/** float:left，（只是减少回流，不是避免回流。）
-- **使用 visibility: hidden 替代 display: none**：visibility: hidden 不会触发回流，因为元素仍然占据空间，只是不可见。而使用 display: none 则会将元素从渲染树中移除，引起回流。
+- 把布局读取集中在一起，再批量写入样式；不要在循环中交替读取 offsetWidth/getBoundingClientRect 和修改样式。
+- 动画优先使用 transform、opacity，并通过 Performance 面板确认实际渲染路径。
+- 在同一帧内批量更新 DOM，使用 class、DocumentFragment 或框架批处理减少中间状态。
+- 用 requestAnimationFrame 安排视觉更新，但它不会自动消除布局；回调中仍要避免读写交错。
+- 对彼此独立的复杂区域按需使用 contain/content-visibility，先验证可访问性、尺寸占位和浏览器支持。
+- 谨慎使用 will-change；长期创建过多合成层会增加显存和管理成本。
+
+translate3d(0,0,0) 不是“强制 GPU 加速”的通用答案，visibility:hidden 也不是 display:none 的等价性能替代：两者布局、可访问性和交互语义都不同。最终应以 Chrome DevTools Performance 录制中的 Layout、Paint 和 Composite 证据为准。
+
+参考：[资料 1](https://web.dev/articles/rendering-performance) · [资料 2](https://developer.chrome.com/docs/devtools/performance/)。
 
 ---
 
 ## Q2｜以下代码触发了多少次回流？
 
-**答案：**3 次
+适用：现代浏览器布局实验；次数需按当前环境录制。
 
-**讲解：**
+原导入题只保留截图和固定次数，缺少可复制程序，不能据此保证“必定回流 3 次”。下面补一个独立实验：比较集中写入与读写交错，具体 Layout 次数用当前浏览器 Performance 记录确认。
 
-- **场景1**
+```html
+<div id="box" style="width:100px;height:20px"></div>
+<script>
+const box = document.querySelector("#box");
+function batched() {
+  for (let i = 0; i < 5; i++) box.style.width = `${101 + i}px`;
+  return box.offsetWidth;
+}
+function interleaved() {
+  const widths = [];
+  for (let i = 0; i < 5; i++) {
+    box.style.width = `${111 + i}px`;
+    widths.push(box.offsetWidth);
+  }
+  return widths;
+}
+// 分别从控制台运行 batched() 和 interleaved() 并录制 Performance。
+</script>
+```
+
+布局失效后读取 offsetWidth 可能强制同步布局；集中写入有机会合并，交错读取通常迫使多次刷新。浏览器初始状态、containment 和实现会影响记录，不能把赋值次数直接换算布局次数。以下旧图保留作题目背景，图中数字不是新实验的验证结果。
 
 ![](./images/interview/大前端面试宝典-image-11.png)
 
-**答案：**1 次
-
----
-
-- **场景2**
-
 ![](./images/interview/大前端面试宝典-image-10.png)
-
-**答案：**1 次
-
----
-
-- **场景3**
 
 ![](./images/interview/大前端面试宝典-image-9.png)
 
-**答案：**1 次
-
----
-
-- **场景4**
-
 ![](./images/interview/大前端面试宝典-image-8.png)
-
-**答案：**1 次
-
----
-
-- **场景5**
 
 ![](./images/interview/大前端面试宝典-image-7.png)
 
 ![](./images/interview/大前端面试宝典-image-6.png)
-
-**答案：**2 次
-
----
-
-- **场景6**
 
 ![](./images/interview/大前端面试宝典-image-13.png)
 
@@ -95,88 +86,126 @@ technologyVersion: "HTML Living Standard；现代 CSS，注意浏览器兼容性
 
 ![](./images/interview/大前端面试宝典-image-3.png)
 
-**答案：**3 次
-
----
-
-- **优化方案**
-
 ![](./images/interview/大前端面试宝典-image-4.png)
 
 ![](./images/interview/大前端面试宝典-image.png)
 
-**答案：**2 次（利用合并特性，减少1次）
+参考：[资料 1](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing)。
 
 ---
 
 ## Q3｜Margin 塌陷问题如何解决？BFC 是什么？ 怎么触发？
 
-- **margin塌陷问题：**上面例子两个 div 的间隔为200px，取 margin 重叠部分的更大值（这是正常情况，符合 CSS 的外边距合并规则），如果希望间隔 300px，可为每个 div 触发 BFC。
-- **BFC定义：**全称叫块级格式化上下文 （Block Formatting Context），一个独立的渲染区域，有自己的渲染规则，与外部元素不会互相影响。
-- **BFC触发方式：**
-- 设置了 float 属性（值不为 none）
-- 设置了 position 属性为 absolute 或 fixed
-- 设置了 display 属性为 inline-block
-- 设置了 overflow 属性（值不为 visible）
+适用：现代 CSS；块格式化上下文与外边距折叠。
+
+垂直外边距折叠发生在特定块级布局关系中，例如同一块格式化上下文里的相邻块、父元素与第一个/最后一个普通流子元素、没有内容和边框的空块。折叠后的距离通常取正 margin 最大值；存在负值时按规范组合，不能简单概括为“两个 margin 相加”或“永远取最大值”。Flex/Grid 项目的 margin 不发生这种折叠。
+
+BFC（Block Formatting Context）是块级布局的独立格式化上下文。它会包含内部浮动，并阻止内部块与上下文外部块发生部分布局影响。现代代码若只是需要显式创建 BFC，优先使用 display:flow-root，语义比 overflow:hidden 更清楚，也不会意外裁剪内容。
+
+常见创建方式包括：
+
+- 根元素。
+- float 不是 none。
+- position 为 absolute 或 fixed。
+- display 为 flow-root、inline-block、table-cell、table-caption。
+- overflow 不是 visible/clip。
+- Flex/Grid 容器的非普通块子项，以及部分 contain、多列布局等场景。
+
+解决 margin 折叠要先确认是哪种关系：相邻元素可改用 gap；父子折叠可用 padding/border、flow-root、Flex/Grid；不要为了“修复”而给所有元素随意加 overflow:hidden。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Block_formatting_context) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)。
 
 ---
 
 ## Q4｜如何隐藏一个元素
 
-| **方式** | **占位** | **点击事件** |
-|-|-|-|
-| display: none | ❌ | ❌ |
-| opacity: 0 | ✅ | ✅ |
-| visibility: hidden | ✅ | ❌ |
-| clip-path: circle(0) | ✅ | ❌ |
-| position:absolute;<br />top: -999px; | ❌<br /> | ✅<br /> |
+适用：现代 HTML/CSS；同时考虑命中测试和无障碍语义。
+
+隐藏方式要同时考虑布局占位、命中测试、键盘焦点和无障碍树，不能只看“肉眼是否可见”。
+
+| 方式 | 保留布局空间 | 默认指针命中 | 典型语义 |
+| --- | --- | --- | --- |
+| display:none / hidden 属性 | 否 | 否 | 内容当前不存在于布局和无障碍树 |
+| visibility:hidden | 是 | 否 | 保留布局，但内容不可见；后代可重新设 visible |
+| opacity:0 | 是 | 是 | 只改变透明度；仍可能被点击和键盘聚焦 |
+| clip-path:circle(0) | 是 | 通常仅裁剪区域参与命中 | 视觉裁剪，不等价于语义隐藏 |
+| 移到屏幕外 | 取决于定位方式 | 可能 | 常用于特定视觉隐藏模式，处理不当会产生滚动和焦点跳转 |
+
+若只是暂时不显示组件，通常使用 hidden/display:none；若要做淡入淡出，可以动画 opacity，同时在不可见阶段处理 pointer-events、inert 或焦点。给屏幕阅读器保留、但视觉隐藏的文本应使用经过验证的 visually-hidden 样式，不能简单写 top:-999px。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/display) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/visibility) · [资料 3](https://developer.mozilla.org/en-US/docs/Web/CSS/opacity)。
 
 ---
 
 ## Q5｜overflow 不同值的区别。
 
-| **属性值** | **效果** |
-|-|-|
-| visible（默认值） | 内容溢出容器时，会呈现在容器之外，不会被隐藏或截断。这意味着溢出的内容会覆盖其他元素。 |
-| hidden | 内容溢出容器时，会被隐藏，不可见。这意味着超出容器的部分将被截断并隐藏。 |
-| scroll | 如果内容溢出容器，将会显示滚动条以便查看溢出内容。用户可以滚动内容以查看被隐藏的部分。即使内容没有溢出，也会显示滚动条，但它们会被禁用。 |
-| auto | 与 scroll 类似，如果内容溢出容器，会显示滚动条。但与 scroll 不同的是，滚动条仅在内容溢出时才会出现，否则会被禁用。 |
-| inherit | 继承父元素的 overflow 值。 |
+适用：CSS Overflow Module Level 3/4；现代浏览器。
+
+overflow 控制内容超出 padding box 时的裁剪和滚动行为，可分别通过 overflow-x/overflow-y 设置两个方向。
+
+| 值 | 行为 |
+| --- | --- |
+| visible | 默认不裁剪，也不是滚动容器；内容可能绘制到盒外 |
+| hidden | 裁剪溢出内容，不显示滚动条；仍是滚动容器，可被脚本或焦点滚动 |
+| clip | 在 overflow clip edge 裁剪，禁止程序化滚动；单独使用不会创建 BFC |
+| scroll | 裁剪并提供滚动机制；传统滚动条通常会预留/显示，不依赖当前是否溢出 |
+| auto | 由浏览器在实际溢出时提供滚动机制 |
+
+hidden、scroll、auto 通常会创建 BFC，visible 和 clip 不会；需要 clip 同时创建格式化上下文时可配合 display:flow-root。全局关键字 inherit、initial、unset、revert 控制级联，不是 overflow 独有的滚动模式。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)。
 
 ---
 
 ## Q6｜三栏布局的实现方式（圣杯模型）
 
-三栏布局是一种常见的网页布局方式，通常包括一个固定宽度的左侧栏、一个固定宽度的右侧栏以及一个自适应宽度的主要内容区域。
+适用：现代 CSS Grid/Flexbox。
 
-- **Flex 布局**
-- **浮动布局**
-- **Grid 布局：**
-- **绝对定位布局：**
+三栏布局通常是左右固定或受约束、中间自适应。现代实现优先 Grid 或 Flex；经典“圣杯/双飞翼”依赖 float 和负 margin，面试可说明原理，但新项目通常不必继续使用。
+
+Grid 最直接：
+
+```css
+.layout { display: grid; grid-template-columns: 16rem minmax(0, 1fr) 18rem; gap: 1rem; }
+```
+
+Flex 需要允许中间列收缩：
+
+```css
+.layout { display: flex; gap: 1rem; }
+.left { flex: 0 0 16rem; }
+.main { flex: 1 1 auto; min-width: 0; }
+.right { flex: 0 0 18rem; }
+```
+
+响应式布局通常在窄屏改成单列或把侧栏折叠。不要只用 CSS order 改变视觉顺序而忽略 DOM、键盘焦点和屏幕阅读器顺序。绝对定位适合覆盖层，不适合作为普通文档三栏的首选，因为父容器高度和内容溢出需要额外管理。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout)。
 
 ---
 
 ## Q7｜calc() 方法
 
-calc() 是 CSS 中的一个函数，用于动态计算样式属性的值。calc() 主要用于解决以下问题：
+适用：现代 CSS Values and Units；新算术语法需查兼容性。
 
-**响应式布局：**calc() 可以根据不同的屏幕尺寸和视口大小，动态调整元素的尺寸或间距，以实现响应式布局。这有助于确保页面在不同设备上的显示效果良好。
+calc() 让浏览器在计算值阶段组合长度、百分比、角度、时间等兼容类型，常用于“可用空间减固定尺寸”和把自定义属性带入计算。百分比仍按对应属性的包含块规则解析；calc() 不能读取任意兄弟元素的实际 DOM 尺寸。
 
-**动态尺寸调整：**calc() 可用于根据其他元素的尺寸或动态内容的大小来计算元素的尺寸。这在构建复杂的布局时非常有用。
+```css
+.sidebar-layout { width: calc(100% - 18rem); }
+.card { padding: calc(var(--space) * 2); }
+.hero { min-height: calc(100dvh - var(--header-height)); }
+.title { font-size: clamp(1.5rem, calc(1rem + 2vw), 3rem); }
+```
 
-**优化代码：**calc() 可减少不必要的 CSS 代码和样式属性的硬编码，以实现更灵活、可维护和自适应的布局。
+加减号两侧需要空格，例如 calc(100% - 2rem)；不同单位能否运算取决于它们是否具有兼容类型。乘除等较新的 typed arithmetic 能力应先确认目标浏览器兼容性，不能把实验性语法当成所有环境都支持。
 
-其中 expression 是一个包含数值、运算符和单位的表达式。您可以在 calc() 中执行各种数学运算，例如加法、减法、乘法和除法。
-
-以下是一些示例，展示了 calc() 如何用于解决不同问题：
-
-- 自适应宽度：
-- 响应式间距：
-- 动态尺寸：
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/calc)。
 
 ---
 
 ## Q8｜实现 一个固定长宽div 在屏幕上垂直水平居中
+
+适用：现代 Flexbox；动态视口单位按兼容性使用。
 
 给父容器设置至少一个视口高度，使用 Flex 的 justify-content 与 align-items 同时居中。固定长宽属于子元素；box-sizing:border-box 可让边框和内边距包含在指定尺寸内。移动浏览器可用 100dvh 跟随可见视口变化，并为旧浏览器保留 min-height:100vh。
 
@@ -185,176 +214,141 @@ calc() 是 CSS 中的一个函数，用于动态计算样式属性的值。calc(
 .box { width: 240px; height: 160px; box-sizing: border-box; }
 ```
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Aligning_items_in_a_flex_container) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/length)。
+
 ---
 
 ## Q9｜渐进增强（progressive enhancement）和优雅降级（graceful degradation）
 
-"渐进增强"（progressive enhancement）和 "优雅降级"（graceful degradation）都是前端开发中的策略，旨在处理不同浏览器和设备的兼容性问题。有助于确保您的网站在各种环境中能够提供尽可能良好的用户体验。
+适用：现代 Web 平台；特性检测与基础可访问性。
 
-**渐进增强（progressive enhancement）：**
+渐进增强从可访问的核心内容和基本操作开始，再根据能力增加样式、交互或性能优化；优雅降级从完整体验出发，为能力不足或依赖失败的环境保留可接受的退化路径。两者都强调核心任务可完成，差别主要在设计起点。
 
-- 渐进增强的理念是从基本的、核心的功能开始，然后逐渐增强用户体验。
-- 首先为所有用户提供基本的功能和内容，确保网站在所有浏览器和设备上都可以访问和使用。
-- 随着浏览器能力的提升，逐步添加更高级和更复杂的功能和效果，以提供更富有吸引力的用户体验。
-- 渐进增强强调的是从用户需求和核心功能出发，然后根据能力来增强功能和效果。
+实际项目更推荐渐进增强：先使用语义 HTML 和普通表单保证基本提交，再用 CSS、美化控件和 JavaScript 异步提交增强体验。能力判断优先使用特性检测与 @supports，不用浏览器名称猜测。
 
-**考虑一个按钮样式的示例：**
+```css
+.layout { display: block; }
+@supports (display: grid) {
+  .layout { display: grid; grid-template-columns: 1fr 2fr; }
+}
+```
 
-在这个示例中，按钮具有基本样式，即使在不支持 CSS3 的旧浏览器中也可以正常工作。然后，在现代浏览器中，使用增强样式来提供更好的外观和交互效果。
+降级也适用于非浏览器兼容问题，例如图片加载失败显示替代文本、JavaScript 失败仍可使用服务端表单、实时连接断开后回退到轮询。无障碍不是“高级增强”，应属于基础能力。
 
-**优雅降级（graceful degradation）：**
-
-- 优雅降级的理念是首先构建功能丰富的版本，然后在较低能力的浏览器上提供一种相对简化的版本。
-- 先构建适用于现代浏览器的版本，包括高级功能和效果。
-- 针对不支持这些功能的旧浏览器，提供一个更基本、但仍然可访问的版本，以确保核心功能仍然可用。
-- 优雅降级强调的是在功能丰富的版本的基础上创建简化版本，以适应旧浏览器或不支持某些功能的情况。
-
-**考虑一个多媒体播放器的示例：**
-
-在这个示例中，高级浏览器使用包括大型播放按钮和更多控件的高级样式。但在不支持这些样式的浏览器中，简化样式将隐藏高级控件，仅显示基本的播放器控件。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports)。
 
 ---
 
 ## Q10｜iframe 有哪些优缺点及使用场景
 
-<iframe>（内联框架）是 HTML 中的一个标签，用于在当前页面中嵌入另一个页面。
+适用：HTML Living Standard；现代浏览器安全策略。
 
-**优点：**
+iframe 在当前文档中嵌入另一个浏览上下文，适合第三方视频、地图、支付/身份组件、在线编辑器预览和需要较强隔离的微前端。它可以独立导航、加载自己的文档和运行环境，但也带来额外内存、网络、生命周期、焦点与无障碍复杂度。
 
-- 分离内容：<iframe> 允许将不同来源或不同内容的页面嵌套在一起。这有助于将内容分隔开，允许不同团队或服务提供商提供各自的内容。
-- 实现跨域通信：<iframe> 可用于实现跨域通信，例如在父页面和嵌套的 <iframe> 页面之间传递数据，从而创建丰富的嵌入式应用程序。
-- 安全性：<iframe> 可以提高安全性，因为它可以将来自不受信任的来源的内容隔离在一个独立的沙盒中，以防止对主页面的恶意攻击。
-- 无需刷新：<iframe> 允许在不刷新整个页面的情况下加载新内容，这对于实现动态加载内容或应用程序非常有用。
+安全性不是自动获得的：嵌入不可信内容时应使用最小 sandbox 权限，并结合 allow、referrerpolicy、CSP frame-src/frame-ancestors 等策略。不要同时随意授予 allow-scripts 与 allow-same-origin；具体风险取决于内容来源。跨源父子页面不能直接读写彼此 DOM，应通过 postMessage 通信，并严格校验 event.origin、event.source 和消息结构。
 
-**缺点：**
+```html
+<iframe
+  title="代码运行结果"
+  src="/preview.html"
+  sandbox="allow-scripts"
+  loading="lazy"
+  referrerpolicy="no-referrer"
+></iframe>
+```
 
-- 性能问题：每个 <iframe> 都会加载一个新页面，这可能会导致性能问题，特别是在多个嵌套的 <iframe> 页面存在时。
-- 可访问性问题：<iframe> 可能会导致可访问性问题，因为屏幕阅读器可能不会正确处理嵌套的页面。确保提供替代文本和合适的ARIA标记以提高可访问性。
-- 不利于 SEO：搜索引擎通常不会索引嵌套在 <iframe> 中的内容，这可能对网站的搜索引擎优化（SEO）产生负面影响。
-- 兼容性问题：某些浏览器和设备可能不正确支持 <iframe>，或者可能需要特殊处理以确保它们正确显示。
+使用时还要处理：明确 title、响应式尺寸、加载/失败状态、键盘焦点、消息清理和导航策略。SEO 不能简单概括为“iframe 一定不被索引”，但嵌入内容通常不等同于宿主页面自己的可索引正文，因此核心内容不应只存在于第三方 iframe 中。
 
-**使用场景：**
-
-- 嵌入外部内容：例如，将 YouTube 视频、Google 地图或社交媒体小部件嵌入网页。
-- 分离组件：将不同部分的网页分开以进行模块化开发。这对于大型应用程序或团队协作非常有用。
-- 安全沙盒：将不受信任的内容隔离在一个沙盒中，以提高安全性。
-- 跨域通信：在不同源的页面之间进行数据交换，以创建富客户端应用程序。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)。
 
 ---
 
 ## Q11｜CSS 盒子模型
 
-用于排列和定位网页上的元素的基本概念。它定义了每个HTML元素周围的一个矩形区域（或盒子），这个盒子包括内容、内边距、边框和外边距。CSS盒子模型有以下四个主要部分：
+适用：现代 CSS Box Model。
 
-- **内容（Content）：**这是盒子的内部部分，包含元素的实际内容，例如文本、图像或其他媒体。内容的大小可以通过设置宽度（width）和高度（height）属性来控制。
-- **内边距（Padding）：**内边距是内容和边框之间的空白区域。可以使用padding属性来设置内边距的大小。内边距的大小影响了内容与盒子边界之间的距离。
-- **边框（Border）：**边框位于内边距的外部，围绕着内容和内边距。边框的样式、颜色和宽度可以通过border属性进行设置。
-- **外边距（Margin）：**外边距是盒子与其相邻元素之间的空白区域。外边距的大小可以通过margin属性来设置。外边距影响了盒子与其他元素之间的距离。
+CSS 盒由 content、padding、border、margin 四层组成。background 绘制在边框盒内部，margin 位于盒外且可能发生折叠。width/height 控制哪一层取决于 box-sizing：content-box 下声明尺寸只约束内容盒，总占用还要加 padding 和 border；border-box 下声明尺寸包含 padding 和 border，但不包含 margin。
+
+```css
+* { box-sizing: border-box; }
+.card { width: 300px; padding: 20px; border: 2px solid; }
+```
+
+盒的实际尺寸还受 min/max-width、固有尺寸、百分比包含块、书写模式和格式化上下文影响。调试时应在 DevTools Box Model 查看计算值，不要只根据声明的 width 推断最终占用空间。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing)。
 
 ---
 
 ## Q12｜HTML5 的特性
 
-- **语义元素：**HTML5引入了一些新的语义元素，如<header>、<footer>、<nav>、<section>等，以更好地描述网页的结构，提高可读性和可访问性。
-- **多媒体支持：**HTML5提供了内置的多媒体支持，包括<audio>和<video>元素，使音频和视频的嵌入更加简单，而无需使用第三方插件（如Flash）。
-- **Canvas：**引入了<canvas>元素，允许通过JavaScript创建和操作图形，用于绘制图表、游戏和应用程序。
-- **本地存储：**HTML5引入了Web Storage和IndexedDB，允许在客户端存储数据，以提高离线应用程序的性能。
-- **新表单元素：**HTML5引入了新的表单元素，如<input type="date">、<input type=email">、<input type="range">等，使表单更具交互性和用户友好性。
-- **Web Workers：**HTML5引入了Web Workers，允许在后台运行JavaScript，以提高Web应用程序的响应性，而不会阻塞用户界面。
-- **WebSocket：**HTML5引入了WebSocket，一种用于实时通信的协议，可用于创建实时聊天和多人游戏等。
-- **地理位置：**HTML5允许网页访问用户的地理位置信息，以便创建地理位置相关的应用程序，如地图和位置服务。
-- **SVG：**HTML5支持可缩放矢量图形（SVG），允许创建矢量图形和图表，以便在不同分辨率的屏幕上显示。
-- **拖放：**HTML5引入了拖放API，允许在网页中实现拖放操作，使用户界面更直观。
-- **离线应用程序：**HTML5引入了应用程序缓存，使Web应用程序能够在离线时继续工作。
-- **新事件API：**HTML5引入了新的事件API，如addEventListener，使事件处理更加灵活和强大。
+适用：HTML Living Standard；独立 Web API 按各自规范。
+
+“HTML5”在面试中通常泛指现代 HTML 与同期 Web 平台，但要区分 HTML 元素和独立 Web API。HTML Living Standard 中的重要变化包括语义结构元素（main/article/nav 等）、audio/video、canvas、更丰富的表单类型与约束验证、原生拖放以及更明确的解析规则。Web Storage、IndexedDB、Workers、WebSocket、Geolocation 等由各自规范定义，不应全部说成 HTML 标签特性。
+
+Application Cache 已废弃并从现代浏览器移除；离线能力通常使用 Service Worker 与 Cache API。addEventListener 也早于 HTML5。回答时应说明“HTML 语言能力”和“现代 Web API 生态”两个层次，避免列出已经废弃的功能。
+
+参考：[资料 1](https://html.spec.whatwg.org/) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTML)。
 
 ---
 
 ## Q13｜CSS3 的特性
 
-- **圆角边框：**通过border-radius属性，可创建圆角边框，包括圆形、椭圆和自定义形状。
-- **阴影和发光效果）：**使用box-shadow和text-shadow属性，可以为元素添加阴影和发光效果。
-- **渐变背景：**通过linear-gradient和radial-gradient属性，可以创建渐变背景，包括线性和径向渐变。
-- **多列布局：**通过column-count和column-width等属性，可以创建多列布局，类似于报纸的排版。
-- **变换：**使用transform属性，可以对元素进行旋转、缩放、倾斜和平移等变换。
-- **过渡：**通过transition属性，可以创建元素状态之间的平滑过渡效果，例如鼠标悬停时的渐变效果。
-- **动画：**使用@keyframes规则和animation属性，可创建CSS动画，使元素可实现复杂的运动和效果。
-- **2D和3D转换：**CSS3支持2D和3D转换，可以实现元素在平面和三维空间的旋转、缩放和倾斜。
-- **字体嵌入：**通过@font-face规则，可以在网页上嵌入自定义字体，以提供更多的字体选择。
-- **透明度：**使用opacity属性，可以控制元素的透明度，使元素可以半透明或完全不透明。
-- **栅格布局：**通过display: grid属性，可以创建更复杂的网格布局，用于定位和对齐元素。
-- **自定义属性：**使用CSS变量（var()）来定义和重用自定义属性，以简化样式表的管理。
-- **用户界面控件：**CSS3引入了样式化的用户界面控件，如滚动条、复选框和单选框的自定义样式。
-- **响应式设计：**通过媒体查询和弹性布局，CSS3支持响应式设计，以适应不同的屏幕尺寸和设备。
+适用：现代模块化 CSS；各模块兼容性独立判断。
+
+现代 CSS 不再整体发布为一个“CSS3 版本”，而是按模块独立演进。面试中的 CSS3 通常指相对 CSS2.1 普及的一批模块，例如 border-radius/box-shadow、渐变、媒体查询、Web Fonts、多列布局、transform、transition、animation、Flexbox、Grid、自定义属性等。
+
+回答时应避免暗示这些能力同时出现或兼容性完全一致：Grid、Custom Properties 等模块成熟时间不同；表单控件和滚动条样式也不是所有浏览器完全统一。实际项目应针对具体属性查询 Baseline/兼容性，并准备可接受的回退，而不是只说“支持 CSS3”。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS)。
 
 ---
 
 ## Q14｜CSS 中选择器的优先级，权重计算方式。
 
-1. **!important规则：**如果有!important声明，那么该规则具有最高的优先级。
-2. **特定性：**特定性值的大小来排序，特定性值较大的规则具有更高的优先级，**权重计算方式**如下：
+适用：CSS Cascade Level 5/6；包含 cascade layers。
 
-- 内联样式：每个内联样式规则的特定性为1000。
-- ID选择器：每个ID选择器的特定性为100。
-- 类选择器、属性选择器和伪类选择器：每个类选择器、属性选择器和伪类选择器的特定性为10。
-- 元素选择器和伪元素选择器：每个元素选择器和伪元素选择器的特定性为1。
+CSS 先按来源、重要性、层叠上下文与层（cascade layers）比较，再比较选择器特定性，最后才看作用域接近度和声明顺序。!important 不是无条件高于所有来源，用户重要声明等仍可能胜出。
 
-案例：
+特定性用三列元组比较，不应当作十进制 100/10/1 相加：
 
-- #header：特定性值为100（1个ID选择器）。
-- .menu-item：特定性值为10（1个类选择器）。
-- ul li：特定性值为2（2个元素选择器）。
-- **覆盖规则：**如果两个规则具有相同的特定性，后面定义的规则将覆盖先前定义的规则，因此后定义的规则具有更高的优先级。
+- ID 列：#id。
+- 类列：.class、[attr]、:hover 等伪类。
+- 类型列：div、::before 等类型与伪元素。
+
+例如 #app .item 是 (1,1,0)，.page .list .item 是 (0,3,0)，前者胜出；再多类选择器也不会“进位”成一个 ID。:where() 的特定性为零，:is()、:not()、:has() 取参数列表中最高特定性。内联样式可视为独立的更高层级，而不是简单写成 1000。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Specificity) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Cascade)。
 
 ---
 
 ## Q15｜HTML5 input 元素 type 属性
 
-- **text：**用于接受单行文本输入。
-- **password：**用于密码输入，输入的字符会被掩盖。
-- **radio：**用于单选按钮，用户可以在一组选项中选择一个。
-- **checkbox：**用于复选框，用户可以选择多个选项。
-- **number：**用于输入数字，可以包括上下箭头来增减数值。
-- **range：**用于输入范围，例如滑动条。
-- **date：**用于日期输入。
-- **time：**用于时间输入。
-- **file：**用于文件上传。
-- **color：**用于颜色选择器。
-- **hidden：**用于存储数据，但不会在页面中显示。
-- **submit：**用于提交表单。
-- **reset：**用于重置表单。
-- **button：**用于创建自定义按钮。
+适用：HTML Living Standard；控件 UI 按平台实现。
+
+常用类型包括 text、password、search、email、url、tel、number、range、date、month、week、time、datetime-local、color、file、checkbox、radio、hidden，以及 submit/reset/button/image。未知 type 按 text 处理。
+
+type 不只是改变外观，还会影响输入法提示、原生控件、默认校验和提交值。例如 email/url 会参与约束验证，但浏览器验证不能替代服务端校验；number 适合真正的数值，不适合邮编、身份证或带前导零的编号；日期控件界面与支持程度依平台而异。应搭配 label、name、autocomplete、inputmode、min/max/step 等属性，并在目标设备验证可访问性。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input)。
 
 ---
 
 ## Q16｜CSS 中属性的继承性
 
-**可继承的属性（Inherited Properties）：**
+适用：现代 CSS Cascade and Inheritance。
 
-1. color：控制文本颜色。
-2. font：包括font-family、font-size、font-style、font-weight等属性。
-3. line-height：控制行高。
-4. text-align：控制文本对齐方式。
-5. text-indent：控制首行缩进。
-6. text-transform：控制文本转换为大写、小写或首字母大写。
-7. visibility：控制元素的可见性。
+继承发生在没有指定值时：部分属性会从父元素的计算值取得值，常见的是 color、font-family/font-size/font-style/font-weight、line-height、text-align、visibility 等文本与可见性属性。布局和盒模型属性如 display、position、width、height、margin、padding、border、background 通常不继承。
 
-**不可继承的属性（Non-inherited Properties）：**
+不能只靠记忆列表：每个属性规范都定义 inherited: yes/no。inherit 可强制继承，initial 使用属性初始值，unset 对可继承属性等同 inherit、对其他属性等同 initial，revert 回退到较早来源/层。自定义属性默认继承，但通过 @property 可以改变继承行为和类型。
 
-1. border：包括border-width、border-style、border-color等属性。
-2. margin：包括margin-top、margin-right、margin-bottom、margin-left。
-3. padding：包括padding-top、padding-right、padding-bottom、padding-left。
-4. background：包括background-color、background-image、background-repeat等属性。
-5. width：控制元素的宽度。
-6. height：控制元素的高度。
-7. position：控制元素的定位方式（例如，relative、absolute、fixed）。
-8. top、right、bottom、left：控制元素的位置。
-9. display：控制元素的显示方式（例如，block、inline、none）。
-10. float：控制元素的浮动方式。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Inheritance) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/inherit)。
 
 ---
 
 ## Q17｜画一条 0.5px  的线
+
+适用：现代 CSS；显示效果受 DPR 和缩放影响。
 
 CSS 像素不是物理像素，0.5px 在不同设备像素比和缩放下表现可能不同。常见方案是在定位好的容器中画 1px 高的伪元素，再用 scaleY(.5) 缩放；它不占额外布局高度。设备像素比为 2 时，半个 CSS 像素通常对应一个物理像素，不能保证所有设备都得到完全相同的清晰度。
 
@@ -363,133 +357,152 @@ CSS 像素不是物理像素，0.5px 在不同设备像素比和缩放下表现�
 .divider::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #aaa; transform: scaleY(.5); transform-origin: bottom; }
 ```
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/length) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/transform)。
+
 ---
 
 ## Q18｜position 的值
 
-- **static（静态定位）：**
-- 默认值。
-- 元素按照文档流正常排列，不受其他定位属性影响。
-- top、right、bottom、left属性不起作用。
-- **relative（相对定位）：**
-- 元素相对于其正常位置定位。
-- 可以使用top、right、bottom、left属性来调整元素的位置。
-- 相对定位不会脱离文档流，其他元素仍然占据原来的位置。
-- **absolute（绝对定位）：**
-- 元素相对于最近的已定位祖先元素定位，如果没有已定位的祖先元素，则相对于初始包含块（通常是浏览器窗口）定位。
-- 使用top、right、bottom、left属性来精确控制位置。
-- 绝对定位会脱离文档流，不再占据原来的位置。
-- f**ixed（固定定位）：**
-- 元素相对于视口定位，不随页面滚动而移动。
-- 使用top、right、bottom、left属性来控制位置。
-- 固定定位脱离文档流，不占据原来的位置。
-- **sticky（粘性定位）：**
-- 元素在跨越特定阈值前表现为相对定位，之后表现为固定定位。
-- 通常用于创建“粘性”导航栏或侧边栏。
-- 使用top、right、bottom、left属性来控制位置。
+适用：现代 CSS Positioned Layout。
+
+- static：普通定位，inset 属性通常不参与定位。
+- relative：保留原布局位置，再按 inset 视觉偏移，并可为绝对定位后代建立包含块。
+- absolute：脱离普通流，通常相对最近建立定位包含块的祖先；没有时使用初始包含块。
+- fixed：脱离普通流，通常相对视口；transform、filter、contain 等属性可能让祖先建立固定定位包含块。
+- sticky：在普通流中占位，并相对最近滚动机制祖先/包含块在指定 inset 阈值内粘附。
+
+sticky 至少需要一个非 auto inset（如 top:0）和可滚动空间；祖先 overflow、容器高度、表格布局等都可能影响效果。z-index 与定位会参与层叠上下文，但“设置 position 就一定创建层叠上下文”并不正确。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/position)。
 
 ---
 
 ## Q19｜什么是浮动，浮动会引起什么问题，有何解决方案？
 
-浮动（float）是CSS中的一种布局属性，用于控制元素在其父元素中的位置，使元素可以浮动到其父元素的左侧或右侧。浮动通常用于实现文本环绕图片、创建多列布局等效果。
+适用：现代 CSS；flow-root 优先用于包含浮动。
 
-**导致问题：**
+float 最初用于让文本和行内内容环绕图片等浮动盒。浮动盒移到当前行左侧或右侧，后续行盒绕开它；它仍影响普通流排版，但父块高度可能不包含只由浮动子项形成的高度。现代多列页面布局优先 Flex/Grid，不应用 absolute/inline-block 模拟 float。
 
-- 高度塌陷（Collapsing）：浮动元素会导致其父元素的高度塌陷，使父元素无法自动适应浮动元素的高度。
-- 元素重叠（Overlapping）：浮动元素可能会重叠在一起，导致布局混乱。
+包含浮动推荐在父容器使用 display:flow-root。传统 clearfix 也可通过生成清除浮动的伪元素处理；clear 属性用于让某个后续块移动到相关浮动盒下方。overflow:auto/hidden 能因创建 BFC 包含浮动，但可能产生滚动条或裁剪，不应只为 clearfix 随意使用。
 
-**解决方案：**
+```css
+.media { display: flow-root; }
+.media img { float: inline-start; margin-inline-end: 1rem; }
+```
 
-- 清除浮动（Clearing Floats）：在包含浮动元素的父元素之后，可以使用clear属性来清除浮动。
-- 使用布局技巧：为了防止高度塌陷，可以使用现代CSS布局技巧，如Flexbox和Grid，来替代浮动布局。
-- 使用display: inline-block：将需要浮动的元素设置为display: inline-block，可以模拟浮动效果，但不会导致高度塌陷，因为inline-block元素会受到文本行的影响。
-- 使用position: absolute：在某些情况下，position: absolute也可以替代浮动，但需要搭配适当的定位属性来控制元素的位置。
-- 使用overflow: hidden：在包含浮动元素的父元素上添加overflow: hidden可以清除浮动，但可能会剪切内容，因此需谨慎使用。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/float) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/clear) · [资料 3](https://developer.mozilla.org/en-US/docs/Web/CSS/display#flow-root)。
 
 ---
 
 ## Q20｜line-height 和 height 的区别
 
-- **line-height（行高）**：
-- height 控制元素 content 高度
-- 它用于指定行内元素的文本行的垂直间距，可以影响文本的垂直居中和行距等。
-- line-height通常用于文本元素，如段落、标题等，以调整文本在行内框中的垂直位置。
-- **height（高度）**：
-- height 控制元素的整体高度，不仅包括文本内容，还包括内边距和边框。
-- 它用于指定块级元素的高度，可以确保元素的高度与其他元素一致。
-- height通常用于块级元素，如<div>、<section>等，以设置元素的具体高度。
+适用：现代 CSS Inline/Box Sizing。
 
-**总结：** line-height用于控制文本行的垂直间距，而height用于控制整个元素的高度，包括文本内容、内边距和边框。它们在不同的上下文中有不同的用途，根据布局需求选择合适的属性来控制高度。
+line-height 定义行框使用的行高，影响多行文本间距和行内内容垂直分布，并且默认可继承。无单位值通常更适合继承，例如 line-height:1.5 会在后代按各自字体大小计算。用 line-height 等于容器高度只能近似居中单行文本，不适合多行、图标混排或可变字体。
+
+height 定义盒在块轴上的指定尺寸；默认 box-sizing:content-box 时只约束内容盒，padding 和 border 会额外增加外部尺寸，border-box 时才包含它们。height:auto、min/max-height、百分比基准和内容溢出还会影响最终尺寸。现代居中优先使用 Flex/Grid 对齐，而不是依赖 line-height 技巧。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/height)。
 
 ---
 
 ## Q21｜设置一个元素的背景颜色会填充的区域。
 
-- **内容区域：**背景颜色会填充元素的内容区域，即文本和内联元素所在的区域。
-- **内边距区域：**如果元素具有内边距（通过 padding 属性设置），背景颜色也会填充内边距区域。
-- **边框区域：**如果元素具有边框（通过 border 属性设置），且背景颜色为 transparent，也会填充边框区域。
+适用：现代 CSS Backgrounds and Borders。
 
-背景颜色不会填充元素的外边距区域。外边距是元素与其他元素之间的间距，背景颜色通常不会扩展到外边距。
+背景绘制区域由 background-clip 决定。默认 border-box，背景绘制到边框盒边缘并位于边框下方；如果边框不透明，背景只是被边框遮住。padding-box 截止到内边距外边缘，content-box 只绘制内容盒，text 可用于文字裁剪但兼容和前缀需要确认。背景不会绘制到 margin。
 
-这意味着背景颜色将覆盖元素的内容、内边距和边框，但不会覆盖外边距。这是CSS中背景颜色的标准行为。
+```css
+.box { background-color: tomato; background-clip: padding-box; }
+```
+
+多层背景共享 background-origin/background-clip 的对应列表；根元素背景还有传播到画布的特殊规则，不能用普通盒模型简单概括。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip)。
 
 ---
 
 ## Q22｜inline-block、inline 和 block 的区别
 
-- block：块级元素
-- 块级元素会独占一行，它们在页面上按从上到下的顺序垂直排列。
-- 块级元素可以设置宽度、高度、内边距和外边距，并会自动换行。
-- inline：内联元素
-- 内联元素不会独占一行，它们在同一行内水平排列，直到一行不足以容纳它们，然后换行。
-- 内联元素通常不可以设置宽度和高度，它们的尺寸由其内容决定。
-- inline-block：内联块级元素
-- 内联块级元素结合了块级元素和内联元素的特点。它们在同一行内水平排列，但可以设置宽度、高度、内边距和外边距，同时也会换行。
-- 内联块级元素通常用于创建水平排列的块状元素，如按钮或导航链接。
+适用：现代 CSS Display。
+
+这三个值描述外部/内部显示类型的组合：block 在块布局中生成块盒，通常从新行开始；inline 生成可分片的行内盒，参与行布局；inline-block 对外参与行布局，对内建立块级格式化上下文。
+
+- block 的 width:auto 通常填充可用内联尺寸，但它不是“永远占满一行”。
+- 非替换 inline 盒的 width/height 通常不生效，左右 margin/padding 参与行布局，垂直 margin 不按块盒方式推开行；内容可跨多行形成多个片段。
+- inline-block 可以设置尺寸且整体不跨行拆分，默认按基线对齐；HTML 源码中的空白也可能形成可见间隙。
+
+现代水平布局通常优先 Flex/Grid；选择 display 应根据布局语义，而不是元素标签的传统“块级/行内”称呼。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/display)。
 
 ---
 
 ## Q23｜为什么 img 是 inline 但是可以设置宽高
 
-关于为什么img元素通常被视为内联元素，但可以设置宽度和高度，这是因为HTML规范中对img元素的默认样式有特殊的定义。默认情况下，img元素是内联元素，但可以设置其宽度和高度。这是因为img元素通常需要具体的宽度和高度信息，以确保图像以正确的尺寸显示，而不会引起页面重新布局。因此，即使是内联元素，img元素也可以具有宽度和高度属性。
+适用：HTML Living Standard；现代 CSS replaced elements。
+
+img 默认是 inline-level replaced element（行内级替换元素）。普通非替换 inline 盒由文字内容和字体指标决定，width/height 通常不适用；替换元素的内容由外部图像替代，具有固有宽高和宽高比，因此 CSS width/height 可以参与计算。
+
+它仍参与行盒并按基线对齐，所以图片下方常出现为文字下行部预留的间隙。可按需求设置 display:block，或调整 vertical-align。给 img 写 width/height HTML 属性还能让浏览器在图片下载前预留宽高比，减少布局偏移，但响应式 CSS 仍应允许 max-width:100%;height:auto。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Replaced_element_properties) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img)。
 
 ---
 
 ## Q24｜box-sizing 的作用，如何使用？
 
-box-sizing 是一个CSS属性，用于控制元素的盒模型如何计算尺寸。它有两个主要取值：
+适用：现代 CSS Box Sizing。
 
-- content-box（默认值）：元素的宽度和高度只包括内容区域，不包括内边距和边框。这是传统的盒模型。
-- border-box：元素的宽度和高度包括内容区域、内边距和边框。这意味着设置元素的宽度和高度时，内边距和边框不会增加元素的总宽度和高度，而会占用内容区域内的空间。
+box-sizing 决定 width/height、min/max 尺寸作用于内容盒还是边框盒。content-box 是多数元素默认值：外部宽度 = width + padding + border；border-box 把 padding 和 border 包含在声明宽度内，内容盒会相应缩小。margin 始终不包含在两者中。
 
-在上述示例中，当box-sizing设置为border-box时，设置的宽度值（100px）包括了内边距和边框，而内容区域的宽度会自动减少以适应内边距和边框。这可以帮助更精确地控制元素的总宽度。
+```css
+*, *::before, *::after { box-sizing: border-box; }
+```
 
-**注意：**box-sizing通常在全局样式中设置，以确保整个页面使用一致的盒模型。
+表单控件的用户代理默认值可能不同。border-box 让组件尺寸更易预测，但若 padding+border 大于声明尺寸，内容尺寸仍会受最小约束和溢出规则影响。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing)。
 
 ---
 
 ## Q25｜CSS 实现动画
 
-CSS动画可以通过使用CSS的@keyframes规则和animation属性来实现。以下是实现CSS动画的基本步骤：
+适用：CSS Animations Level 1；现代浏览器。
 
-1. **定义关键帧（Keyframes）：**使用@keyframes规则定义动画的关键帧，即动画在不同时间点的状态。每个关键帧定义了一个或多个CSS属性的值。
-2. **应用动画：**将关键帧应用到元素上，使用animation属性。可指定动画名称、持续时间、延迟、重复次数等。
-3. **触发动画：**您可以通过添加类名或通过JavaScript来触发动画。
-4. 使用类名触发动画：
-5. 使用JavaScript触发动画：
+CSS 动画使用 @keyframes 描述关键状态，通过 animation-* 属性控制时长、缓动、延迟、次数、方向和填充模式。优先动画 transform 与 opacity，通常可以避免布局计算；宽高、位置等影响布局的属性可能触发更多样式计算和绘制。
 
-**可选设置：**根据需要，您还可以使用其他animation属性，如
+```css
+@keyframes slide-in {
+  from { transform: translateX(-24px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
 
-- animation-fill-mode（指定动画结束后元素的状态）
-- animation-direction（指定动画播放的方向）
-- animation-play-state（控制动画的播放状态）
+.card.is-entering {
+  animation: slide-in 240ms ease-out both;
+}
 
-CSS动画是一种简单而有效的方式来创建元素的过渡和动画效果。您可以根据需求和创意来定义动画的关键帧和属性。动画可以在不编写JavaScript的情况下实现，但也可以与JavaScript一起使用，以响应用户交互或动态生成动画效果。
+@media (prefers-reduced-motion: reduce) {
+  .card.is-entering { animation: none; }
+}
+```
+
+添加类名触发动画：
+
+```js
+card.classList.add('is-entering');
+card.addEventListener('animationend', () => card.classList.remove('is-entering'), { once: true });
+```
+
+animationend 在动画正常结束时触发；如果元素被移除或动画被取消，不能假设它一定发生。需要业务状态收尾时应设计超时或取消路径。可交互界面还应尊重 prefers-reduced-motion，避免强制用户观看大幅运动。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)。
 
 ---
 
 ## Q26｜transition 和 animation 的区别？
+
+适用：现代 CSS Transitions and Animations。
 
 transition 和 animation 是CSS用于创建动画效果的两种不同的属性。
 
@@ -512,9 +525,13 @@ transition 和 animation 是CSS用于创建动画效果的两种不同的属性�
 - 使用 transition 可以创建简单的状态过渡效果，适用于鼠标悬停、焦点等触发的状态变化。
 - 使用 animation 可以创建更复杂的动画，包括关键帧、持续时间、循环和更精细的控制。它适用于需要更多控制和复杂度的动画场景。
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)。
+
 ---
 
 ## Q27｜如何实现在某个容器中居中的？
+
+适用：现代 CSS Grid/Flex alignment。
 
 需要同时居中时，父容器用 display:grid 和 place-items:center，并保证容器有足够高度。只有水平居中且子元素宽度受限时，可用 margin-inline:auto。绝对定位的 50% 加 translate(-50%,-50%) 适合脱离文档流的覆盖元素，必须先给容器建立定位上下文。
 
@@ -522,9 +539,13 @@ transition 和 animation 是CSS用于创建动画效果的两种不同的属性�
 .container { display: grid; place-items: center; min-height: 300px; }
 ```
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/place-items)。
+
 ---
 
 ## Q28｜如何改变一个 DOM 元素的字体颜色？
+
+适用：现代 CSSOM/DOM。
 
 字体颜色由 CSS 的 color 属性控制，可设置类，也可修改元素 style.color；background-color 改的是背景，不是文字。推荐通过切换类表达状态，避免大量内联样式。颜色应同时考虑深浅主题和可读性，不能只靠颜色传达错误或成功。
 
@@ -533,158 +554,118 @@ element.classList.add('is-error'); // CSS: .is-error { color: #b42318; }
 element.style.color = '#334155'; // 简单动态场景
 ```
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/color) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList)。
+
 ---
 
 ## Q29｜相对布局和绝对布局，position:relative 和 absolute。
 
-- **相对布局（Relative Positioning）：**
-- 使用position: relative;将元素的位置相对于其自身在正常文档流中的位置进行调整。
-- 相对布局会保留元素原有的空间，但可以通过top、right、bottom和left属性来调整元素的位置，使其相对于原始位置上下左右偏移。
-- **绝对布局（Absolute Positioning）：**
-- 使用position: absolute;将元素的位置相对于其最近的具有相对定位或绝对定位的父元素进行调整。
-- 绝对布局会使元素脱离正常文档流，不保留原有的空间，因此不会影响其他元素的位置。
+适用：现代 CSS Positioned Layout。
 
-在绝对定位中，通常需要指定元素相对于哪个父元素进行定位，这可以通过为父元素添加position: relative;来实现。如果没有明确的相对定位的父元素，绝对定位将相对于文档的根元素进行定位。
+relative 元素保留在普通流中的原始空间，再相对自身正常位置按 inset 偏移；它常用于轻微视觉偏移，也可为绝对定位后代建立包含块。偏移不会让周围元素重新占用它原来的位置。
+
+absolute 元素脱离普通流，通常相对最近建立定位包含块的祖先定位。position 非 static 的祖先是常见来源，但 transform、contain 等也可能建立包含块；没有合适祖先时使用初始包含块。绝对定位适合徽标、弹层内部定位等明确覆盖关系，不适合替代普通响应式布局。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/position)。
 
 ---
 
 ## Q30｜弹性盒子 flex 布局
 
-Flex 布局的核心概念包括以下几点：
+适用：现代 CSS Flexbox。
 
-- **容器和项：**在 Flex 布局中，存在容器元素和容器内的项（子元素）。容器元素通过设置 display: flex; 或 display: inline-flex; 来启用 Flex 布局。
-- **主轴和交叉轴：**Flex 布局定义了主轴和交叉轴。主轴是项排列的主要方向，而交叉轴是垂直于主轴的方向。
-- **弹性布局：**Flex 布局允许项根据可用空间自动调整大小，以填充容器。这意味着项可以具有弹性的宽度或高度，以适应不同屏幕尺寸。
-- **对齐和排序：**您可以轻松地控制项在主轴和交叉轴上的对齐方式，以及它们的排序顺序。
-- **自动换行：**如果项在主轴上无法适应容器的宽度，它们可以自动换行到下一行，而无需使用浮动布局。
-- **嵌套支持：**您可以嵌套多个 Flex 容器以创建复杂的布局结构。
+Flexbox 是一维布局模型：flex-direction 决定主轴，交叉轴与主轴垂直；writing-mode 和方向会影响实际物理方向。容器默认 flex-wrap:nowrap，不会“空间不够自动换行”，需要显式设置 wrap。
+
+flex 项先取得 flex-basis，再按 flex-grow 分配剩余空间、按 flex-shrink 收缩。常见的 flex:1 等价语义需结合规范展开值理解；内容项无法收缩时通常给它 min-width:0。justify-content 控制主轴分布，align-items/align-self 控制单行交叉轴，align-content 只对多行容器的行分布有效。
+
+order 只改变视觉顺序，不改变 DOM 与通常的键盘/朗读顺序，因此不应拿来修复语义结构。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout)。
 
 ---
 
 ## Q31｜Less 和 SCSS 的区别
 
-Less（Leaner Style Sheets）和 SCSS（Sassy CSS）都是CSS预处理器，它们添加了一些功能和语法糖来帮助开发人员更轻松地管理和组织样式代码。
+适用：Less/Sass 当前文档；Sass 模块系统。
 
-- 语法:
-- Less: Less 使用较少的特殊字符，例如，变量定义以@开头，Mixin以.开头，选择器嵌套使用&等。
-- SCSS:  SCSS采用类似于CSS的语法，使用大括号{}和分号;来定义块和分隔属性。
-- 编译:
-- Less: Less编译后生成的是纯CSS文件，文件扩展名通常为.css。
-- SCSS: SCSS编译后也生成纯CSS文件，文件扩展名通常为.css，与Less一样。
-- 兼容性:
-- Less: Less在早期版本中对CSS语法更宽松，因此较容易与现有的CSS文件集成。最新版本的Less也支持更严格的CSS语法。
-- SCSS: SCSS采用了更接近标准CSS的语法，因此对于已经熟悉CSS的开发人员来说更容易上手。
-- 生态系统:
-- Less: Less在生态系统方面较早出现，因此有一些基于Less的工具和库。
-- SCSS: SCSS在Sass的基础上发展而来，因此与Sass的生态系统整合紧密，也有许多相关工具和库。
-- 特性:
-- Less: Less提供了一些常见的CSS功能，如变量、嵌套、Mixin等，但在某些高级功能方面不如SCSS强大。
-- SCSS: SCSS具有更丰富的功能集，包括控制指令、函数、循环等，因此在某些情况下更强大。
-- 扩展名:
-- Less: Less文件的扩展名通常为.less。
-- SCSS: SCSS文件的扩展名通常为.scss。
+Less 与 Sass/SCSS 都在构建阶段编译为 CSS。Less 变量常用 @name，mixin 可直接复用规则集；SCSS 变量使用 $name，并提供模块系统、mixin/function、控制指令和更系统的值类型。SCSS 是 Sass 的 CSS 兼容语法，缩进语法 .sass 是另一种写法。
+
+选择时应看现有技术栈、组件库和构建工具，而不是只比较语法多少。现代 CSS 已原生支持自定义属性、嵌套、颜色函数等部分能力，但编译期变量/循环与运行时 CSS 自定义属性语义不同，不能直接互换。新 Sass 代码应优先 @use/@forward，旧 @import 已被弃用。
+
+参考：[资料 1](https://lesscss.org/features/) · [资料 2](https://sass-lang.com/documentation/)。
 
 ---
 
 ## Q32｜CSS3 伪类，伪元素
 
-CSS3中引入了许多新的伪类和伪元素，它们用于选择文档结构中的元素，并使其具有不同的样式和行为。这些伪类和伪元素是CSS中的特殊选择器，用于更精确地定位和样式化页面元素。
+适用：现代 Selectors/Pseudo-elements。
 
-**CSS3 伪类（Pseudo-classes）：**伪类用于选择文档中的特定元素，通常基于它们的状态、位置或属性。
+伪类用单冒号选择元素的状态或结构关系，例如 :hover、:focus-visible、:checked、:nth-child()、:not()、:is()、:where()、:has()。:nth-child(n) 判断元素在兄弟节点中的位置，不是简单“选父元素中的某种标签第 n 个”，需要区分 :nth-of-type()。
 
-1. :hover：选择鼠标悬停的元素。
-2. :active：选择被点击的元素。
-3. :focus：选择获得焦点的元素，如表单元素。
-4. :nth-child(n)：选择某元素在其父元素的第n个位置。
-5. :not(selector)：选择不匹配指定选择器的元素。
-6. :first-child：选择某元素的父元素中的第一个子元素。
-7. :last-child：选择某元素的父元素中的最后一个子元素。
+伪元素用双冒号表示元素的一部分或生成盒，例如 ::before、::after、::first-line、::first-letter、::selection、::marker。::before/::after 依赖 content 生成，不能替代有业务语义的真实 DOM；生成内容的可访问性支持也不应作为关键信息唯一来源。
 
-**CSS3 伪元素（Pseudo-elements）：**伪元素用于在文档中生成虚拟元素，通常用于添加样式或内容。
-
-1. ::before：在元素内容之前生成内容，通常用于添加装饰或图标。
-2. ::after：在元素内容之后生成内容，也常用于添加装饰或图标。
-3. ::first-line：选择元素的首行文本，用于样式化段落中的首行文字。
-4. ::first-letter：选择元素的首字母，用于样式化段落或标题的首字母。
-5. ::selection：选择用户选择的文本部分，允许自定义选中文本的样式。
-
-这些伪类和伪元素扩展了CSS的能力，使开发人员可以更精确地选择和样式化文档中的元素。它们在创建各种效果、优化用户界面和提供更丰富的用户体验方面非常有用。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)。
 
 ---
 
 ## Q33｜::before 和 ::after 中双冒号和单冒号的区别
 
-::before 和 ::after 伪元素选择器都用于在元素的内容之前和之后插入生成的内容，通常用于添加额外的样式或内容。在CSS中，双冒号 :: 和单冒号 : 的区别主要在于标准的规范化。双冒号 :: 用于伪元素，而单冒号 : 用于伪类。虽然在实际使用中，双冒号 :: 和单冒号 : 在大多数现代浏览器中通常都可以互换使用，但根据CSS规范，应该使用双冒号 :: 来表示伪元素。
+适用：CSS Selectors / Pseudo-elements。
 
-**总结：**
+双冒号表示伪元素，例如 ::before、::after、::marker；单冒号表示伪类，例如 :hover、:focus。为了兼容 CSS 早期语法，浏览器同时接受 :before、:after、:first-line、:first-letter 这四个历史伪元素的单冒号写法。
 
-- ::before 和 ::after 是伪元素选择器。
-- 根据CSS规范，应该使用双冒号 ::，如 ::before 和 ::after。
-- 大多数现代浏览器也允许使用单冒号 :，但为了规范化和未来兼容性，建议使用双冒号 ::。
+该兼容规则不能推广到所有伪元素，:marker 并不是 ::marker 的等价写法。新代码统一使用双冒号表示伪元素。before/after 通常需要 content 才产生生成内容，其文本不能替代关键语义、表单标签或可访问名称。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)。
 
 ---
 
 ## Q34｜响应式布局的实现方案
 
-响应式布局是一种适应不同屏幕尺寸和设备的设计方法，以确保网站在各种设备上都能提供良好的用户体验。
+适用：现代响应式 Web；容器查询按兼容性使用。
 
-- **使用媒体查询（Media Queries）：**媒体查询是CSS3的一项功能，允许根据屏幕宽度、高度、分辨率等条件来应用不同的样式。通过在CSS中嵌入媒体查询，可以为不同的屏幕尺寸定义不同的样式规则。
-- **流式布局（Fluid Layout）：**通过使用百分比宽度而不是固定像素宽度来定义布局，使网站能够随着屏幕尺寸的变化而自动调整。这种方法可确保网站的内容能够适应不同的屏幕尺寸。
-- **弹性布局（Flexbox）：**使用Flexbox布局模型可以轻松实现网页中的水平和垂直居中，以及自适应布局。Flexbox提供了更高级的布局控制。
-- **图片大小调整：**使用max-width: 100%;或width: 100%;来确保图像能够根据屏幕尺寸缩放，以避免图像在小屏幕上溢出。
+响应式设计不是按设备型号写多套页面，而是让内容和组件在可用空间、输入方式、用户偏好和资源能力变化时保持可用。
+
+- 先使用流式尺寸、Flex/Grid、minmax()、clamp() 等让布局自然伸缩。
+- 视口级变化使用移动优先媒体查询；组件由所在容器决定布局时使用 container queries。
+- 图片使用 max-width:100%;height:auto，并通过 picture/srcset/sizes 提供合适资源。
+- 使用逻辑属性和相对单位支持不同书写方向与缩放。
+- 响应 prefers-reduced-motion、prefers-color-scheme、hover/pointer 等用户或设备能力。
+- 断点应由内容何时失效决定，不按某款手机宽度硬编码。
+
+响应式还包括可触摸目标、键盘操作、文本放大、动态视口单位和真实低性能设备验证。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)。
 
 ---
 
 ## Q35｜link 标签和 import 标签的区别？
 
-<link> 标签和 @import 规则都用于引入外部CSS文件，区别如下：
+适用：HTML Living Standard；现代 CSS Cascade。
 
-- **语法和用法：**
-- <link> 标签是HTML标记，用于在HTML文档的<head>部分中引入外部CSS文件。它具有自己的属性，例如rel（关系）、href（资源链接）、type（MIME类型）等。
-- @import 是CSS规则，用于在CSS样式表中引入外部CSS文件。它必须位于CSS样式表中，通常放在样式表的顶部，可以用于导入其他CSS文件。
-- **加载方式：**
-- <link> 标签会在页面加载过程中同时加载CSS文件，这可以并行进行，不会阻止页面的渲染。
-- @import 规则只能在当前CSS文件加载完成后才会加载引入的外部CSS文件，这会导致页面渲染的延迟，因为它会阻止页面的渲染。
-- **兼容性：**
-- <link> 标签的支持广泛，可以用于所有HTML版本。
-- @import 规则是CSS2引入的特性，较旧的浏览器可能不支持，尤其是在CSS1规范中并没有这个特性。但在现代浏览器中，它通常能够正常工作。
-- **维护和管理：**
-- 使用<link>标签更容易维护和管理，因为它与HTML文档分开，并且可以在文档的<head>部分中轻松找到。
-- 使用@import规则时，CSS代码和引入的CSS文件混在一起，可能会导致维护复杂度增加，特别是在大型项目中。
+link rel=stylesheet 在 HTML 解析阶段被发现，样式表通常会阻塞首次渲染，避免无样式内容闪烁；它支持 media、integrity、crossorigin 等属性。@import 写在 CSS 内，浏览器必须先取得并解析外层样式表才能发现导入，容易形成串行请求链，因此性能关键样式通常优先 link 或构建期合并。
+
+@import 必须出现在样式表其他普通规则之前（除 @charset、@layer 等允许的前置规则），并可指定 media、supports、layer。两者最终都参与 CSS 层叠；“link 不阻塞渲染”是错误表述。现代构建工具还可能内联、拆包或重写导入，分析网络行为时要看最终产物。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)。
 
 ---
 
 ## Q36｜块元素、行元素、置换元素的区别
 
-在HTML和CSS中，元素可以根据它们的行为和显示方式分为
+适用：HTML Living Standard；现代 CSS Display。
 
-1. 块级元素（Block-level Elements）、
-2. 内联元素（Inline Elements）
-3. 置换元素（Replaced Elements）。
+要区分 HTML 内容模型和 CSS 盒类型。div、p、a 等标签允许包含什么由 HTML 规范决定；它们默认生成块盒还是行内盒由用户代理样式和 display 决定，CSS 可以改变显示类型，但不能因此改变 HTML 嵌套合法性或语义。
 
-**块级元素（Block-level Elements）：**
+块级/行内级描述盒如何参与外部格式化上下文。替换元素则描述内容表现由外部对象替代，并可能具有固有尺寸，例如 img、video、iframe 和部分表单控件。img 可以同时是行内级盒和替换元素，这两个维度不冲突。并非所有 video/iframe 尺寸都完全由资源决定，CSS 仍可约束它们。
 
-- 块级元素通常以新行开始，占据父元素可用宽度的整个宽度。
-- 块级元素可以包含其他块级元素和内联元素。
-- 常见的块级元素包括<div>、<p>、<h1>-<h6>、<ul>、<ol>、<li>等。
-
-**内联元素（Inline Elements）：**
-
-- 内联元素通常不会导致新行的开始，它们只占据它们的内容宽度。
-- 内联元素通常包含在块级元素内部，可以与其他内联元素在同一行上。
-- 常见的内联元素包括\`、<a>、\*\*、\*、<img>、<br>\`等。
-
-**置换元素（Replaced Elements）：**
-
-- 置换元素是一种特殊类型的元素，其内容通常由外部资源（如图像、视频或浏览器默认样式）来替代。
-- 置换元素的尺寸和外观通常由外部资源定义，而不是CSS样式。
-- 常见的置换元素包括<img>、<video>、<iframe>等。
-
-**注意：**这些术语描述了元素的默认行为，但CSS可以用于修改元素的显示方式。例如，可以使用CSS将内联元素转换为块级元素，或者使用display属性将块级元素转换为内联元素。置换元素的行为通常是固定的，但也可以通过CSS进行一些控制。这些概念对于理解和掌握HTML和CSS的布局和显示方式非常重要，因为它们影响到页面结构和样式的创建和控制。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/display) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Replaced_element_properties)。
 
 ---
 
 ## Q37｜单行元素的文本省略号实现方式
+
+适用：现代 CSS Overflow/Text。
 
 单行省略号需要同时具备受限宽度、禁止换行和隐藏溢出，再设置 text-overflow:ellipsis。Flex 或 Grid 子项常因默认最小宽度而不收缩，应加 min-width:0。省略只影响视觉展示，完整文字仍在 DOM 中，重要内容应允许查看全文。
 
@@ -692,61 +673,45 @@ CSS3中引入了许多新的伪类和伪元素，它们用于选择文档结构�
 .title { min-width: 0; max-width: 20rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 ```
 
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow)。
+
 ---
 
 ## Q38｜HTML 语义化标签
 
-HTML语义化标签是指在HTML文档中使用具有明确定义和语义含义的标签，以描述文档的结构和内容。这些标签有助于开发人员和浏览器更好地理解文档的内容和结构，提高可访问性、可维护性和搜索引擎优化（SEO），以及改进文档的可读性：
+适用：HTML Living Standard；现代无障碍语义。
+
+HTML 语义化是根据内容角色选择元素，让浏览器、辅助技术、搜索工具和维护者理解结构，而不是只按默认样式选标签。语义元素不能代替正确的标题层级、可访问名称和键盘行为：
 
 1. **<header>：**定义文档或文档的一部分的页眉。通常包括网站的标题、标志、导航菜单等。
 2. **<nav>：**用于定义导航部分，通常包括导航链接、菜单、目录等。
-3. **<main>：**表示文档的主要内容区域，通常每个文档只有一个<main>元素。
+3. **<main>：**表示文档主要内容，通常只应有一个当前可见 main。
 4. **<article>：**用于表示独立于页面内容的、可独立分发或重复使用的内容块，如一篇新闻文章、博客帖子或评论。
 5. **<section>：**用于组织文档的不同章节或主题区域，如文章的章节、内容块等。
 6. **<aside>：**表示与页面主要内容相关但可以视为附属的内容，如侧边栏、广告、引用等。
 7. **<footer>：**定义文档或文档的一部分的页脚，通常包括版权信息、联系信息、相关链接等。
 8. **<figure>：**用于包含与文档相关的图像、图表、照片等，通常与<figcaption>元素一起使用来提供图像的描述。
 9. **<figcaption>：**用于为<figure>元素提供标题或描述。
-10. **<time>：**用于表示日期、时间或时间范围，有助于机器和搜索引擎更好地理解时间信息。   
+10. **<time>：**表示日期、时间或时间范围，可通过 datetime 提供机器可读值。
+
+如果原生 button、nav、details 等已经提供语义和交互，不要优先用 div 加 ARIA 重新实现；规则是“没有 ARIA 胜过错误 ARIA，原生语义优先”。
+
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/Semantics) · [资料 2](https://html.spec.whatwg.org/)。
 
 ---
 
 ## Q39｜px，rpx，vw，vh，rem，em 的区别
 
-1. **px（像素）：**
+适用：现代 CSS Values and Units；rpx 为非标准平台单位。
 
-- 相对单位，代表屏幕上的一个基本单位，逻辑像素。
-- 不会根据屏幕尺寸或分辨率自动调整大小。
-- 在高分辨率屏幕上可能显得很小。
+- px 是 CSS 绝对长度单位中的参考像素，不等于一个物理屏幕像素；缩放和设备像素比会决定它映射到多少设备像素。
+- rpx 是微信小程序等特定平台的非标准单位，通常按 750rpx 对应屏幕宽度换算，不能直接用于普通 Web CSS。
+- 1vw/1vh 分别是初始包含块宽高的 1%；移动端浏览器工具栏变化时还需理解 svh/lvh/dvh 等小、大、动态视口单位。
+- rem 相对根元素字体大小；适合全局尺度与用户字体设置联动。
+- em 在 font-size 上相对父元素字体大小，在多数其他属性上相对当前元素计算后的字体大小，嵌套时可能累积。
 
-1. **rpx（微信小程序单位）：**
+字体通常优先 rem/em，边框等精细尺寸可用 px，流式尺寸可结合百分比、视口/容器单位和 clamp()。单位选择应服务缩放、内容和组件边界，不能靠单一单位解决所有响应式问题。
 
-- 主要用于微信小程序开发。
-- 是相对单位，基于屏幕宽度进行缩放。
-- 可以在不同设备上保持一致的布局。
-
-1. **vw（视窗宽度单位）：**
-
-- 相对单位，表示视窗宽度的百分比。
-- 1vw等于视窗宽度的1%。
-- 用于创建适应不同屏幕宽度的布局。
-
-1. **vh（视窗高度单位）：**
-
-- 相对单位，表示视窗高度的百分比。
-- 1vh等于视窗高度的1%。
-- 用于创建根据屏幕高度进行布局调整的效果。
-
-1. **rem（根元素单位）：**
-
-- 相对单位，基于根元素的字体大小。
-- 1rem等于根元素的字体大小。
-- 可用于实现相对大小的字体和元素，适合响应式设计。
-
-1. **em（字体相对单位）：**
-
-- 相对单位，基于当前元素的字体大小。
-- 1em等于当前元素的字体大小。
-- 通常用于设置相对于父元素的字体大小。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/CSS/length)。
 
 ---

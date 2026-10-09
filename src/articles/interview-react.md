@@ -6,311 +6,376 @@ description: "整理 React 生态中的核心概念、Hooks、状态管理与工
 kind: "知识文章"
 tags: ["React","Hooks","面试"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 105
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://react.dev/reference/react/useState","https://react.dev/reference/react/useEffect","https://react.dev/learn/reusing-logic-with-custom-hooks"]
 technologyVersion: "React 18/19；客户端 Hook 语义"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://react.dev/reference/react/useState) · [参考 2](https://react.dev/reference/react/useEffect) · [参考 3](https://react.dev/learn/reusing-logic-with-custom-hooks)。
 
 
 ## Q204｜React 中为什么要设计 Hook ，为了解决什么问题
 
-总的来说是以下三个原因：
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-- Component 非 UI 逻辑复用困难。
-- 组件的生命周期函数不适合 side effect 逻辑的管理。
-- 不友好的 Class Component。
+Hooks 让函数组件使用状态、Context、引用和副作用，并把相关业务逻辑抽成自定义 Hook。它解决了类组件中相关逻辑分散于多个生命周期、HOC/render props 容易形成嵌套、this 与实例行为较难组合等问题。
+
+Hooks 复用的是逻辑，不是自动共享状态；每次调用拥有独立状态。一般 Hook 必须在组件或自定义 Hook 顶层调用，保持调用顺序稳定。类组件仍受支持，不必为了使用新语法重写所有存量代码。
+
+参考：[资料 1](https://react.dev/learn/reusing-logic-with-custom-hooks) · [资料 2](https://react.dev/reference/rules/rules-of-hooks)。
 
 ---
 
 ## Q205｜组件的生命周期方法。
 
-React组件的生命周期可以分为三个阶段：挂载阶段、更新阶段和卸载阶段。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-- 挂载阶段包括constructor、render、componentDidMount等方法，用于初始化组件、渲染到真实DOM和处理副作用。
-- 更新阶段包括shouldComponentUpdate、render、componentDidUpdate等方法，用于控制组件的重新渲染和处理更新后的副作用。
-- 卸载阶段包括componentWillUnmount方法，用于清理组件产生的副作用和资源。
+类组件挂载主要经过 constructor、render、componentDidMount；更新经过 render 并在提交后调用 componentDidUpdate，可用 shouldComponentUpdate 提供优化提示；卸载前调用 componentWillUnmount 清理资源。getDerivedStateFromProps、getSnapshotBeforeUpdate 和错误边界方法用于特定需求，不应机械地全部实现。
+
+render 阶段必须纯净，可能执行后被放弃。请求、订阅等放在提交后阶段，并保证清理对称。函数组件用状态与 Effect 表达相同需求，但 useEffect 是与外部系统同步，不是每个生命周期方法的一对一替代。开发 StrictMode 可能额外执行挂载清理检查。
+
+参考：[资料 1](https://react.dev/reference/react/Component)。
 
 ---
 
 ## Q206｜状态（state）和属性（props）
 
-- **状态（state）:** React组件的可变数据，用于存储组件内部的状态信息。状态可以通过setState方法进行更新，并且只能在组件内部访问和修改。
-- **属性（props）:** 是React组件的外部输入，用于传递数据和配置信息给组件。属性是不可变的，只能由父组件传递给子组件，子组件不能直接修改父组件传递的属性。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+props 是组件收到的只读输入，state 是组件拥有的渲染状态。它们在一次渲染中都是快照，不能原地修改；通过 setter 或类组件 setState 请求下一次更新。
+
+状态可以提升到共同父组件并通过 props 共享，并不是“只能在本组件访问”。Hook setter 替换整个状态值；类 setState 对对象执行浅合并。下一状态依赖旧状态时使用函数式更新；对象和数组更新通常创建新引用，避免破坏历史快照和变更检测。
+
+参考：[资料 1](https://react.dev/learn/passing-props-to-a-component) · [资料 2](https://react.dev/learn/state-as-a-snapshot)。
 
 ---
 
 ## Q207｜高阶组件（Higher-Order Components）
 
-- 高阶组件是一种函数，接受一个组件作为参数并返回一个新的组件。高阶组件可以用于封装通用的逻辑和行为，以便在多个组件中重复使用。它们可以用于实现组件的复用、逻辑的抽象和代码的组合。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+高阶组件 HOC 是接收组件、返回增强组件的函数，用于权限、订阅或兼容已有库的包装。应组合原组件并透传无关 props，不能修改传入组件；也不要在父组件每次 render 时创建新的 HOC 类型，否则可能不断卸载和重挂。
+
+包装会影响 displayName、静态属性和 ref 转发，需要显式处理。现代函数组件中的逻辑复用常用自定义 Hook；HOC 仍适合组件接口包装。两者应按调用方需要选择，不必将所有 HOC 改为 Hook。
+
+参考：[资料 1](https://legacy.reactjs.org/docs/higher-order-components.html)。
 
 ---
 
 ## Q208｜受控组件 和 非受控组件
 
-- **受控组件：**是由React控制并管理其内部状态的组件。它的状态通常通过props传递给子组件，并通过事件处理程序进行更新。受控组件提供了更精确的控制和验证，但需要更多的代码来处理状态更新。
-- **非受控组件：**是由组件本身管理其内部状态的组件。它的状态通常通过ref从DOM中获取，并且不依赖于React来处理状态的更新。非受控组件通常在处理表单和第三方DOM集成时使用。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+以表单为例，受控输入的 value/checked 由 React 状态决定，onChange 同步更新对应状态；非受控输入用 defaultValue/defaultChecked 提供初值，后续当前值保存在 DOM，提交时可通过 FormData 或 ref 读取。
+
+```jsx
+import { useState } from "react";
+function NameInput() {
+  const [name, setName] = useState("");
+  return <input value={name} onChange={event => setName(event.target.value)} />;
+}
+```
+
+同一个输入在生命周期内不要从 undefined 切到受控字符串；checkbox 使用 checked。文件输入的文件由用户选择，不能按普通文本 value 控制。
+
+参考：[资料 1](https://react.dev/reference/react-dom/components/input)。
 
 ---
 
 ## Q209｜展示组件 (Presentational component) 和 容器组件 (Container component) 区别
 
-**展示组件（Presentational component）：**
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-- 主要关注UI的呈现和展示，负责渲染和显示数据。
-- 通常是无状态的（stateless），接收来自容器组件的props，并根据props渲染UI。
-- 不关心数据的来源和逻辑处理，只负责展示和交互。
-- 通常是可复用的，可以在多个地方使用。
+展示组件偏重 UI 与交互接口，容器组件偏重获取数据、协调状态和处理业务。二者是职责划分约定，不是 React 的组件类型；展示组件也可以有展开状态，容器也可以渲染布局。
 
-**容器组件（Container component）：**
+可以用 props 把数据与事件传给展示组件，或把获取逻辑抽成自定义 Hook。只有当复用、测试和理解成本确实下降时再拆层，避免每个简单组件都增加一个空容器。
 
-- 主要关注数据的获取和逻辑处理，负责管理数据和状态。
-- 通常是有状态的（stateful），可以包含自己的state，并通过props将数据传递给展示组件。
-- 可以通过Redux或其他状态管理库来管理应用程序的状态。
-- 可以包含多个展示组件，负责协调它们之间的交互和数据流动。
+参考：[资料 1](https://react.dev/learn/thinking-in-react)。
 
 ---
 
 ## Q210｜类组件(Class component) 和 函数式组件(Functional component)  区别
 
-**类组件（Class component）：**
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-- 通过继承React.Component类来定义组件。
-- 可以包含自己的状态（state）和生命周期方法（lifecycle methods）。
-- 可以使用this关键字来访问组件的状态和props。
-- 可以使用ref来访问DOM元素或子组件。
-- 可以使用setState方法来更新组件的状态，触发组件的重新渲染。
-- 通常用于复杂的组件，需要管理自己的状态并响应生命周期事件。
+类组件继承 Component，通过 this.props、this.state、setState 和生命周期方法组织逻辑；函数组件直接接收 props，通过 Hooks 使用状态、副作用和引用。自 React 16.8 起，函数组件即可管理复杂状态，不能再把它定义成无状态展示函数。
 
-**函数式组件（Functional component）：**
+函数每次渲染重新执行，闭包捕获该次状态快照；类方法通常通过 this 访问当前实例。新代码一般优先函数组件，现有类组件仍可维护；错误边界等能力还需使用对应类 API 或成熟封装。
 
-- 通过函数来定义组件，接收props作为参数，返回JSX元素。
-- 没有自己的状态和生命周期方法。
-- 不能使用this关键字来访问组件的状态和props。
-- 通常用于简单的展示组件，只关注UI的呈现和展示，不需要管理状态和响应生命周期事件。
+参考：[资料 1](https://react.dev/reference/react/Component) · [资料 2](https://react.dev/reference/react)。
 
 ---
 
 ## Q211｜如何划分 技术组件 和 业务组件
 
-- **业务组件：**业务组件是与应用程序的业务逻辑紧密相关的组件。它们通常是可重用的，可以在应用程序的不同部分使用。这些组件通常包含与数据交互、状态管理和用户交互相关的代码。例如，登录表单、购物车组件和用户列表等都可以视为业务组件。
-- **技术组件：**技术组件是与应用程序的技术实现相关的组件。它们通常是可重用的，用于处理特定的技术功能或实现通用的UI样式。这些组件通常包含与样式、路由、数据请求和状态管理无关的代码。例如，按钮组件、弹出框组件和表单验证组件等都可以视为技术组件。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-**划分组件的指导原则：**
+技术组件提供通用能力，如 Button、Dialog、分页或上传基础交互；业务组件表达领域规则，如订单审批、购物车结算与权限化操作。划分依据是是否依赖具体业务概念，而不是能否包含样式、请求或状态。
 
-1. 单一职责原则：每个组件应该只关注一个特定的功能或任务。这样可以使组件更加可重用和可测试。
-2. 可组合性：组件应该是可组合的，可以与其他组件一起使用。这样可以构建更大的组件和应用程序。
-3. 数据流动：组件之间的数据流动应该是单向的，从父组件到子组件。可以更好地追踪数据的变化和调试问题。
-4. 分层架构：将组件按照层次结构进行组织，从而更好地分离业务逻辑和技术实现。
+通用层通过 props/事件暴露稳定接口，业务层负责字段映射、权限和服务调用。遵循单一职责与可组合性，但不为猜测中的复用过度抽象；通过依赖方向确保基础组件不反向引用业务模块。
+
+参考：[资料 1](https://react.dev/learn/thinking-in-react)。
 
 ---
 
 ## Q212｜什么是 React 中的上下文（Context）？它有什么作用？
 
-在 React 中，上下文（Context）是一种用于在组件树中共享数据的方法。它允许将数据在组件之间传递，而不需要通过显式地将 props 逐层传递下去。上下文提供了一种在组件之间共享数据的便捷方式。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-上下文由两个主要组件组成：
+Context 用于让后代读取最近 Provider 提供的数据，避免逐层透传。createContext 的默认值只在找不到 Provider 时生效；Provider 传 undefined 不会自动退回默认值。
 
-- React.createContext：该函数用于创建上下文对象。它接受一个初始值作为参数，并返回一个上下文对象。例如：
-- Provider 组件：该组件用于将数据传递给后代组件。通过 Provider 组件的 value 属性，可以将数据传递给下层组件。例如：
-- Consumer 组件或 useContext 钩子：后代组件可以使用 Consumer 组件或 useContext 钩子来访问上下文中的数据。
-- 使用 Consumer 组件：
-- 使用 useContext 钩子：
+```jsx
+import { createContext, useContext } from "react";
+const ThemeContext = createContext("light");
+function Label() { return <span>{useContext(ThemeContext)}</span>; }
+function App() {
+  return <ThemeContext.Provider value="dark"><Label /></ThemeContext.Provider>;
+}
+```
 
-**上下文的作用如下：**
+value 按 Object.is 比较，变化会更新读取该 Context 的组件，memo 不阻止这种更新。避免每次无意义创建新对象，可拆分不同更新频率的 Context。React 19 还支持直接用 Context 作 Provider；Context 自身不提供状态存储与更新策略。
 
-- 数据共享：上下文允许在组件树中共享数据，而不需要通过逐层传递 props。这对于许多组件需要访问相同的数据的情况非常有用。
-- 简化组件之间的通信：上下文提供了一种简化组件之间通信的方式。数据可以直接在上下文中共享，而不需要将其传递给每个中间组件。
-- 跨层级访问数据：上下文允许在组件树的不同层级中访问共享的数据。这对于需要在深层嵌套的组件之间传递数据非常方便。
-
-需要注意的是，上下文不应被滥用。过多的使用上下文可能导致组件之间的耦合性增加，并使代码难以维护。因此，在使用上下文时需要谨慎评估是否真正需要共享数据，并确保上下文使用合理和适度。
+参考：[资料 1](https://react.dev/reference/react/useContext) · [资料 2](https://react.dev/reference/react/createContext)。
 
 ---
 
 ## Q213｜React 是 mvvm 框架吗 ？
 
-- React 不是一个典型的 MVVM（Model-View-ViewModel）框架，它更倾向于是一个 V（View）层库。尽管 React 可以与其他库（如 Redux 或 MobX）结合使用以实现更丰富的架构，但它本身并没有提供严格的 ViewModel 层。
-- 在典型的 MVVM 模式中，ViewModel 作为连接视图（View）和数据模型（Model）的中间层，负责管理视图的状态和数据，并与数据模型进行交互。而 React 的设计理念更加集中在组件化的视图层，通过构建可重用的组件来管理 UI 状态。
-- React 强调单向数据流的概念，其中数据从父组件通过 props 传递给子组件，子组件通过回调函数将状态更改传递回父组件。这种单向数据流的模型有助于构建可预测和可维护的组件，但与典型的双向绑定的 MVVM 模式不同。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+React 是构建 UI 的库，核心是组件、声明式渲染与单向数据流。它没有强制 Model/ViewModel/View 三层结构，不能仅因有状态和视图就认定是完整 MVVM 框架。
+
+可以在业务中用领域服务作为 Model，自定义 Hook 作为 ViewModel，组件作为 View；也可采用其他架构。MVVM 的关键是职责与视图状态映射，是否具备语法级双向绑定不是唯一判据。
+
+参考：[资料 1](https://react.dev/learn/thinking-in-react)。
 
 ---
 
 ## Q214｜React 如何实现 mvvm？
 
-在React中，你可以使用以下方法来实现类似MVVM的架构：
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-- 使用状态管理库：React可以与状态管理库（如Redux、MobX、React Context等）结合使用，以实现集中化的状态管理。这些库可以帮助你在模型层和视图层之间进行数据传递和状态管理，从而实现MVVM的一部分。
-- 使用双向数据绑定库：有一些第三方库（如mobx-react-lite、reactive-react等）提供了双向数据绑定的能力，它们可以使React组件中的数据与视图保持同步。通过使用这些库，你可以更接近MVVM模式中的双向数据绑定概念。
-- 自定义视图模型：你可以在React中定义自己的视图模型类或对象，将数据逻辑和转换逻辑封装到这些视图模型中。通过将视图模型与React组件结合使用，你可以实现数据的映射和处理逻辑。
+在 React 中可以用自定义 Hook 封装视图状态和操作，用服务层处理数据访问，组件只负责展示和派发意图。受控表单通过 value 与 onChange 显式连接两个方向，不需要所谓“双向绑定库”。
 
-需要注意的是，React本 身是一个非常灵活的库，你可以选择与其他库或模式结合使用，以满足你的应用程序需求。MVVM只是一种软件架构模式，具体的实现方式可以根据项目的特定要求和团队的偏好进行调整。
+```jsx
+import { useState } from "react";
+function useNameModel() {
+  const [name, setName] = useState("");
+  return { name, setName, valid: name.trim().length > 0 };
+}
+function NameForm() {
+  const vm = useNameModel();
+  return <input value={vm.name} onChange={e => vm.setName(e.target.value)} aria-invalid={!vm.valid} />;
+}
+```
+
+这是架构示意，实际提交、异步错误与服务端校验另行处理。MobX 的响应式观察也不等于自动表单双向绑定。
+
+参考：[资料 1](https://react.dev/learn/reusing-logic-with-custom-hooks) · [资料 2](https://react.dev/reference/react-dom/components/input)。
 
 ---
 
 ## Q215｜redux 主要解决什么问题 及 优缺点
 
-Redux 主要解决的问题是JavaScript应用中的状态管理。在大型的单页应用中，状态（state）会随着用户操作和数据变化而不断变化，这些状态分散在各个组件中，使得状态的管理变得复杂。Redux 提供了一个集中式的状态管理方案，使得状态的变化变得可预测和可控。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-**优点：**
+Redux 通过 store、action、reducer 组织共享状态转换，使更新路径可追踪、可重放和可测试。reducer 应纯净，不原地修改旧状态；Redux Toolkit 的 createSlice 可借助 Immer 写出修改草稿的语法，但仍产生不可变更新。
 
-1. 状态管理集中化，使得状态的变化变得可预测和可控。
-2. Redux 的状态存储只读，只能通过派发（dispatch）动作（action）来改变，使状态的变化更加清晰和可追踪。
-3. Redux 提供了中间件接口，可以方便的使用各种中间件来增强 Redux 的功能，如处理异步操作、打印日志等。
-4. Redux 有大量的社区支持和丰富的插件，可以方便的扩展其功能。
+现代官方推荐 Redux Toolkit 与 React Redux，RTK Query 可管理请求缓存，不能只拿早期大量样板代码描述现状。代价包括依赖、数据建模和团队学习；局部表单、可派生值及所有服务端数据不必一律放到全局 store。
 
-**缺点：**
-
-1. Redux 的使用有一定的学习成本，需要理解其工作原理和一些概念，如纯函数、动作、中间件等。
-2. 对于一些简单的应用，使用 Redux 可能会显得过于复杂，增加了开发的难度。
-3. Redux 的代码冗余度较高，需要编写大量的样板代码。
+参考：[资料 1](https://redux.js.org/introduction/why-rtk-is-redux-today)。
 
 ---
 
 ## Q216｜React 性能优化方案，所关联周期函数。
 
-1. 使用PureComponent或shouldComponentUpdate方法来避免不必要的重新渲染。可确定是否需要重新渲染。
-2. 使用React.memo()来缓存组件，避免不必要的重新渲染。React.memo()可以将组件的输入和输出缓存起来，避免相同的输入导致相同的输出。
-3. 使用React.lazy()和Suspense来延迟加载组件。可降低初始加载时间，并提高应用程序的性能。
-4. 使用shouldComponentUpdate或React.memo()来避免不必要的props更新，避免不必要的重新渲染。
-5. 使用React.useCallback()和React.useMemo()来缓存函数和计算结果，避免不必要的函数调用和计算。
-6. 使用React.Fragment来避免不必要的DOM节点。可减少DOM节点数量，提高应用程序的性能。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-**shouldComponentUpdate**方法和**React.memo()**与React性能优化的关联性较大。
+先用 React Profiler 与浏览器 Performance 定位瓶颈，区分组件计算、DOM 提交、布局和网络。优先缩小状态作用域、避免 Effect 循环更新、虚拟化长列表、按路由加载代码，再对昂贵且输入稳定的部分考虑 memo/useMemo/useCallback。
 
-- shouldComponentUpdate方法可以帮助您确定是否需要重新渲染组件，从而避免不必要的渲染。
-- React.memo()可以将组件的输入和输出缓存起来，避免相同的输入导致相同输出，从而避免不必要的重新渲染。
+memo 默认逐项用 Object.is 比较 props，是跳过部分渲染的优化提示；自身 state 或 Context 更新仍可触发渲染。类组件对应 PureComponent/shouldComponentUpdate。不要把 useMemo 当正确性保证，缓存也有比较与内存成本。Compiler 是否可替代手工缓存取决于项目配置；应在生产条件下测量收益。
+
+参考：[资料 1](https://react.dev/reference/react/memo) · [资料 2](https://react.dev/reference/react/Profiler)。
 
 ---
 
 ## Q217｜虚拟 DOM 的意义
 
-1. **减少实际的DOM操作：**通过比较新旧虚拟DOM树的差异，React可以确定需要更新的部分，并生成最小化的DOM操作序列。这样可以减少实际的DOM操作次数，提高性能。
-2. **批量更新：**React会将所有需要更新的DOM操作批量执行，从而避免了频繁的DOM操作，提高了性能。
-3. **跨平台兼容性：**虚拟DOM是一个轻量级的JavaScript对象，可以在不同的平台上运行，例如浏览器、移动设备和服务器。这使得React可以在多个环境中使用相同的代码和逻辑。
-4. **更好的开发体验：**虚拟DOM使得开发者可以使用类似于HTML的标记语言来描述UI，而不需要直接操作DOM。这简化了开发过程，并提供了更好的开发体验。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+虚拟 DOM 为 UI 提供声明式描述，使 React 能协调组件更新并提交必要的宿主变化，也便于实现不同渲染目标和调度。开发者描述状态下应出现的 UI，框架处理结构复用与更新。
+
+它不是性能的充分条件：创建元素、执行组件、协调与内存都有成本，也不保证最少 DOM 操作。React 一次重新渲染不等于 DOM 一定变化；长任务、布局抖动、巨大 DOM 仍须单独优化。
+
+参考：[资料 1](https://react.dev/learn/render-and-commit)。
 
 ---
 
 ## Q218｜react DOM Diff 算法
 
-React的 虚拟 DOM diff算法是一种用于比较新旧虚拟DOM树的差异的算法，目标是找出需要更新的部分，并生成一个最小化的DOM操作序列：
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-1. **比较根节点：**算法首先比较新旧虚拟DOM树的根节点。如果它们的类型不同，那么React会完全替换旧的DOM树。如果它们的类型相同，那么算法会继续比较它们的属性和子节点。
-2. **比较属性：**算法会比较新旧虚拟DOM树的属性，判断是否有属性发生了变化。如果有属性发生了变化，React会更新对应的DOM节点上的属性。
-3. **比较子节点：**算法会递归地比较新旧虚拟DOM树的子节点。如果子节点的数量不同，那么React会更新对应的DOM节点的子节点。如果子节点的数量相同，那么算法会继续比较它们的类型和内容。
-4. **递归比较：**算法会递归地比较新旧虚拟DOM树的子节点。如果子节点的类型相同，那么算法会继续比较它们的属性和子节点。如果子节点的类型不同，那么React会完全替换旧的DOM节点。
-5. **生成DOM操作序列：**通过比较新旧虚拟DOM树，算法会生成一个最小化的DOM操作序列，包括插入、更新和删除操作。React会将这些操作批量执行，从而减少实际的DOM操作次数。
+React 按树中位置、元素类型和 key 判断身份。同一位置同类型通常复用已有状态与宿主节点；类型变化会重建对应子树，列表用稳定 key 匹配兄弟。props 差异在提交时反映到 DOM。
+
+协调采用可承受的启发式规则，不计算任意两棵树的全局最短编辑序列，也不是“子节点数量相同才比较”。改变 key 可主动重置状态；把组件定义放进另一个组件函数内部会产生新的类型，可能意外重置。Fiber 的具体移动标记算法要固定源码版本后解释。
+
+参考：[资料 1](https://react.dev/learn/preserving-and-resetting-state) · [资料 2](https://react.dev/learn/rendering-lists)。
 
 ---
 
 ## Q219｜关于 Fiber 架构
 
-- Fiber是React中一种新的架构，它用于实现增量式的、可中断的虚拟DOM diff过程。Fiber的目标是改进React的性能和用户体验，使得React应用程序更加流畅和响应。
-- 在React的旧版本中，虚拟DOM diff过程是一个递归的过程，它会一直执行直到完成，期间无法中断。这可能会导致长时间的JavaScript执行，从而阻塞主线程，造成页面的卡顿和不流畅的用户体验。
-- 为了解决这个问题，React引入了Fiber架构。Fiber将整个虚拟DOM diff过程分为多个小任务，每个任务称为一个Fiber节点。这些Fiber节点被组织成一个树状结构，称为Fiber树。
-- Fiber树可以被中断和恢复，这意味着在执行Fiber树的diff过程时，可以在任意时刻中断当前任务，并优先执行其他任务。这样可以使得应用程序更加灵活地响应用户的交互和其他优先级的任务，提高性能和响应性。
-- 通过Fiber架构，React可以根据任务的优先级动态地调整任务的执行顺序，从而更好地控制JavaScript的执行。这使得React应用程序可以在不阻塞主线程的情况下进行虚拟DOM diff，减少页面的卡顿和提高用户体验。
-- 总而言之，Fiber是React中一种新的架构，用于实现增量式的、可中断的虚拟DOM diff过程。它通过将diff过程分为多个小任务，并根据优先级动态地调整任务的执行顺序，提高React应用程序的性能和响应性。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+Fiber 是 React 协调器用于表示工作单元与保存更新状态的数据结构。它让渲染工作能够按优先级组织，支持并发渲染时暂停、继续或丢弃尚未提交的结果；这不同于开多个 JavaScript 线程并行执行组件。
+
+让出控制是协作式的，不能在任意一条同步语句中抢占；组件内部一个超长循环仍会阻塞主线程。render 阶段必须无副作用，因为工作可能重做；DOM 变更在 commit 阶段提交，不应把提交过程也描述为随意中断。具体 lanes、flags 等结构属于版本相关实现。
+
+参考：[资料 1](https://react.dev/blog/2022/03/29/react-v18) · [资料 2](https://react.dev/learn/render-and-commit)。
 
 ---
 
 ## Q220｜关于 Flux
 
-一种架构思想，用于构建前端应用程序的数据流管理，解决传统MVC架构在复杂应用中数据流管理变得困难的问题。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-Flux架构的核心思想是单向数据流，划分为四个主要部分：
+Flux 是单向数据流架构：View 产生 action，dispatcher 分发给 store，store 更新后通知 view。目的在于明确状态写入入口和依赖方向，减少复杂应用中的隐式双向同步。
 
-1. **View（视图）：**负责展示用户界面，并将用户的操作转发给Action进行处理。
-2. **Action（动作）：**定义应用程序中可能发生的各种操作，例如点击按钮、输入文本等。当用户在View上执行操作时，View会触发相应的Action。
-3. **Dispatcher（派发器）：**负责接收Action并将其分发给注册的Store。
-4. **Store（数据仓库）：**存储应用程序的数据，并定义数据的更新逻辑。当Dispatcher将Action分发给Store时，Store会根据Action的类型更新数据，并触发事件通知View进行更新。
+它不是 React 必需依赖，也不自动消除业务循环。经典 Flux 可有多个 store；Redux 借鉴其思想但通常有一个 store，用纯 reducer 计算下一状态，并不逐字复刻 dispatcher/store 模型。讨论时先说明是历史架构思想还是具体库。
 
-Flux架构的关键是单向数据流，当用户在View上执行操作时，View会触发相应的Action，Action会通过Dispatcher被分发给Store，Store根据Action的类型更新数据，并触发事件通知View进行更新。这样，数据的流动是单向的，没有循环依赖和复杂的数据交互。通过这种单向数据流的方式，Flux架构使得应用程序的数据流管理更加清晰和可预测。避免了数据的混乱和不一致，使得应用程序的开发和维护更加简单和可靠。
+参考：[资料 1](https://facebookarchive.github.io/flux/docs/in-depth-overview/)。
 
 ---
 
 ## Q221｜React 项目脚手架
 
-- **Create React App：**Create React App是官方推荐的React项目脚手架，它基于Webpack和Babel，可以快速创建React应用程序的基本结构和配置文件。Create React App提供了一套简单易用的命令行工具，可以快速创建、运行和打包React应用程序。
-- **Next.js：**Next.js是一个基于React的轻量级服务器端渲染框架，它提供了一套简单易用的API和命令行工具，可以快速创建具有服务器端渲染功能的React应用程序。Next.js还提供了一些高级特性，例如自动代码分割、静态文件服务、CSS模块化等。
-- **Gatsby：**Gatsby是一个基于React的静态站点生成器，它可以快速创建高性能、可靠的静态网站。Gatsby使用React和GraphQL构建静态网站，可以通过插件和主题扩展功能。
-- **React Boilerplate：**React Boilerplate是一个React项目脚手架，它提供了一套完整的React应用程序开发框架，包括基本结构、配置文件、测试、代码分割、性能优化等功能。React Boilerplate还提供了一些常用的React库和工具，例如Redux、React Router、Webpack等。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+Create React App 已被官方弃用，不再作为新项目默认推荐。生产应用先评估 React 官方推荐的框架及路由/数据加载能力；需要自行组合的客户端应用或学习项目，可用 Vite 等构建工具。
+
+```bash
+npm create vite@latest my-app -- --template react-ts
+```
+
+脚手架解决初始化，不自动提供鉴权、部署与可观测性。选择时考虑 SSR/静态生成需求、托管平台、路由、Node 版本及团队维护能力。Next.js 也不只是“轻量 SSR 脚手架”，其完整框架能力和运行模式应按对应版本评估。
+
+参考：[资料 1](https://react.dev/blog/2025/02/14/sunsetting-create-react-app) · [资料 2](https://react.dev/learn/creating-a-react-app)。
 
 ---
 
 ## Q222｜React 组件可请求数据生命周期钩子
 
-- componentDidMount：组件挂载后立即调用，在此方法中可以发起请求，并更新组件的状态或props。
-- componentDidUpdate：组件更新后立即调用，在此方法中可以根据props或state的变化发起请求，
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+客户端类组件可在 componentDidMount 请求初始数据，在 componentDidUpdate 比较前后参数后请求新数据，并在卸载时清理。不能无条件在每次更新后 setState 发请求，否则可能循环；组件也不能修改收到的 props。
+
+函数组件可在 Effect 中同步请求，但需处理取消、竞态、加载和失败。更完整的应用优先考虑框架数据加载器或请求缓存库，避免瀑布请求、重复获取与 SSR 缺数据。render 和 useMemo 都不应承担请求副作用。
+
+参考：[资料 1](https://react.dev/reference/react/Component#componentdidmount) · [资料 2](https://react.dev/reference/react/useEffect#fetching-data-with-effects)。
 
 ---
 
 ## Q223｜refs 的作用
 
-在React中，refs（引用）是用于访问组件或DOM元素的方法。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
 
-1. **访问组件实例：**通过refs，可以获取到组件的实例，从而可以直接调用组件的方法或访问组件的属性。这在某些情况下非常有用，例如需要手动触发组件的某个方法或获取组件的状态。
-2. **访问DOM元素：**通过refs，可以获取到React组件中的DOM元素，从而可以直接操作DOM，例如改变样式、获取输入框的值等。这在需要直接操作DOM的场景下非常有用，但在React中应该尽量避免直接操作DOM，而是通过状态和属性来控制组件的渲染。
+ref 保存跨渲染的可变引用，修改 current 不触发重新渲染。它适合 DOM 聚焦、测量、计时器 ID 与外部实例；显示在页面上的数据仍应使用 state。避免在普通 render 中读写 ref 来决定界面。
+
+DOM ref 在提交时赋值，卸载时清空；函数组件没有类实例，可通过 useImperativeHandle 暴露有限命令。React 18 常用 forwardRef 接收 ref；React 19 函数组件可将 ref 作为 prop。不要用 ref 绕开单向数据流随意修改子组件内部状态。
+
+参考：[资料 1](https://react.dev/reference/react/useRef) · [资料 2](https://react.dev/reference/react/useImperativeHandle)。
 
 ---
 
 ## Q224｜key 在渲染列表时的作用
 
-1. **识别每个列表项的唯一性：**key属性用于帮助React区分列表中的每个元素。React使用key属性来跟踪列表中的每个元素，以便在进行列表更新时能够准确地识别每个元素。如果没有指定key属性或key属性不唯一，React可能会出现警告或产生不正确的渲染结果。
-2. **提高列表更新的性能：**key属性可以帮助React在进行列表更新时，识别出哪些元素是新添加的、哪些元素是已存在的、哪些元素是已删除的。通过key属性，React可以更加高效地进行DOM操作，减少不必要的重渲染。
-3. **保持元素的稳定性：**key属性可以帮助React保持元素的稳定性。当列表中的元素顺序发生变化时，如果每个元素都有一个稳定的key属性，React可以更准确地识别出哪些元素是移动的，哪些元素是新增的，哪些元素是删除的，从而只进行必要的DOM操作，提高性能。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+key 标识同一父节点下列表项的身份，与类型/位置共同影响状态保留。排序、插入和删除时，稳定业务 ID 能帮助 React 把状态跟随到正确项。key 只需在当前兄弟中唯一，不会作为普通 prop 传入组件。
+
+不要在每次 render 生成随机 key；会造成重挂、焦点丢失和状态重置。会变动的列表不宜用数组索引，否则输入值等局部状态可能对应错误记录。key 不保证组件永不重渲染，其首要意义是身份与正确性。
+
+参考：[资料 1](https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key)。
 
 ---
 
 ## Q225｜如何使用 useState Hook 来管理状态
 
-useState 返回当前状态和更新函数。下一次状态依赖上一次值时，使用函数式更新；同一处理函数中的多次更新可能被合并。对象和数组应创建新引用，不直接修改原状态。Hook 必须在组件或自定义 Hook 的顶层调用，不能放在条件分支里。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+useState 返回当前渲染的状态与稳定 setter。调用 setter 安排下一次渲染，不会立即改写当前闭包中的变量；下一状态依赖旧状态时用 updater，连续更新会按队列计算。
 
 ```jsx
+import { useState } from "react";
 function Counter() {
   const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(value => value + 1)}>{count}</button>;
+  return <button onClick={() => {
+    setCount(n => n + 1);
+    setCount(n => n + 1);
+  }}>{count}</button>;
 }
 ```
+
+一次点击增加 2。对象/数组创建新引用；惰性 initializer 和 updater 必须纯净，开发 StrictMode 可能额外调用以检查纯度。
+
+参考：[资料 1](https://react.dev/reference/react/useState) · [资料 2](https://react.dev/learn/queueing-a-series-of-state-updates)。
 
 ---
 
 ## Q226｜如何使用 useEffect Hook 执行副作用操作
 
-useEffect 用于把组件与外部系统同步，比如订阅或网络请求。依赖变化和卸载时运行清理，Effect 回调本身不要声明为 async；下面通过内部函数与 AbortController 取消过期请求，并避免旧响应写入当前状态。开发 StrictMode 会额外执行一次设置和清理，用来暴露不对称的副作用。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+useEffect 用于与外部系统同步。依赖变化时先清理旧效果再设置新效果，卸载时清理；依赖按 Object.is 比较，包含 Effect 用到的响应式值。Effect 只在客户端运行，不应把它笼统等同于“必定在绘制后运行”。
 
 ```js
 useEffect(() => {
-  const controller = new AbortController(); let active = true;
+  const controller = new AbortController();
+  let active = true;
+  setError(null);
+  setData(null);
   async function load() {
     try {
       const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json(); if (active) setData(data);
-    } catch (error) { if (active) setError(error.message); }
+      const data = await response.json();
+      if (active) setData(data);
+    } catch (error) {
+      if (active) setError(error instanceof Error ? error.message : String(error));
+    }
   }
   load();
   return () => { active = false; controller.abort(); };
 }, [url]);
 ```
 
+片段假定在组件内已声明 url、setData 与 setError。回调本身不能 async，否则返回 Promise 而非清理函数。开发 StrictMode 的额外设置/清理用于检查对称性。
+
+参考：[资料 1](https://react.dev/reference/react/useEffect)。
+
 ---
 
 ## Q227｜如何使用自定义Hook来共享逻辑
 
-自定义 Hook 共享可复用逻辑，并不会让多个调用共享同一份状态。命名以 use 开头，内部遵守 Hook 规则；两个组件各自调用 useCounter，会得到两个独立计数器。要共享数据还需把状态提升，或使用 Context、外部状态库等。
+适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+
+自定义 Hook 抽取有状态逻辑，名称以 use 开头，内部遵守 Hook 规则。多个组件调用同一个 Hook 得到独立状态；共享状态需要提升状态、Context 或外部 store。
 
 ```jsx
+import { useState } from "react";
 function useCounter(initial = 0) {
   const [count, setCount] = useState(initial);
-  const increment = () => setCount(value => value + 1);
-  return { count, increment };
+  return { count, increment: () => setCount(n => n + 1) };
 }
 ```
+
+initial 只影响初次挂载，后续 prop 改变不会自动重置计数。抽象应表达业务目的与清理契约；不要为了复用而隐藏必要依赖或创建含糊的“生命周期 Hook”。
+
+参考：[资料 1](https://react.dev/learn/reusing-logic-with-custom-hooks)。
 
 ---

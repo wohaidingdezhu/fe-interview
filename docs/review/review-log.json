@@ -1,0 +1,2143 @@
+{
+  "Q2": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器布局实验；次数需按当前环境录制",
+    "sources": [
+      "https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing"
+    ]
+  },
+  "Q33": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "CSS Selectors / Pseudo-elements",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements"
+    ]
+  },
+  "Q40": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "sources": [
+      "https://v8.dev/docs/hidden-classes",
+      "https://v8.dev/blog/fast-properties"
+    ]
+  },
+  "Q41": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "sources": [
+      "https://v8.dev/blog/elements-kinds"
+    ]
+  },
+  "Q50": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let"
+    ]
+  },
+  "Q55": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
+    ]
+  },
+  "Q82": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Event/composed"
+    ]
+  },
+  "Q86": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document/write",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML"
+    ]
+  },
+  "Q101": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript 2024；严格模式与 ES 模块",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/prototype"
+    ]
+  },
+  "Q102": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain"
+    ]
+  },
+  "Q107": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript 2024；严格模式与 ES 模块",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim"
+    ]
+  },
+  "Q112": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "sources": [
+      "https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.sort",
+      "https://github.com/v8/v8/blob/12.4.254/third_party/v8/builtins/array-sort.tq",
+      "https://v8.dev/blog/array-sort"
+    ]
+  },
+  "Q113": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript 2024；严格模式与 ES 模块",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#cant_assign_to_properties_on_primitives"
+    ]
+  },
+  "Q115": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
+    ]
+  },
+  "Q159": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://v2.vuejs.org/v2/guide/reactivity.html#For-Arrays"
+    ]
+  },
+  "Q160": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://v3-migration.vuejs.org/",
+      "https://v2.vuejs.org/v2/guide/migration-vue-2-7.html"
+    ]
+  },
+  "Q161": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/components/events.html",
+      "https://vuejs.org/guide/components/provide-inject.html"
+    ]
+  },
+  "Q163": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/instance/init.ts"
+    ]
+  },
+  "Q164": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/api/options-lifecycle.html"
+    ]
+  },
+  "Q165": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/scheduler.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/util/next-tick.ts"
+    ]
+  },
+  "Q166": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://vuejs.org/api/general.html#nexttick",
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/scheduler.ts"
+    ]
+  },
+  "Q167": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/api/options-state.html#data"
+    ]
+  },
+  "Q168": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://v2.vuejs.org/v2/api/#Options-Lifecycle-Hooks",
+      "https://vuejs.org/api/options-lifecycle.html"
+    ]
+  },
+  "Q169": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html",
+      "https://vuejs.org/guide/essentials/watchers.html"
+    ]
+  },
+  "Q170": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html",
+      "https://vuejs.org/guide/best-practices/performance.html#computed-stability"
+    ]
+  },
+  "Q171": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html#best-practices",
+      "https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup"
+    ]
+  },
+  "Q172": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/renderer.ts"
+    ]
+  },
+  "Q173": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/renderer.ts#L2485"
+    ]
+  },
+  "Q174": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    ]
+  },
+  "Q175": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    ]
+  },
+  "Q176": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "sources": [
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/index.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/dep.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/watcher.ts"
+    ]
+  },
+  "Q178": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/extras/rendering-mechanism.html"
+    ]
+  },
+  "Q179": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://v2.vuejs.org/v2/api/#Options-Lifecycle-Hooks"
+    ]
+  },
+  "Q183": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/extras/rendering-mechanism.html#compiler-informed-virtual-dom"
+    ]
+  },
+  "Q184": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/extras/composition-api-faq.html#comparison-with-react-hooks",
+      "https://react.dev/learn/state-as-a-snapshot"
+    ]
+  },
+  "Q187": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://v3.router.vuejs.org/guide/essentials/history-mode.html"
+    ]
+  },
+  "Q188": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/api/sfc-script-setup.html#reactive-props-destructure"
+    ]
+  },
+  "Q189": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/template-refs.html"
+    ]
+  },
+  "Q190": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "sources": [
+      "https://vuejs.org/guide/essentials/watchers.html#deep-watchers"
+    ]
+  },
+  "Q191": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q192": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ]
+  },
+  "Q193": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q194": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q195": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q196": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q197": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://vuejs.org/guide/extras/reactivity-in-depth.html"
+    ]
+  },
+  "Q198": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q199": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ]
+  },
+  "Q200": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ]
+  },
+  "Q201": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ]
+  },
+  "Q202": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ]
+  },
+  "Q203": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ]
+  },
+  "Q204": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks",
+      "https://react.dev/reference/rules/rules-of-hooks"
+    ]
+  },
+  "Q205": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/Component"
+    ]
+  },
+  "Q206": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/passing-props-to-a-component",
+      "https://react.dev/learn/state-as-a-snapshot"
+    ]
+  },
+  "Q207": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://legacy.reactjs.org/docs/higher-order-components.html"
+    ]
+  },
+  "Q208": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react-dom/components/input"
+    ]
+  },
+  "Q209": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ]
+  },
+  "Q210": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/Component",
+      "https://react.dev/reference/react"
+    ]
+  },
+  "Q211": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ]
+  },
+  "Q212": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/useContext",
+      "https://react.dev/reference/react/createContext"
+    ]
+  },
+  "Q213": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ]
+  },
+  "Q214": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks",
+      "https://react.dev/reference/react-dom/components/input"
+    ]
+  },
+  "Q215": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://redux.js.org/introduction/why-rtk-is-redux-today"
+    ]
+  },
+  "Q216": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/memo",
+      "https://react.dev/reference/react/Profiler"
+    ]
+  },
+  "Q217": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/render-and-commit"
+    ]
+  },
+  "Q218": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/preserving-and-resetting-state",
+      "https://react.dev/learn/rendering-lists"
+    ]
+  },
+  "Q219": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/blog/2022/03/29/react-v18",
+      "https://react.dev/learn/render-and-commit"
+    ]
+  },
+  "Q220": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://facebookarchive.github.io/flux/docs/in-depth-overview/"
+    ]
+  },
+  "Q221": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/blog/2025/02/14/sunsetting-create-react-app",
+      "https://react.dev/learn/creating-a-react-app"
+    ]
+  },
+  "Q222": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/Component#componentdidmount",
+      "https://react.dev/reference/react/useEffect#fetching-data-with-effects"
+    ]
+  },
+  "Q223": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/useRef",
+      "https://react.dev/reference/react/useImperativeHandle"
+    ]
+  },
+  "Q224": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key"
+    ]
+  },
+  "Q225": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/useState",
+      "https://react.dev/learn/queueing-a-series-of-state-updates"
+    ]
+  },
+  "Q226": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/reference/react/useEffect"
+    ]
+  },
+  "Q227": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks"
+    ]
+  },
+  "Q228": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/concepts/"
+    ]
+  },
+  "Q229": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/api/compiler-hooks/",
+      "https://webpack.js.org/api/compilation-hooks/"
+    ]
+  },
+  "Q230": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/concepts/hot-module-replacement/"
+    ]
+  },
+  "Q231": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/loaders/",
+      "https://webpack.js.org/guides/asset-modules/"
+    ]
+  },
+  "Q232": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/plugins/",
+      "https://webpack.js.org/plugins/define-plugin/"
+    ]
+  },
+  "Q233": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/concepts/loaders/",
+      "https://webpack.js.org/concepts/plugins/"
+    ]
+  },
+  "Q234": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/api/loaders/"
+    ]
+  },
+  "Q235": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/contribute/writing-a-plugin/"
+    ]
+  },
+  "Q236": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/guides/build-performance/",
+      "https://webpack.js.org/configuration/cache/"
+    ]
+  },
+  "Q237": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/api/module-methods/#magic-comments"
+    ]
+  },
+  "Q238": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://webpack.js.org/guides/code-splitting/",
+      "https://webpack.js.org/guides/caching/"
+    ]
+  },
+  "Q239": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://vite.dev/guide/why.html",
+      "https://vite.dev/blog/announcing-vite8"
+    ]
+  },
+  "Q240": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://babeljs.io/docs/",
+      "https://babeljs.io/docs/babel-preset-typescript"
+    ]
+  },
+  "Q241": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
+      "https://react.dev/learn/thinking-in-react"
+    ]
+  },
+  "Q242": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://nodejs.org/api/esm.html",
+      "https://nodejs.org/api/modules.html"
+    ]
+  },
+  "Q243": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://vuejs.org/guide/scaling-up/ssr.html"
+    ]
+  },
+  "Q244": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/SPA",
+      "https://web.dev/articles/rendering-on-the-web"
+    ]
+  },
+  "Q245": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻",
+    "sources": [
+      "https://v8.dev/blog/trash-talk",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management"
+    ]
+  },
+  "Q246": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
+    ]
+  },
+  "Q247": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://web.dev/articles/vitals"
+    ]
+  },
+  "Q248": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Performance",
+      "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver"
+    ]
+  },
+  "Q249": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://webpack.js.org/guides/tree-shaking/",
+      "https://webpack.js.org/guides/code-splitting/"
+    ]
+  },
+  "Q250": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ]
+  },
+  "Q251": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers",
+      "https://web.dev/articles/optimize-long-tasks"
+    ]
+  },
+  "Q252": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Lazy_loading"
+    ]
+  },
+  "Q253": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload"
+    ]
+  },
+  "Q254": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://web.dev/learn/images/"
+    ]
+  },
+  "Q255": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/CDN",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ]
+  },
+  "Q256": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work"
+    ]
+  },
+  "Q257": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work"
+    ]
+  },
+  "Q258": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://web.dev/articles/virtualize-long-lists-react-window"
+    ]
+  },
+  "Q259": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://web.dev/articles/performance-http2"
+    ]
+  },
+  "Q260": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "sources": [
+      "https://web.dev/articles/performance-http2"
+    ]
+  },
+  "Q261": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/"
+    ]
+  },
+  "Q262": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/"
+    ]
+  },
+  "Q263": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/MVC"
+    ]
+  },
+  "Q264": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ]
+  },
+  "Q265": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ]
+  },
+  "Q266": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ]
+  },
+  "Q267": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Advanced_JavaScript_objects/Object-oriented_programming"
+    ]
+  },
+  "Q268": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://en.wikipedia.org/wiki/SOLID"
+    ]
+  },
+  "Q269": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/singleton"
+    ]
+  },
+  "Q270": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/factory-method"
+    ]
+  },
+  "Q271": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/builder"
+    ]
+  },
+  "Q272": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/prototype"
+    ]
+  },
+  "Q273": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/adapter"
+    ]
+  },
+  "Q274": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/decorator"
+    ]
+  },
+  "Q275": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/observer"
+    ]
+  },
+  "Q276": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/strategy"
+    ]
+  },
+  "Q277": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/command"
+    ]
+  },
+  "Q278": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/state"
+    ]
+  },
+  "Q279": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/visitor"
+    ]
+  },
+  "Q280": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/template-method"
+    ]
+  },
+  "Q281": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/mediator"
+    ]
+  },
+  "Q282": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/memento"
+    ]
+  },
+  "Q283": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Interpreter_pattern"
+    ]
+  },
+  "Q284": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/flyweight"
+    ]
+  },
+  "Q285": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/chain-of-responsibility"
+    ]
+  },
+  "Q286": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/bridge"
+    ]
+  },
+  "Q287": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/composite"
+    ]
+  },
+  "Q288": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/iterator"
+    ]
+  },
+  "Q289": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "sources": [
+      "https://refactoring.guru/design-patterns/proxy"
+    ]
+  },
+  "Q290": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number"
+    ]
+  },
+  "Q291": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "sources": [
+      "https://man7.org/linux/man-pages/man7/pthreads.7.html"
+    ]
+  },
+  "Q292": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management"
+    ]
+  },
+  "Q293": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-9"
+    ]
+  },
+  "Q294": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-9.3"
+    ]
+  },
+  "Q295": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm"
+    ]
+  },
+  "Q296": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9111",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ]
+  },
+  "Q297": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control"
+    ]
+  },
+  "Q298": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"
+    ]
+  },
+  "Q299": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15.4"
+    ]
+  },
+  "Q300": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15.5"
+    ]
+  },
+  "Q301": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/HTTPS",
+      "https://www.rfc-editor.org/rfc/rfc8446"
+    ]
+  },
+  "Q302": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc8446#section-2"
+    ]
+  },
+  "Q303": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies"
+    ]
+  },
+  "Q304": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+    ]
+  },
+  "Q305": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293",
+      "https://www.rfc-editor.org/rfc/rfc768"
+    ]
+  },
+  "Q306": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.5"
+    ]
+  },
+  "Q307": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.5"
+    ]
+  },
+  "Q308": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.6"
+    ]
+  },
+  "Q309": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc5681"
+    ]
+  },
+  "Q310": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+    ]
+  },
+  "Q311": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"
+    ]
+  },
+  "Q312": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+      "https://fetch.spec.whatwg.org/"
+    ]
+  },
+  "Q313": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "Q314": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "Q315": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html"
+    ]
+  },
+  "Q316": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "Q317": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/AJAX"
+    ]
+  },
+  "Q318": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"
+    ]
+  },
+  "Q319": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest",
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal"
+    ]
+  },
+  "Q320": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://fetch.spec.whatwg.org/",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+    ]
+  },
+  "Q321": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API",
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"
+    ]
+  },
+  "Q322": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+      "https://react.dev/reference/react/StrictMode"
+    ]
+  },
+  "Q323": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+      "https://www.rfc-editor.org/rfc/rfc6455"
+    ]
+  },
+  "Q324": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc6455#section-4",
+      "https://www.rfc-editor.org/rfc/rfc8441"
+    ]
+  },
+  "Q325": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send",
+      "https://www.rfc-editor.org/rfc/rfc6455#section-5"
+    ]
+  },
+  "Q326": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events"
+    ]
+  },
+  "Q327": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events",
+      "https://nodejs.org/api/http.html"
+    ]
+  },
+  "Q328": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events",
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+    ]
+  },
+  "Q329": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9113",
+      "https://developer.chrome.com/blog/removing-push"
+    ]
+  },
+  "Q330": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://c4model.com/",
+      "https://adr.github.io/"
+    ]
+  },
+  "Q331": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://eslint.org/docs/latest/use/configure/configuration-files"
+    ]
+  },
+  "Q332": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git",
+      "https://git-scm.com/docs/git-add"
+    ]
+  },
+  "Q333": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://www.conventionalcommits.org/en/v1.0.0/"
+    ]
+  },
+  "Q334": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://nvie.com/posts/a-successful-git-branching-model/"
+    ]
+  },
+  "Q335": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-merge",
+      "https://git-scm.com/docs/git-rebase"
+    ]
+  },
+  "Q336": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-reset",
+      "https://git-scm.com/docs/git-revert",
+      "https://git-scm.com/docs/git-restore"
+    ]
+  },
+  "Q337": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-log",
+      "https://git-scm.com/docs/git-blame"
+    ]
+  },
+  "Q338": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/gitignore",
+      "https://git-scm.com/docs/git-rm"
+    ]
+  },
+  "Q339": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-fetch",
+      "https://git-scm.com/docs/git-pull"
+    ]
+  },
+  "Q340": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-merge",
+      "https://git-scm.com/docs/git-rebase"
+    ]
+  },
+  "Q341": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/docs/git-reset",
+      "https://git-scm.com/docs/git-revert",
+      "https://git-scm.com/docs/git-checkout"
+    ]
+  },
+  "Q342": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control",
+      "https://svnbook.red-bean.com/en/1.8/svn.branchmerge.html"
+    ]
+  },
+  "Q343": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://spec.openapis.org/oas/latest.html",
+      "https://docs.pact.io/"
+    ]
+  },
+  "Q344": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://dora.dev/guides/"
+    ]
+  },
+  "Q345": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "sources": [
+      "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/",
+      "https://docs.docker.com/build/building/best-practices/"
+    ]
+  },
+  "Q346": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop",
+      "https://nodejs.org/api/worker_threads.html"
+    ]
+  },
+  "Q347": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs"
+    ]
+  },
+  "Q348": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://expressjs.com/en/resources/middleware/cors/"
+    ]
+  },
+  "Q349": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json"
+    ]
+  },
+  "Q350": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://pnpm.io/symlinked-node-modules-structure",
+      "https://docs.npmjs.com/cli/v11/commands/npm-ci"
+    ]
+  },
+  "Q351": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nodejs.org/api/http.html",
+      "https://expressjs.com/en/guide/using-middleware.html"
+    ]
+  },
+  "Q352": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://expressjs.com/en/guide/error-handling.html",
+      "https://koajs.com/"
+    ]
+  },
+  "Q353": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nginx.org/en/docs/beginners_guide.html"
+    ]
+  },
+  "Q354": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass"
+    ]
+  },
+  "Q355": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "sources": [
+      "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+    ]
+  },
+  "Q356": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Database_normalization"
+    ]
+  },
+  "Q357": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/introduction.html",
+      "https://www.mongodb.com/docs/manual/core/data-modeling-introduction/"
+    ]
+  },
+  "Q358": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/multiple-column-indexes.html",
+      "https://dev.mysql.com/doc/refman/8.4/en/using-explain.html"
+    ]
+  },
+  "Q359": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/optimization-indexes.html"
+    ]
+  },
+  "Q360": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/storage-engines.html"
+    ]
+  },
+  "Q361": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/innodb-introduction.html",
+      "https://dev.mysql.com/doc/refman/8.4/en/myisam-storage-engine.html"
+    ]
+  },
+  "Q362": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/sql-statements.html"
+    ]
+  },
+  "Q363": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/join.html"
+    ]
+  },
+  "Q364": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://redis.io/docs/latest/develop/get-started/",
+      "https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/"
+    ]
+  },
+  "Q365": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://kafka.apache.org/documentation/#intro_concepts_and_terms"
+    ]
+  },
+  "Q366": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://redis.io/docs/latest/develop/data-types/streams/",
+      "https://kafka.apache.org/documentation/#intro_concepts_and_terms"
+    ]
+  },
+  "Q367": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/innodb-auto-increment-handling.html",
+      "https://www.rfc-editor.org/rfc/rfc9562"
+    ]
+  },
+  "Q368": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://huggingface.co/learn/llm-course/chapter1/1"
+    ]
+  },
+  "Q369": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://platform.openai.com/docs/models",
+      "https://ai.google.dev/gemini-api/docs/models",
+      "https://huggingface.co/models"
+    ]
+  },
+  "Q370": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/",
+      "https://www.anthropic.com/news/model-context-protocol",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q371": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://samnewman.io/patterns/architectural/bff/",
+      "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/"
+    ]
+  },
+  "Q372": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents",
+      "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "Q373": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://arxiv.org/abs/2311.05232",
+      "https://platform.openai.com/docs/guides/evaluation-best-practices"
+    ]
+  },
+  "Q374": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://arxiv.org/abs/2005.11401",
+      "https://platform.openai.com/docs/guides/retrieval"
+    ]
+  },
+  "Q375": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://platform.openai.com/docs/guides/retrieval",
+      "https://arxiv.org/abs/2005.11401"
+    ]
+  },
+  "Q376": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams"
+    ]
+  },
+  "Q377": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q378": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q379": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q380": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://www.anthropic.com/news/model-context-protocol",
+      "https://modelcontextprotocol.io/specification/2025-06-18/"
+    ]
+  },
+  "Q381": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+      "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+    ]
+  },
+  "Q382": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q383": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+      "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ]
+  },
+  "Q384": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents"
+    ]
+  },
+  "Q385": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents"
+    ]
+  },
+  "Q386": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents",
+      "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "Q387": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://huggingface.co/docs/transformers/training"
+    ]
+  },
+  "Q388": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://huggingface.co/docs/peft/index",
+      "https://arxiv.org/abs/2305.14314"
+    ]
+  },
+  "Q389": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://arxiv.org/abs/2106.09685",
+      "https://huggingface.co/docs/peft/conceptual_guides/lora"
+    ]
+  },
+  "Q390": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://huggingface.co/docs/trl/sft_trainer"
+    ]
+  },
+  "Q391": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/getting-started/introduction",
+      "https://github.com/langgenius/dify/blob/main/LICENSE"
+    ]
+  },
+  "Q392": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow",
+      "https://docs.dify.ai/en/cloud/use-dify/build/orchestrate-node"
+    ]
+  },
+  "Q393": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/http-request",
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/tools"
+    ]
+  },
+  "Q394": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/knowledge-retrieval"
+    ]
+  },
+  "Q395": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/llm",
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/variable-assigner",
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow"
+    ]
+  },
+  "Q396": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/agent",
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow"
+    ]
+  },
+  "Q397": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling"
+    ]
+  },
+  "Q398": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9700#section-4.14",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+    ]
+  },
+  "Q399": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+      "https://react.dev/reference/react/useEffect#fetching-data-with-effects"
+    ]
+  },
+  "Q400": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers"
+    ]
+  },
+  "Q401": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback"
+    ]
+  },
+  "Q402": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://tanstack.com/virtual/latest/docs/api/virtualizer",
+      "https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver"
+    ]
+  },
+  "Q403": {
+    "date": "2026-10-09",
+    "scope": "技术内容修订；官方资料/规范交叉核对；不代表所有者人工签字",
+    "version": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled",
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "step1": "沿用 Node 24 与 node:test，准备脚本再次执行",
+  "step2": "javascript；已有语言、项目和依赖上下文继续适用",
+  "scope_type": "non_diff",
+  "TARGETS": [
+    {
+      "file_path": "src/search-utils.ts",
+      "symbol": "searchHits, searchDocuments",
+      "target_type": "file",
+      "locator": "export function",
+      "source": "explicit",
+      "reason": "题号精确查找、多词匹配与文章聚合",
+      "hunks": []
+    },
+    {
+      "file_path": "scripts/content-assets.mjs",
+      "symbol": "contentAssets",
+      "target_type": "function",
+      "locator": "export function contentAssets",
+      "source": "explicit",
+      "reason": "生成每题索引并保持生产草稿隔离",
+      "hunks": []
+    },
+    {
+      "file_path": "src/ArticleContent.tsx",
+      "symbol": "ArticleContent",
+      "target_type": "function",
+      "locator": "export default function",
+      "source": "explicit",
+      "reason": "稳定锚点渲染与原链接兼容",
+      "hunks": []
+    }
+  ],
+  "BUG_MAP": [],
+  "candidate_filter": "本轮新增功能而非声明已有缺陷；同篇锚点导航纳入实现与验收，现有文章聚合搜索原本符合旧契约。",
+  "step6": "无覆盖率门禁，按 skill skip",
+  "result": "新增题目搜索测试从未实现失败到通过；锚点渲染和懒加载服务端渲染测试通过；浏览器交互未执行",
+  "TMP_ROOT": "/var/folders/yd/6bl5yh1973v5qrd7m_bgk36r0000gn/T/tmp.EPojv4i3eS"
+}

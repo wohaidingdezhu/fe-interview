@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import library from 'virtual:library';
 import type { ArticleMetadata } from './data-utils';
-import { searchDocuments, type SearchDocument } from './search-utils';
+import { searchHits, type SearchDocument } from './search-utils';
 export const articles = library.articles.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, 'zh-CN'));
 export const resources = library.resources;
 const bodies = new Map<string, Promise<string>>();
@@ -24,7 +24,9 @@ export function loadArticle(article: ArticleMetadata) {
 }
 export function loadSearchIndex() {
   return searchRequest ??= readJSON(library.searchPath).then((data) => {
-    if (!Array.isArray(data) || data.some((item) => !item || typeof item.id !== 'string' || typeof item.text !== 'string')) throw new Error('搜索索引格式错误。');
+    if (!Array.isArray(data) || data.some((item) => !item || typeof item.id !== 'string' || typeof item.text !== 'string'
+      || item.questionNumber !== undefined && (!Number.isSafeInteger(item.questionNumber) || item.questionNumber < 1
+        || typeof item.questionTitle !== 'string' || item.anchor !== `q${item.questionNumber}`))) throw new Error('搜索索引格式错误。');
     return data as SearchDocument[];
   }).catch((error) => { searchRequest = undefined; throw error; });
 }
@@ -42,6 +44,10 @@ export function useSearchIndex(query: string) {
   return { documents, error, loading: active && !documents && !error, retry: () => setAttempt((value) => value + 1) };
 }
 export function searchArticles(query: string, documents: SearchDocument[] = []) {
-  const matches = searchDocuments(documents, query);
-  return articles.filter((article) => matches.has(article.id)).map((article) => ({ ...article, snippet: matches.get(article.id)! }));
+  const byId = new Map(articles.map(article => [article.id, article]));
+  return searchHits(documents, query).flatMap(hit => {
+    const article = byId.get(hit.id);
+    return article ? [{ ...article, title: hit.questionTitle ?? article.title, questionNumber: hit.questionNumber,
+      href: `?article=${encodeURIComponent(article.id)}${hit.anchor ? `#${hit.anchor}` : ''}`, snippet: hit.snippet }] : [];
+  });
 }

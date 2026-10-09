@@ -1,6 +1,6 @@
 import { articles, resources, useSearchIndex } from './content';
 import { filterItems, type ListItem } from './data-utils';
-import { searchDocuments } from './search-utils';
+import { searchDocuments, searchHits } from './search-utils';
 
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
 export function LibraryList({ params, navigate }: Props) {
@@ -11,6 +11,10 @@ export function LibraryList({ params, navigate }: Props) {
   const query = params.get('q') || '';
   const search = useSearchIndex(isNotes ? query : '');
   const matches = isNotes && query.trim() ? searchDocuments(search.documents || [], query) : undefined;
+  const questionMatches = new Map<string, { title: string; href: string }>();
+  if (isNotes && query.trim()) for (const hit of searchHits(search.documents || [], query)) {
+    if (hit.anchor && !questionMatches.has(hit.id)) questionMatches.set(hit.id, { title: hit.questionTitle!, href: `?article=${encodeURIComponent(hit.id)}#${hit.anchor}` });
+  }
   const type = params.get('type') || '';
   const maintenance = isNotes ? params.get('maintenance') || '' : '';
   const sort = params.get('sort') || 'newest';
@@ -40,7 +44,7 @@ export function LibraryList({ params, navigate }: Props) {
     <div className="breadcrumb">前端资料库 <span>/</span> <b>{isNotes ? '我的笔记' : '资料收藏'}</b></div>
     <div className="list-heading"><div><span className="eyebrow">{isNotes ? 'NOTES & IDEAS' : 'READ · LEARN · BUILD'}</span><h1>{isNotes ? '我的笔记' : '资料收藏'}</h1><p className="description">{isNotes ? '留下自己的理解，让零散的知识连成体系。' : '值得阅读的文章、文档与工具，在需要时更容易找到。'}</p></div><span className="collection-count">{items.length}<small>{isNotes ? '篇笔记' : '条资料'}</small></span></div>
     <section className="filters" aria-label="资料筛选">
-      <label className="list-search"><span>关键词</span><input type="search" aria-label="检索当前列表" placeholder={isNotes ? '标题、标签或正文关键词' : '标题、简介、来源或标签'} value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
+      <label className="list-search"><span>关键词</span><input type="search" aria-label="检索当前列表" placeholder={isNotes ? '题号、标题、标签或正文关键词' : '标题、简介、来源或标签'} value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
       <div className={`filter-selects ${isNotes ? 'has-maintenance' : ''}`}>
         <label>分类<select aria-label="按分类筛选" value={category} onChange={(event) => update('category', event.target.value)}><option value="">全部分类</option>{categories.map((value) => <option key={value}>{value}</option>)}{category && !categories.includes(category) && <option>{category}</option>}</select></label>
         <label>类型<select aria-label="按类型筛选" value={type} onChange={(event) => update('type', event.target.value)}><option value="">全部类型</option>{types.map((value) => <option key={value}>{value}</option>)}{type && !types.includes(type) && <option>{type}</option>}</select></label>
@@ -57,8 +61,9 @@ export function LibraryList({ params, navigate }: Props) {
         if (!item.url && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); navigate(`?article=${item.id}`); }
       }}>{item.title}<span aria-hidden="true">{item.url ? '↗' : '→'}</span></a></h2>
       <p>{item.description}</p>
-      {(item.questionCount ?? 0) > 0 && <p className="resource-source">{item.publishedQuestionCount} / {item.questionCount} 题已公开{(item.publishedQuestionCount ?? 0) > 0 && (item.publishedQuestionCount ?? 0) < (item.questionCount ?? 0) ? ' · 部分公开' : ''}</p>}
+      {(item.questionCount ?? 0) > 0 && <p className="resource-source">共 {item.questionCount} 题 · 已复核 {item.publishedQuestionCount} · 待处理 {(item.questionCount ?? 0) - (item.publishedQuestionCount ?? 0)}{(item.publishedQuestionCount ?? 0) > 0 && (item.publishedQuestionCount ?? 0) < (item.questionCount ?? 0) ? ' · 部分公开' : ''}</p>}
       {matches?.has(item.id) && <p className="search-snippet">{matches.get(item.id)}</p>}
+      {questionMatches.has(item.id) && <a className="question-result-link" href={questionMatches.get(item.id)!.href} onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); navigate(questionMatches.get(item.id)!.href); }}>阅读 {questionMatches.get(item.id)!.title} →</a>}
       <div className="resource-bottom"><span className="resource-source">{item.source}</span><div>{item.tags.map((tag) => <button className="tag" key={tag} aria-label={`筛选标签 ${tag}`} onClick={() => toggleTag(tag)}>{tag}</button>)}</div></div>
     </article>)}</div>
     {!search.loading && !search.error && !result.total && <div className="empty-state"><span aria-hidden="true">⌕</span><h2>没有找到匹配内容</h2><p>减少筛选条件，或换一个关键词再试。</p><button className="text-button" onClick={() => navigate(`?view=${isNotes ? 'notes' : 'resources'}`)}>查看全部{isNotes ? '笔记' : '资料'} →</button></div>}

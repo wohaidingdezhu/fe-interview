@@ -6,55 +6,39 @@ description: "收录 Q245–Q246 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["浏览器","V8","存储"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 107
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://html.spec.whatwg.org/","https://developer.mozilla.org/en-US/docs/Web/API"]
-technologyVersion: "现代浏览器；各引擎实现细节仍需核对"
+technologyVersion: "现代浏览器；实现细节按题内固定版本说明"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://html.spec.whatwg.org/) · [参考 2](https://developer.mozilla.org/en-US/docs/Web/API)。
 
 
 ## Q245｜V8 垃圾回收机制
 
-- **分代回收（Generational Garbage Collection）：** V8 使用分代回收策略，将对象分为不同的代，通常包括新生代和老年代。新生代包含大多数新创建的对象，而老年代包含经过多次回收仍然存活的对象。这种策略有助于提高性能，因为新生代的对象通常比老年代的对象更容易回收。
-- **标记-清除（Mark and Sweep）：** 这是一种更复杂的垃圾回收策略，它将内存中的所有对象分为“可达”和“不可达”两组。垃圾回收器首先标记所有可达对象，然后清除所有不可达对象。这个过程涉及两个阶段：标记阶段和清除阶段。
-- **标记阶段：** 从根对象开始，垃圾回收器递归遍历所有对象，并标记为可达的对象。
-- **清除阶段：** 垃圾回收器清除所有未标记的对象，即不可达对象。
-- **增量回收（Incremental Garbage Collection）：** 这种策略将垃圾回收操作分解为多个小步骤，以允许在应用程序执行期间执行垃圾回收操作，减少对应用程序的中断。
-- **并行回收（Parallel Garbage Collection）：** 一允许多个线程同时进行垃圾回收操作，以提高性能。
-- **压缩（Compaction）：** 为了减少内存碎片，V8 垃圾回收器还包括了内存压缩步骤，将存活对象移动到内存中的连续位置，以提高内存使用效率。
+适用：现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻。
 
-**总结：**
+垃圾回收以可达性为基础，从根对象沿引用追踪仍可使用的对象；循环引用本身不一定泄漏，始终被全局缓存、闭包、DOM 监听等持有的无用对象才可能持续存活。
 
-- V8 引擎中并没有使用引用计数（Reference Counting）作为主要的垃圾回收策略，引用计数是一种简单的垃圾回收策略，它跟踪对象的引用计数，当引用计数降为零时，对象被回收。然而，引用计数在处理循环引用等情况时存在问题，并且不够高效。
-- V8 的垃圾回收机制是一种复杂的混合策略，结合了多种技术，以优化内存管理和性能。这些技术的结合使得 V8 成为一个高性能的 JavaScript 引擎。
+V8 采用分代思想，并结合复制、标记、清扫/整理以及增量、并发、并行技术降低停顿；不同空间和版本策略不同。不能承诺对象在某一时刻立即回收，WeakRef/FinalizationRegistry 也不能用于必须及时释放的资源。排查时看多次操作与 GC 后的堆趋势、保留路径和分配热点，而不是一次内存高峰。
+
+参考：[资料 1](https://v8.dev/blog/trash-talk) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management)。
 
 ---
 
 ## Q246｜localStorage 、sessionStorage、indexedDB 的区别
 
-**localStorage：**
+适用：现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻。
 
-- 存储容量：通常支持存储大约 5-10 MB 的数据，具体容量因浏览器而异。
-- 生命周期：数据永久保存，除非显式删除。
-- 数据模型：键值对存储，数据以字符串形式存储，可以通过JavaScript的 localStorage API 访问。
+浏览器存储按用途选择：Cookie 可随匹配请求自动发送，适合会话标识；localStorage/sessionStorage 是同步字符串存储，前者持久、后者主要按顶层浏览上下文隔离；IndexedDB 提供异步结构化数据与事务，适合较大本地数据。Cache API 存储 Request/Response，常与 Service Worker 配合。
 
-**sessionStorage：**
+配额、隐私模式、清理与跨站分区受浏览器策略影响，不能写死统一容量或永久保留。敏感会话优先评估 Secure/HttpOnly/SameSite Cookie 与服务端校验；JS 可读存储无法抵御同源 XSS。跨设备同步需服务器，不能靠 localStorage 自动实现。
 
-- 存储容量：通常支持存储大约 5-10 MB 的数据，具体容量因浏览器而异，与localStorage相同。
-- 生命周期：数据仅在会话期间有效。一旦用户关闭浏览器标签或窗口，数据就会被删除。
-- 数据模型：键值对存储，数据以字符串形式存储，可以通过JavaScript的 sessionStorage API 访问。
-
-**IndexedDB：**
-
-- 存储容量：通常支持更大的存储容量，通常在多十兆字节以上，具体容量因浏览器而异。
-- 生命周期：数据是持久的，除非显式删除。不受会话或浏览器关闭的影响。
-- 数据模型：支持更复杂的数据模型，可以存储结构化数据，如对象、数组等，而不仅仅是字符串。可以使用异步API来访问和管理数据。
-- 使用 localStorage 和 sessionStorage 适用于相对小的数据量，例如用户配置、临时存储等，其中 localStorage 的数据是永久保存的，而 sessionStorage 的数据在会话结束后会被删除。
-- 使用 IndexedDB 适用于需要处理大量结构化数据、需要离线访问和更复杂查询的情况，例如离线Web应用程序、数据同步等。 IndexedDB 提供了更灵活的数据存储和检索选项，但也需要更多的编程工作。
+参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)。
 
 ---

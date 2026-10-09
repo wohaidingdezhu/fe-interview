@@ -6,182 +6,170 @@ description: "收录 Q346–Q355 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["Node.js","Nginx","服务端"]
 addedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 order: 113
 status: draft
-quality: incomplete
+quality: complete
 sources: ["https://expressjs.com/en/resources/middleware/cors/","https://nginx.org/en/docs/http/ngx_http_proxy_module.html"]
 technologyVersion: "补充示例基于 Node、Express 5 与 Nginx HTTP proxy 模块"
 ---
 
-> 审核说明：本专题仍为草稿。本次补充参考资料与部分题解，未逐条审核全部原导入答案；字数校验通过不代表技术准确。
+> 本专题已完成本轮技术内容修订。题号用于稳定定位；适用版本和来源见各题。教学示例按文中约定使用，原始配图保留作辅助参考。
 
 补充参考资料：[参考 1](https://expressjs.com/en/resources/middleware/cors/) · [参考 2](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)。
 
 
 ## Q346｜nodejs 特点
 
-- **非阻塞I/O模型：** Node.js采用事件驱动、非阻塞I/O模型，使其非常适合处理高并发的网络应用程序。它可以同时处理多个客户端请求而不阻塞其他请求的处理。
-- **单线程：** Node.js单线程，但通过事件循环机制，可处理大量并发请求，编写高性能服务器变得更加容易。
-- **速度快：** Node.js构建在 V8 JavaScript引擎之上，具有出色的性能，特别适合处理I/O 密集型任务。
-- **跨平台：** Node.js可以在多个操作系统上运行，包括Windows、macOS和Linux。
-- **NPM：** Node.js附带了 Node Package Manager（NPM），用于管理第三方库和工具。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+Node.js 是基于 V8 的 JavaScript 运行时，事件循环配合非阻塞 I/O 适合大量等待网络/文件的任务。一个 isolate 通常在一个线程执行 JS，但运行时还有线程池和其他内部线程，也可使用 worker_threads；不能把整个 Node 进程说成只有一个线程。
+
+同步文件操作、巨型 JSON 处理和 CPU 循环仍会阻塞事件循环。CPU 重任务可放 Worker/独立进程，注意队列、通信和内存成本。非阻塞模型不自动保证低延迟，需要限制并发、设置超时并测量事件循环延迟。
+
+参考：[资料 1](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop) · [资料 2](https://nodejs.org/api/worker_threads.html)。
 
 ---
 
 ## Q347｜nodejs 作用
 
-1. **前端 BFF（Backend For Frontend）层：** Node.js可以用作前端BFF层，负责聚合多个后端API并向前端提供定制的数据和服务。这有助于减少前端应用程序中对后端API的请求数量，提高性能和用户体验。
-2. **API服务器：** Node.js非常适合构建API服务器，用于提供数据和服务给前端应用程序。它的非阻塞I/O模型和事件驱动性能使其成为处理大量客户端请求的理想选择。
-3. **前端代理服务器：** Node.js可以用作前端代理服务器，用于代理和转发请求到后端服务器，同时可以进行请求和响应的中间件处理，如鉴权、缓存、请求重定向等。
-4. **Web运行时服务器：** Node.js可以用于构建Web运行时服务器，以在服务器端渲染（SSR）前端应用程序，提供更快的初始加载时间和更好的搜索引擎优化（SEO）。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+Node 可用于 BFF/API、SSR、CLI、构建工具、WebSocket 服务和任务编排。BFF 常按页面聚合后端接口、整理错误和会话，减少前端连接复杂度。
+
+聚合并不意味着越多越好：要设单请求预算、限制扇出并发、传递取消、记录追踪 ID，并避免把底层所有失败隐藏成成功。CPU 密集计算或强隔离场景可交给更适合的服务，选择依据是团队与工作负载，而不是语言统一就必然性能更好。
+
+参考：[资料 1](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)。
 
 ---
 
 ## Q348｜nodejs 开放跨域白名单
 
-CORS 白名单在服务器检查请求 Origin，并对允许来源返回对应的 Access-Control-Allow-Origin。允许携带凭据时不能使用通配符 *，还要正确处理预检并设置 Vary:Origin。下面使用 Express 的 cors 中间件；无 Origin 的请求可继续处理，但 CORS 并不是服务端认证，恶意脚本和非浏览器客户端仍需身份与授权检查。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+服务端按完整 Origin 白名单决定是否开放响应读取。Express 的 cors 中间件可处理预检与 Vary: Origin，带凭据时不能使用通配符。
 
 ```js
-import express from 'express'; import cors from 'cors';
+import express from "express";
+import cors from "cors";
 const app = express();
-const allowed = new Set(['https://example.com']);
+const allowed = new Set(["https://example.com"]);
 app.use(cors({
-  origin(origin, callback) { callback(null, !origin || allowed.has(origin)); },
-  credentials: true
+  origin(origin, callback) { callback(null, origin !== undefined && allowed.has(origin)); },
+  credentials: true,
 }));
-// 随后注册路由与身份验证
+app.get("/health", (_req, res) => res.json({ ok: true }));
+app.listen(3000);
 ```
+
+未允许的来源不会获得 CORS 响应头，但请求仍可能到达路由；无 Origin 的服务端/同源调用也不需此授权头。CORS 不是认证、CSRF 或防爬边界，敏感接口必须另做身份与权限校验，不要用 endsWith 域名后缀判断替代精确匹配。
+
+参考：[资料 1](https://expressjs.com/en/resources/middleware/cors/)。
 
 ---
 
 ## Q349｜dependencies 和 devDependencies 两者区别
 
-**dependencies：**
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
 
-- 属性用于定义项目的运行时依赖，这些包在实际部署和运行项目时是必需的，会被安装在生产环境。
-- 这些依赖通常包括项目的核心功能所需的包，如Web框架、数据库驱动、工具库等。
-- 当使用npm install或yarn add命令时，这些依赖包将被安装。
+dependencies 声明包正常使用/运行所需依赖，devDependencies 声明本包开发、测试与构建工具。npm 默认安装通常包含两者，npm ci --omit=dev 才会省略开发依赖；构建阶段仍可能需要它们。
 
-**devDependencies：**
+前端静态站点最终部署的是构建产物，浏览器不会读取 package.json 决定下载哪些包，实际 bundle 由 import 图与打包配置决定。SSR/Node 服务运行期用到的库应正确放入 dependencies；可复用库的 peerDependencies 则表达与宿主的版本契约。
 
-- 属性用于定义项目的开发依赖，这些依赖包在开发过程中是必需的，但在实际生产环境中不需要。
-- 这些依赖通常包括开发工具、测试框架、代码检查工具、打包工具等，用于项目的构建和开发。
-- 当使用npm install --save-dev或yarn add --dev命令时，这些依赖包将被安装。
+参考：[资料 1](https://docs.npmjs.com/cli/v11/configuring-npm/package-json)。
 
 ---
 
 ## Q350｜幽灵依赖是什么 及 解决方案
 
-幽灵依赖（Phantom Dependency）是指当你的项目间接依赖了某个模块，而这个模块没有在你的package.json文件的依赖列表中明确声明。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
 
-例如，假设你的项目直接依赖于模块 A，而模块 A 又依赖于模块 B。如果你的代码直接使用了模块 B，但没有在package.json中将模块 B 声明为直接依赖，这就形成了一个幽灵依赖。如果未来模块 A 不再需要模块 B，或者升级到不再依赖模块 B 的版本，项目将因缺少必需的模块 B 而出现问题。
+幽灵依赖指代码直接导入了未在所属包依赖清单声明的包，却因提升或其他间接依赖暂时能解析。上游升级或安装布局变化后就可能失败。
 
-**如何使用 npm 解决幽灵依赖**
+修复应把直接使用的包声明在正确 workspace 的 dependencies/devDependencies/peerDependencies 中，使用 lockfile 和干净 npm ci 验证。pnpm 严格布局或 Yarn PnP 可更早暴露问题，但提升例外和配置仍会影响结果；npm ls 只能帮助分析依赖图，不会自动找全源码里的未声明导入。
 
-使用npm ls命令可以帮助你查看当前项目中所有依赖的层次结构。通过这个命令检查是否有你的代码直接使用却没有在package.json中声明的模块。
-
-1. **审查依赖：**
-
-检查项目，确保所有直接使用的依赖都在package.json中被正确声明。如果有未声明的依赖，应该加入到package.json中。
-
-1. **清理未使用的依赖：**
-
-使用一些工具如depcheck可以帮助你发现哪些依赖在代码中被使用，但没有被声明在package.json中。这可以自动化检测幽灵依赖的过程。
-
-1. **自动检测未声明的依赖：**
-
-在package.json中使用准确的版本号或使用版本锁定文件（如package-lock.json或yarn.lock）。
-
-1. **确保依赖的版本管理：**
-2. **使用 npm 包管理工具**
-
-使用如 pnpm 统一管理相关依赖，以确保依赖的一致性和项目的稳定性。
+参考：[资料 1](https://pnpm.io/symlinked-node-modules-structure) · [资料 2](https://docs.npmjs.com/cli/v11/commands/npm-ci)。
 
 ---
 
 ## Q351｜从服务器接收到 url 开始 到 返回响应结果 发生了什么事
 
-1. **接收URL请求：** 当Web服务器（如Node.js）接收到来自客户端浏览器的HTTP请求时，它解析该请求的URL和其他HTTP头信息。
-2. **路由处理：** 服务器根据请求的URL和HTTP方法（GET、POST等）将请求路由到相应的处理程序。路由通常由应用程序的路由器或框架完成。
-3. **中间件处理：** 请求可能会经过一系列中间件处理，这些中间件可以执行诸如身份验证、日志记录、数据解析等任务。中间件是可重用的模块，可以在请求处理的不同阶段进行插入。
-4. **逻辑处理：** 一旦请求到达适当的路由和中间件，服务器执行特定的业务逻辑来满足请求。这可能涉及到访问数据库、计算、验证、权限检查等操作。
-5. **数据库查询：** 如果业务逻辑需要从数据库中检索或存储数据，服务器将与数据库进行通信，执行相应的查询或操作。这通常涉及到使用数据库查询语言（如SQL）来执行操作。
-6. **数据处理：** 服务器接收来自数据库的数据，对其进行处理并可能与应用程序的逻辑进行合并。数据处理可能包括格式化、筛选、排序、分组等操作。
-7. **生成响应：** 一旦数据处理完成，服务器生成HTTP响应，包括状态代码、响应头和响应体。响应体通常包含用于呈现页面或API响应的数据。
-8. **返回响应：** 生成的HTTP响应将被发送回客户端浏览器，通常作为HTML页面或JSON数据。客户端浏览器解析响应并呈现给用户。
-9. **结束请求：** 一旦响应被发送，请求处理过程结束，服务器可以等待下一个请求或继续处理其他请求。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+服务端连接通常先经过负载均衡/反向代理、TLS 与 HTTP 解析，再进入路由和中间件：请求大小限制、认证授权、参数校验、业务处理、数据库/下游访问、响应编码与发送。缓存、流式响应或提前拒绝会缩短该路径。
+
+需要贯穿请求 ID、超时、取消、错误映射与日志脱敏；响应发出后客户端断开不一定自动取消底层数据库任务。高并发下还要控制连接池与队列，避免单次慢依赖耗尽服务资源。顺序以具体框架和中间件注册为准。
+
+参考：[资料 1](https://nodejs.org/api/http.html) · [资料 2](https://expressjs.com/en/guide/using-middleware.html)。
 
 ---
 
 ## Q352｜Koa 和 Expreess 区别
 
-1. **中间件处理：**
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
 
-- Koa使用异步函数（async/await）的中间件处理，更简洁。
-- Express使用回调函数的中间件处理，需要显式调用next函数。
+Express 通过 req/res/next 组织路由和中间件，生态丰富；Koa 通过 ctx 与 async 中间件组织流程，await next() 形成下游执行后再返回上游的洋葱模型。Koa 核心通常需另接路由和 body parser。
 
-1. **错误处理：**
+Express 5 对返回 Promise 的路由/中间件拒绝会自动交给错误处理，不能沿用“Express 完全不支持 async”旧结论。Koa 的异步错误可在上游 try/catch 中集中捕获，但未 await 的后台 Promise 仍需自行管理。性能取决于实际中间件和业务，不按框架名字保证。
 
-- Koa内置错误处理，自动捕获和处理异常。
-- Express需要手动编写错误处理中间件。
-
-1. **模块性：**
-
-- Koa更模块化，允许选择性添加功能。
-- Express在核心包含更多功能，较重。
-
-1. **Node.js版本：**
-
-- Koa 2需要Node.js 7.6或更高版本，因为它使用了async/await。
-- Express适用于更旧的Node.js版本。
+参考：[资料 1](https://expressjs.com/en/guide/error-handling.html) · [资料 2](https://koajs.com/)。
 
 ---
 
 ## Q353｜nginx 配置
 
-Nginx 配置包含事件、HTTP、server 和 location 等层级。静态站点需要 listen、server_name、root 和 index；SPA 若使用 history 路由，可把不存在的路径回退到 index.html，静态资源或 API 应按需要单独返回 404。修改后先检查语法，再平滑重载。TLS、缓存与压缩需根据实际站点配置，不能直接把示例当作完整生产配置。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+Nginx 在 http 块中配置 server，再通过 location 匹配请求。下面是部署在根路径的 SPA 示例片段：
 
 ```nginx
 server {
-  listen 80;
-  server_name example.com;
-  root /srv/www;
-  index index.html;
-  location / { try_files $uri $uri/ /index.html; }
+    listen 80;
+    server_name example.com;
+    root /srv/app/dist;
+    location /assets/ { try_files $uri =404; }
+    location /api/ { proxy_pass http://127.0.0.1:3000; }
+    location / { try_files $uri $uri/ /index.html; }
 }
 ```
+
+上线还需配置 HTTPS、入口与指纹资源缓存、日志和请求限制。API 与缺失静态文件不能一律回退 HTML；改动后先 nginx -t 校验，再按环境流程 reload。子路径部署要对齐构建 base 与服务器路由。
+
+参考：[资料 1](https://nginx.org/en/docs/beginners_guide.html)。
 
 ---
 
 ## Q354｜nginx 配置代理转发，解决跨域问题
 
-前端请求与页面同源的 /api/，由 Nginx 转发到内部服务，浏览器就不需要对内部服务进行跨源请求。proxy_pass 带尾部斜杠时会用其 URI 替换匹配的 location 前缀，本例 /api/users 转为上游 /users；不带 URI 时通常保留 /api/users。保留原始主机和转发信息，身份认证仍由服务端实现。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
+
+让浏览器向同源 /api 请求，再由 Nginx 转发给上游，可避免前端读取跨源 API 的限制。proxy_pass 是否带 URI 尾斜杠会影响路径替换：
 
 ```nginx
 location /api/ {
-  proxy_pass http://127.0.0.1:3000/;
-  proxy_set_header Host $host;
-  proxy_set_header X-Real-IP $remote_addr;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_pass http://127.0.0.1:3000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 30s;
 }
 ```
+
+此例 /api/users 转为上游 /users；不带尾部 / 的版本通常保留 /api/users。后端只应信任已知代理添加的转发头；Cookie Domain/Path、流式响应缓冲及 WebSocket 升级需按具体路由另配。
+
+参考：[资料 1](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass)。
 
 ---
 
 ## Q355｜反向代理
 
-反向代理（Reverse Proxy）是一种网络架构，其中代理服务器接受来自客户端的请求，并将这些请求转发到一个或多个后端服务器，然后将后端服务器的响应返回给客户端。这与传统的正向代理服务器相反，正向代理服务器代表客户端发出请求，并从服务器获取响应。
+适用：Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置。
 
-1. **负载均衡：** 可以平衡多个后端服务器之间的负载，确保请求被均匀分发到各个服务器，以提高性能和高可用性。
-2. **SSL终止：** 反向代理可以用于解密客户端和服务器之间的SSL/TLS加密通信，减轻后端服务器的负担。
-3. **安全性：** 反向代理可以充当安全屏障，防止直接访问后端服务器，从而提高安全性。
-4. **缓存：** 反向代理可以缓存响应，以减少后端服务器的负载并提高响应时间。
-5. **内容压缩：** 反向代理可以在将响应发送给客户端之前对内容进行压缩，以减少带宽占用。
-6. **URL重写：** 反向代理可以修改请求和响应中的URL，以适应特定的要求。
-7. **单一入口：** 反向代理可以充当应用程序的单一入口点，将客户端请求路由到不同的应用程序或微服务。
-8. **保护隐私：** 反向代理可以隐藏服务端的真实IP地址，增加隐私保护。
+反向代理代表服务端接收客户端请求并转发到内部服务，常用于 TLS 终止、路由、负载均衡、缓存与访问控制；正向代理主要代表客户端访问外部目标。
 
-用于构建高性能、可伸缩和安全的网络应用程序的关键组件，常用于Web服务器、负载均衡器、API网关等场景。
+反向代理不等于只隐藏 IP 或自动消除跨域，它必须与浏览器访问入口和转发规则配合。要明确可信转发头、超时、缓冲、请求体限制和健康检查，并保留请求 ID 以区分代理失败与上游失败。代理不能代替后端资源级权限校验。
+
+参考：[资料 1](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)。
 
 ---

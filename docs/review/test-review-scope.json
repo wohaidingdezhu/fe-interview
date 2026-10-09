@@ -1,0 +1,176 @@
+{
+  "scope_type": "non_diff",
+  "LANG": "javascript",
+  "EXEC_SOURCE": "",
+  "TMP_ROOT": "/var/folders/yd/6bl5yh1973v5qrd7m_bgk36r0000gn/T/tmp.B1MS4e7sRq",
+  "project_test_conventions": "node:test + node:assert/strict；tests/*.test.mjs；Node 24，无额外 AGENTS 约定",
+  "biz_spec": "用户要求补完整题库后检查修复整体项目并补充单测",
+  "TARGETS": [
+    {
+      "file_path": "examples/interview-algorithms.mjs",
+      "target_type": "file",
+      "symbol": "setByPath, permutations, throttle",
+      "locator": "export function",
+      "source": "explicit",
+      "reason": "前批手写答案边界复核",
+      "hunks": []
+    },
+    {
+      "file_path": "examples/interview-streams.mjs",
+      "target_type": "function",
+      "symbol": "consumeSSE",
+      "locator": "line 2",
+      "source": "untracked",
+      "reason": "新补流式解析需要验证跨块和失败清理",
+      "hunks": []
+    },
+    {
+      "file_path": "examples/interview-business.mjs",
+      "target_type": "file",
+      "symbol": "createLatestLoader, forEachIdle",
+      "locator": "export function",
+      "source": "untracked",
+      "reason": "验证乱序、取消、调度预算和失败",
+      "hunks": []
+    },
+    {
+      "file_path": "examples/interview-signals.mjs",
+      "target_type": "function",
+      "symbol": "createSignalSystem",
+      "locator": "line 2",
+      "source": "untracked",
+      "reason": "验证分支依赖清理、重入和停止",
+      "hunks": []
+    },
+    {
+      "file_path": "scripts/content-assets.mjs",
+      "target_type": "function",
+      "symbol": "contentAssets",
+      "locator": "line 4",
+      "source": "explicit",
+      "reason": "全部题目通过后本地维护状态应同步",
+      "hunks": []
+    },
+    {
+      "file_path": "scripts/publication.mjs",
+      "target_type": "file",
+      "symbol": "selectPublished, validateContent, inspectQuestions",
+      "locator": "export function",
+      "source": "explicit",
+      "reason": "全量发布后描述和题目日期检查",
+      "hunks": []
+    }
+  ],
+  "BUG_MAP": [
+    {
+      "id": "path-inherited",
+      "defect_type": "Security",
+      "severity": "P1",
+      "file_path": "examples/interview-algorithms.mjs",
+      "target_func": "setByPath",
+      "bug_range": "135-150",
+      "scenario": "[defect-probing] 目标继承对象字段时不得修改原型中的共享对象",
+      "evidence": "current[key] 直接读取继承属性，随后写入该对象",
+      "expect_outcome": "仅写目标自有路径，原型保持不变",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "path-quoted",
+      "defect_type": "Logic Errors",
+      "severity": "P1",
+      "file_path": "examples/interview-algorithms.mjs",
+      "target_func": "setByPath",
+      "bug_range": "137-139",
+      "scenario": "[defect-probing] 引号括号内含点的字段应保持单个键",
+      "evidence": "先替换括号为点再 split 会错误拆开 a[\"x.y\"]",
+      "expect_outcome": "生成 a 的 x.y 字段，而非 a.x.y",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "permutation-equality",
+      "defect_type": "Logic Errors",
+      "severity": "P1",
+      "file_path": "examples/interview-algorithms.mjs",
+      "target_func": "permutations",
+      "bug_range": "152-163",
+      "scenario": "[defect-probing] 含重复 NaN 或混合原始值时唯一排列不得重复",
+      "evidence": "默认字符串排序不能保证等值相邻，NaN !== NaN 也无法去重",
+      "expect_outcome": "按 SameValueZero 去重，不混淆数字与字符串",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "throttle-initial",
+      "defect_type": "Boundary Errors",
+      "severity": "P2",
+      "file_path": "examples/interview-algorithms.mjs",
+      "target_func": "throttle",
+      "bug_range": "100-112",
+      "scenario": "[defect-probing] 时钟起点为零时首次节流调用仍应立即执行",
+      "evidence": "last=0 与 Date.now()=0 时 remaining=wait，首调进入延迟分支",
+      "expect_outcome": "首调及 cancel 后下一调立即执行",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "topic-status",
+      "defect_type": "Business Gaps",
+      "severity": "P1",
+      "file_path": "scripts/content-assets.mjs",
+      "target_func": "contentAssets",
+      "bug_range": "6-15",
+      "scenario": "[defect-probing] 专题题目全部可发布后不应仍显示待补充",
+      "evidence": "仅派生题数却沿用 draft/incomplete 元数据，下游维护筛选按该状态分类",
+      "expect_outcome": "完整专题派生 published/complete，部分专题保留草稿状态",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "topic-review-date",
+      "defect_type": "Business Gaps",
+      "severity": "P1",
+      "file_path": "scripts/publication.mjs",
+      "target_func": "validateContent",
+      "bug_range": "164-171",
+      "scenario": "[defect-probing] 逐题已有审核日期的专题不应要求重复专题日期",
+      "evidence": "publiclyVisible 使用逐题状态，日期却只查 article.reviewedAt",
+      "expect_outcome": "题库按逐题日期判断保鲜，普通文章按整篇日期",
+      "status": "confirmed",
+      "resolution": "已按用户修复要求修正源码并通过回归测试"
+    },
+    {
+      "id": "topic-description",
+      "defect_type": "Business Gaps",
+      "severity": "P2",
+      "file_path": "scripts/publication.mjs",
+      "target_func": "selectPublished",
+      "bug_range": "121-124",
+      "scenario": "[defect-probing] 全部题发布时描述不应说其余仍在草稿",
+      "evidence": "超过八题固定输出其他题目仍在草稿审核中",
+      "expect_outcome": "完整与部分专题分别生成准确描述",
+      "status": "report_only",
+      "resolution": "已按用户修复要求修正源码并通过回归测试",
+      "status_reason": "静态分支确定性错误；新用例在修正后断言完整专题无草稿描述，未单独留存该项修正前失败输出"
+    },
+    {
+      "id": "duplicate-separators",
+      "defect_type": "Business Gaps",
+      "severity": "P2",
+      "file_path": "scripts/publication.mjs",
+      "target_func": "publishedQuestionContent",
+      "scenario": "逐题正文已包含末尾分隔线，拼接时不应重复产生分隔线",
+      "evidence": "新测试期望 1 条但修复前得到 3 条 thematicBreak",
+      "status": "confirmed",
+      "resolution": "按 Markdown AST 去除题尾分隔线，保留代码节点并统一拼接；回归通过"
+    }
+  ],
+  "validation": {
+    "baselineTests": 56,
+    "finalTests": 87,
+    "passed": 87,
+    "coverage": "skip；没有配置覆盖率门禁",
+    "sourceRepairAuthorization": "用户明确要求整体检查修复，优先于单测技能只改测试的默认边界"
+  }
+}

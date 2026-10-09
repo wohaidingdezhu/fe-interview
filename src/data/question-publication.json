@@ -1,4 +1,1293 @@
 {
+  "Q1": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/rendering-performance",
+      "https://developer.chrome.com/docs/devtools/performance/"
+    ],
+    "technologyVersion": "现代浏览器渲染流水线",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q2": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing"
+    ],
+    "technologyVersion": "现代浏览器布局实验；次数需按当前环境录制",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q3": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Block_formatting_context",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing"
+    ],
+    "technologyVersion": "现代 CSS；块格式化上下文与外边距折叠",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q4": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/display",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/visibility",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/opacity"
+    ],
+    "technologyVersion": "现代 HTML/CSS；同时考虑命中测试和无障碍语义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q5": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/overflow"
+    ],
+    "technologyVersion": "CSS Overflow Module Level 3/4；现代浏览器",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q6": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout"
+    ],
+    "technologyVersion": "现代 CSS Grid/Flexbox",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q7": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/calc"
+    ],
+    "technologyVersion": "现代 CSS Values and Units；新算术语法需查兼容性",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q8": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Aligning_items_in_a_flex_container",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/length"
+    ],
+    "technologyVersion": "现代 Flexbox；动态视口单位按兼容性使用",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q9": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/@supports"
+    ],
+    "technologyVersion": "现代 Web 平台；特性检测与基础可访问性",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q10": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"
+    ],
+    "technologyVersion": "HTML Living Standard；现代浏览器安全策略",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q11": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
+    ],
+    "technologyVersion": "现代 CSS Box Model",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q12": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://html.spec.whatwg.org/",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML"
+    ],
+    "technologyVersion": "HTML Living Standard；独立 Web API 按各自规范",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q13": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS"
+    ],
+    "technologyVersion": "现代模块化 CSS；各模块兼容性独立判断",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q14": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Specificity",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Cascade"
+    ],
+    "technologyVersion": "CSS Cascade Level 5/6；包含 cascade layers",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q15": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input"
+    ],
+    "technologyVersion": "HTML Living Standard；控件 UI 按平台实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q16": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Inheritance",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/inherit"
+    ],
+    "technologyVersion": "现代 CSS Cascade and Inheritance",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q17": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/length",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"
+    ],
+    "technologyVersion": "现代 CSS；显示效果受 DPR 和缩放影响",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q18": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
+    ],
+    "technologyVersion": "现代 CSS Positioned Layout",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q19": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/clear",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/display#flow-root"
+    ],
+    "technologyVersion": "现代 CSS；flow-root 优先用于包含浮动",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q20": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/line-height",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/height"
+    ],
+    "technologyVersion": "现代 CSS Inline/Box Sizing",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q21": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip"
+    ],
+    "technologyVersion": "现代 CSS Backgrounds and Borders",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q22": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/display"
+    ],
+    "technologyVersion": "现代 CSS Display",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q23": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Replaced_element_properties",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img"
+    ],
+    "technologyVersion": "HTML Living Standard；现代 CSS replaced elements",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q24": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
+    ],
+    "technologyVersion": "现代 CSS Box Sizing",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q25": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    ],
+    "technologyVersion": "CSS Animations Level 1；现代浏览器",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q26": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations"
+    ],
+    "technologyVersion": "现代 CSS Transitions and Animations",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q27": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/place-items"
+    ],
+    "technologyVersion": "现代 CSS Grid/Flex alignment",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q28": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/color",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/classList"
+    ],
+    "technologyVersion": "现代 CSSOM/DOM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q29": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
+    ],
+    "technologyVersion": "现代 CSS Positioned Layout",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q30": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout"
+    ],
+    "technologyVersion": "现代 CSS Flexbox",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q31": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://lesscss.org/features/",
+      "https://sass-lang.com/documentation/"
+    ],
+    "technologyVersion": "Less/Sass 当前文档；Sass 模块系统",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q32": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements"
+    ],
+    "technologyVersion": "现代 Selectors/Pseudo-elements",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q33": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements"
+    ],
+    "technologyVersion": "CSS Selectors / Pseudo-elements",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q34": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries"
+    ],
+    "technologyVersion": "现代响应式 Web；容器查询按兼容性使用",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q35": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/@import"
+    ],
+    "technologyVersion": "HTML Living Standard；现代 CSS Cascade",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q36": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/display",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Replaced_element_properties"
+    ],
+    "technologyVersion": "HTML Living Standard；现代 CSS Display",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q37": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow"
+    ],
+    "technologyVersion": "现代 CSS Overflow/Text",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q38": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/Semantics",
+      "https://html.spec.whatwg.org/"
+    ],
+    "technologyVersion": "HTML Living Standard；现代无障碍语义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q39": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/length"
+    ],
+    "technologyVersion": "现代 CSS Values and Units；rpx 为非标准平台单位",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q40": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v8.dev/docs/hidden-classes",
+      "https://v8.dev/blog/fast-properties"
+    ],
+    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q41": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v8.dev/blog/elements-kinds"
+    ],
+    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q42": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q43": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion"
+    ],
+    "technologyVersion": "ECMAScript 当前类型转换规则",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q44": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness"
+    ],
+    "technologyVersion": "ECMAScript 当前相等比较算法",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q45": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Data_structures"
+    ],
+    "technologyVersion": "ECMAScript 2024 数据类型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q46": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+      "https://tc39.es/ecma262/"
+    ],
+    "technologyVersion": "ECMAScript 值传递语义；内存布局属引擎实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q47": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"
+    ],
+    "technologyVersion": "现代浏览器 JavaScript agents 与 Workers",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q48": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray"
+    ],
+    "technologyVersion": "现代 JavaScript；跨 realm 边界需注意",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q49": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/JavaScript_technologies_overview",
+      "https://github.com/tc39/proposals/blob/main/finished-proposals.md"
+    ],
+    "technologyVersion": "ECMAScript 2015–2024 特性摘要",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q50": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let"
+    ],
+    "technologyVersion": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q51": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/Hoisting",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function"
+    ],
+    "technologyVersion": "ECMAScript 声明实例化与词法绑定",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q52": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"
+    ],
+    "technologyVersion": "现代 JavaScript；深比较语义需由业务定义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q53": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/null",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined"
+    ],
+    "technologyVersion": "ECMAScript 当前 Null/Undefined 语义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q54": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval"
+    ],
+    "technologyVersion": "HTML timers；现代浏览器",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q55": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
+    ],
+    "technologyVersion": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q56": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide",
+      "https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint"
+    ],
+    "technologyVersion": "HTML Living Standard 微任务检查点",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q57": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide"
+    ],
+    "technologyVersion": "现代浏览器事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q58": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/queueMicrotask"
+    ],
+    "technologyVersion": "现代浏览器 queueMicrotask",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q59": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await"
+    ],
+    "technologyVersion": "现代 JavaScript async/await",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q60": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
+    ],
+    "technologyVersion": "现代 JavaScript Promise；浏览器任务模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q61": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script"
+    ],
+    "technologyVersion": "HTML Living Standard script 调度",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q62": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.chrome.com/docs/devtools/memory-problems/",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management"
+    ],
+    "technologyVersion": "现代垃圾回收器与 Chrome DevTools",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q63": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q64": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.chrome.com/docs/devtools/console/"
+    ],
+    "technologyVersion": "Chrome DevTools 稳定版；Console API 按环境实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q65": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q66": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice"
+    ],
+    "technologyVersion": "现代 JavaScript Array",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q67": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"
+    ],
+    "technologyVersion": "ECMAScript 2023+；非修改数组方法需查兼容性",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q68": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce"
+    ],
+    "technologyVersion": "现代 JavaScript Array.prototype.reduce",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q69": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys"
+    ],
+    "technologyVersion": "现代 JavaScript 对象键枚举",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q70": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions"
+    ],
+    "technologyVersion": "现代 JavaScript 函数语义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q71": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes"
+    ],
+    "technologyVersion": "现代 JavaScript 对象与 class",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q72": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects",
+      "https://developer.mozilla.org/en-US/docs/Web/API"
+    ],
+    "technologyVersion": "ECMAScript 内置对象与现代 Web APIs",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q73": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray"
+    ],
+    "technologyVersion": "现代 JavaScript；跨 realm 数组判断",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q74": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax"
+    ],
+    "technologyVersion": "现代 JavaScript 可迭代/类数组转换",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q75": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures"
+    ],
+    "technologyVersion": "ECMAScript 词法环境与闭包",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q76": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/with"
+    ],
+    "technologyVersion": "现代 JavaScript；严格模式禁止 with",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q77": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/attributes",
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement"
+    ],
+    "technologyVersion": "HTML Living Standard DOM reflection",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q78": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode"
+    ],
+    "technologyVersion": "现代 DOM Standard",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q79": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling"
+    ],
+    "technologyVersion": "现代 DOM Events",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q80": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+      "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget"
+    ],
+    "technologyVersion": "现代 DOM Events",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q81": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener",
+      "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener"
+    ],
+    "technologyVersion": "现代 DOM EventTarget；AbortSignal 监听器清理",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q82": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Event/composed"
+    ],
+    "technologyVersion": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q83": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/closest"
+    ],
+    "technologyVersion": "现代 DOM Events",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q84": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame"
+    ],
+    "technologyVersion": "现代 CSS/Web Animations；性能需实测",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q85": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect",
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop"
+    ],
+    "technologyVersion": "现代 CSSOM View",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q86": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document/write",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML"
+    ],
+    "technologyVersion": "现代浏览器 HTML/DOM；ECMAScript 2024",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q87": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseover_event",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseenter_event"
+    ],
+    "technologyVersion": "现代 UI Events/Pointer Events",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q88": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture"
+    ],
+    "technologyVersion": "Pointer Events；现代浏览器",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q89": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script"
+    ],
+    "technologyVersion": "HTML Living Standard classic/module scripts",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q90": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/extends",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super"
+    ],
+    "technologyVersion": "现代 JavaScript class inheritance",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q91": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+      "https://promisesaplus.com/"
+    ],
+    "technologyVersion": "ECMAScript Promise；现代 JavaScript",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q92": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race"
+    ],
+    "technologyVersion": "现代 JavaScript Promise combinators",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q93": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function",
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+    ],
+    "technologyVersion": "ES2017+；现代 Abort APIs",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q94": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q95": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/construct"
+    ],
+    "technologyVersion": "现代 JavaScript [[Construct]] 语义",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q96": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/apply"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q97": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control"
+    ],
+    "technologyVersion": "HTTP 缓存语义（RFC 9111）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q98": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/Function"
+    ],
+    "technologyVersion": "现代 JavaScript；CSP/Trusted Types 按环境",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q99": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures"
+    ],
+    "technologyVersion": "现代 JavaScript 闭包与惰性初始化",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q100": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"
+    ],
+    "technologyVersion": "现代 JavaScript Proxy/Reflect",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q101": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/prototype"
+    ],
+    "technologyVersion": "ECMAScript 2024；严格模式与 ES 模块",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q102": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain"
+    ],
+    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q103": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions"
+    ],
+    "technologyVersion": "现代 JavaScript arrow functions",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q104": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this"
+    ],
+    "technologyVersion": "现代 JavaScript this 绑定",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q105": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind"
+    ],
+    "technologyVersion": "ES modules 严格模式示例",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q106": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions"
+    ],
+    "technologyVersion": "现代 JavaScript 词法 this",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q107": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim"
+    ],
+    "technologyVersion": "ECMAScript 2024；严格模式与 ES 模块",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q108": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys"
+    ],
+    "technologyVersion": "现代 JavaScript Symbols",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q109": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf"
+    ],
+    "technologyVersion": "现代 JavaScript String UTF-16 索引",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q110": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt"
+    ],
+    "technologyVersion": "现代 JavaScript 数字转换",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q111": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await"
+    ],
+    "technologyVersion": "ES2017+ async/await",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q112": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.sort",
+      "https://github.com/v8/v8/blob/12.4.254/third_party/v8/builtins/array-sort.tq",
+      "https://v8.dev/blog/array-sort"
+    ],
+    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q113": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#cant_assign_to_properties_on_primitives"
+    ],
+    "technologyVersion": "ECMAScript 2024；严格模式与 ES 模块",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q114": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+      "https://tc39.es/ecma262/"
+    ],
+    "technologyVersion": "ECMAScript 参数按值传递",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q115": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
+    ],
+    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q116": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/console/log_static",
+      "https://developer.chrome.com/docs/devtools/console/"
+    ],
+    "technologyVersion": "现代浏览器 Console API/DevTools",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q117": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html",
+      "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html"
+    ],
+    "technologyVersion": "TypeScript 5.x/6.x 类型系统概念；运行时仍为 JavaScript",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q118": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+      "https://www.typescriptlang.org/docs/handbook/type-inference.html"
+    ],
+    "technologyVersion": "TypeScript 当前 Handbook",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q119": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"
+    ],
+    "technologyVersion": "TypeScript 当前 Handbook",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q120": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types",
+      "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-aliases"
+    ],
+    "technologyVersion": "TypeScript 当前 Handbook",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q121": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+      "https://www.typescriptlang.org/docs/handbook/2/classes.html#implements-clauses"
+    ],
+    "technologyVersion": "TypeScript 当前 Handbook",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q122": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces"
+    ],
+    "technologyVersion": "TypeScript 当前 Handbook",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q123": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Topological_sorting"
+    ],
+    "technologyVersion": "有向无环图拓扑排序；现代 JavaScript",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q124": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Cartesian_product"
+    ],
+    "technologyVersion": "有限集合笛卡尔积；现代 JavaScript",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q125": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"
+    ],
+    "technologyVersion": "现代 JavaScript Promise 任务池",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q126": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat"
+    ],
+    "technologyVersion": "现代 JavaScript Array.flat",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q127": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll",
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/href"
+    ],
+    "technologyVersion": "现代 DOM/HTMLAnchorElement",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q128": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"
+    ],
+    "technologyVersion": "现代 DOM EventTarget",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q129": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture"
+    ],
+    "technologyVersion": "现代 Pointer Events",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q130": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle"
+    ],
+    "technologyVersion": "Fisher–Yates；Math.random 不用于安全随机",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q131": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+      "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle"
+    ],
+    "technologyVersion": "现代 JavaScript sort；均匀洗牌使用 Fisher–Yates",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q132": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap"
+    ],
+    "technologyVersion": "现代 structured clone；教学实现仅普通对象/数组",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q133": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet"
+    ],
+    "technologyVersion": "现代 JavaScript 对象图遍历",
+    "reviewedAt": "2026-10-09"
+  },
   "Q134": {
     "status": "published",
     "quality": "complete",
@@ -7,6 +1296,26 @@
       "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toPrimitive"
     ],
     "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q135": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length"
+    ],
+    "technologyVersion": "现代 JavaScript 函数柯里化教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q136": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse"
+    ],
+    "technologyVersion": "现代 JavaScript；字素簇使用 Intl.Segmenter",
     "reviewedAt": "2026-10-09"
   },
   "Q137": {
@@ -27,6 +1336,2532 @@
       "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now"
     ],
     "technologyVersion": "现代 JavaScript；浏览器定时器 API",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q139": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/FormData",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+    ],
+    "technologyVersion": "现代 Fetch/FormData；并发池复用 Q125",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q140": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat"
+    ],
+    "technologyVersion": "现代 JavaScript Date/Intl",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q141": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply"
+    ],
+    "technologyVersion": "现代 JavaScript 闭包",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q142": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get"
+    ],
+    "technologyVersion": "现代 JavaScript private fields/accessors",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q143": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
+    ],
+    "technologyVersion": "现代 XMLHttpRequest/Promise",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q144": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
+    ],
+    "technologyVersion": "现代浏览器 timers/Promise",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q145": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#download"
+    ],
+    "technologyVersion": "现代浏览器 Blob URL/download；跨源受策略限制",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q146": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events"
+    ],
+    "technologyVersion": "现代 Canvas/CSS；水印不是安全防护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q147": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+      "https://vuejs.org/guide/extras/reactivity-in-depth.html"
+    ],
+    "technologyVersion": "现代 JavaScript Proxy；教学依赖收集模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q148": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/hasInstance"
+    ],
+    "technologyVersion": "现代 JavaScript instanceof",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q149": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Tree_(data_structure)",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+    ],
+    "technologyVersion": "通用树构建；现代 JavaScript Map",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q150": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
+    ],
+    "technologyVersion": "现代 JavaScript（ES2015+）",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q151": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Prototype_Pollution_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "现代 JavaScript；原型污染防护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q152": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Fibonacci_sequence"
+    ],
+    "technologyVersion": "动态规划；结果使用 BigInt",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q153": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Symbol.iterator"
+    ],
+    "technologyVersion": "滑动窗口；按 Unicode code point 迭代",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q154": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Palindrome",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+    ],
+    "technologyVersion": "回文排列奇偶计数；现代 JavaScript",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q155": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Linked_list"
+    ],
+    "technologyVersion": "单链表原地反转",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q156": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Tree_traversal"
+    ],
+    "technologyVersion": "二叉树前/中/后序遍历",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q157": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Permutation",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"
+    ],
+    "technologyVersion": "现代 JavaScript；回溯算法",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q158": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Cycle_detection"
+    ],
+    "technologyVersion": "单链表快慢指针算法",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q159": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v2.vuejs.org/v2/guide/reactivity.html#For-Arrays"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q160": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v3-migration.vuejs.org/",
+      "https://v2.vuejs.org/v2/guide/migration-vue-2-7.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q161": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/components/events.html",
+      "https://vuejs.org/guide/components/provide-inject.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q162": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/event-handling.html#event-modifiers",
+      "https://vuejs.org/guide/essentials/forms.html#modifiers"
+    ],
+    "technologyVersion": "Vue 3 模板修饰符",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q163": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/instance/init.ts"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q164": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/api/options-lifecycle.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q165": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/scheduler.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/util/next-tick.ts"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q166": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/api/general.html#nexttick",
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/scheduler.ts"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q167": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/api/options-state.html#data"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q168": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v2.vuejs.org/v2/api/#Options-Lifecycle-Hooks",
+      "https://vuejs.org/api/options-lifecycle.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q169": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html",
+      "https://vuejs.org/guide/essentials/watchers.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q170": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html",
+      "https://vuejs.org/guide/best-practices/performance.html#computed-stability"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q171": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/computed.html#best-practices",
+      "https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q172": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/renderer.ts"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q173": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/vuejs/core/blob/v3.5.0/packages/runtime-core/src/renderer.ts#L2485"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q174": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q175": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q176": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/index.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/dep.ts",
+      "https://github.com/vuejs/vue/blob/v2.7.16/src/core/observer/watcher.ts"
+    ],
+    "technologyVersion": "Vue 2.7.16 / Vue 3.5.0 固定 tag 源码；教学示例明确边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q177": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/extras/reactivity-in-depth.html",
+      "https://v3-migration.vuejs.org/breaking-changes/"
+    ],
+    "technologyVersion": "Vue 3 Proxy 响应式",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q178": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/extras/rendering-mechanism.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q179": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v2.vuejs.org/v2/api/#Options-Lifecycle-Hooks"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q180": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/api/options-lifecycle.html",
+      "https://vuejs.org/api/composition-api-lifecycle.html"
+    ],
+    "technologyVersion": "Vue 3 当前生命周期 API",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q181": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/watchers.html#deep-watchers"
+    ],
+    "technologyVersion": "Vue 3.5+ 数字 deep；旧版本仅 boolean",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q182": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v2.vuejs.org/v2/api/#Vue-delete",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete"
+    ],
+    "technologyVersion": "Vue 2.7 与 JavaScript delete",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q183": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/extras/rendering-mechanism.html#compiler-informed-virtual-dom"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q184": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/extras/composition-api-faq.html#comparison-with-react-hooks",
+      "https://react.dev/learn/state-as-a-snapshot"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q185": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://router.vuejs.org/guide/advanced/meta.html",
+      "https://router.vuejs.org/guide/advanced/navigation-guards.html"
+    ],
+    "technologyVersion": "Vue Router 4；服务端授权为安全边界",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q186": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/quick-start.html",
+      "https://cli.vuejs.org/"
+    ],
+    "technologyVersion": "Vue 3 create-vue/Vite；Vue CLI 维护模式",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q187": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v3.router.vuejs.org/guide/essentials/history-mode.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q188": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/api/sfc-script-setup.html#reactive-props-destructure"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q189": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/template-refs.html"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q190": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/essentials/watchers.html#deep-watchers"
+    ],
+    "technologyVersion": "Vue 2.7 / Vue 3.5；每题明确 API 边界，Vue 2 用于旧项目维护",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q191": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q192": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q193": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q194": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q195": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q196": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q197": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://vuejs.org/guide/extras/reactivity-in-depth.html"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q198": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q199": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q200": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q201": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q202": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q203": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/system.ts",
+      "https://github.com/stackblitz/alien-signals/blob/1937d80cbb2e7581a5e194a4c59df3ec8d3a3916/src/index.ts"
+    ],
+    "technologyVersion": "Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q204": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks",
+      "https://react.dev/reference/rules/rules-of-hooks"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q205": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/Component"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q206": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/passing-props-to-a-component",
+      "https://react.dev/learn/state-as-a-snapshot"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q207": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://legacy.reactjs.org/docs/higher-order-components.html"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q208": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react-dom/components/input"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q209": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q210": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/Component",
+      "https://react.dev/reference/react"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q211": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q212": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/useContext",
+      "https://react.dev/reference/react/createContext"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q213": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/thinking-in-react"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q214": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks",
+      "https://react.dev/reference/react-dom/components/input"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q215": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://redux.js.org/introduction/why-rtk-is-redux-today"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q216": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/memo",
+      "https://react.dev/reference/react/Profiler"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q217": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/render-and-commit"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q218": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/preserving-and-resetting-state",
+      "https://react.dev/learn/rendering-lists"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q219": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/blog/2022/03/29/react-v18",
+      "https://react.dev/learn/render-and-commit"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q220": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://facebookarchive.github.io/flux/docs/in-depth-overview/"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q221": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/blog/2025/02/14/sunsetting-create-react-app",
+      "https://react.dev/learn/creating-a-react-app"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q222": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/Component#componentdidmount",
+      "https://react.dev/reference/react/useEffect#fetching-data-with-effects"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q223": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/useRef",
+      "https://react.dev/reference/react/useImperativeHandle"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q224": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q225": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/useState",
+      "https://react.dev/learn/queueing-a-series-of-state-updates"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q226": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/reference/react/useEffect"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q227": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://react.dev/learn/reusing-logic-with-custom-hooks"
+    ],
+    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q228": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/concepts/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q229": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/api/compiler-hooks/",
+      "https://webpack.js.org/api/compilation-hooks/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q230": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/concepts/hot-module-replacement/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q231": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/loaders/",
+      "https://webpack.js.org/guides/asset-modules/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q232": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/plugins/",
+      "https://webpack.js.org/plugins/define-plugin/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q233": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/concepts/loaders/",
+      "https://webpack.js.org/concepts/plugins/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q234": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/api/loaders/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q235": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/contribute/writing-a-plugin/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q236": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/guides/build-performance/",
+      "https://webpack.js.org/configuration/cache/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q237": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/api/module-methods/#magic-comments"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q238": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/guides/code-splitting/",
+      "https://webpack.js.org/guides/caching/"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q239": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vite.dev/guide/why.html",
+      "https://vite.dev/blog/announcing-vite8"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q240": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://babeljs.io/docs/",
+      "https://babeljs.io/docs/babel-preset-typescript"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q241": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
+      "https://react.dev/learn/thinking-in-react"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q242": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nodejs.org/api/esm.html",
+      "https://nodejs.org/api/modules.html"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q243": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://vuejs.org/guide/scaling-up/ssr.html"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q244": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/SPA",
+      "https://web.dev/articles/rendering-on-the-web"
+    ],
+    "technologyVersion": "webpack 5；Babel 7；Vite 8 与早期版本区别；Node 24 ESM",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q245": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://v8.dev/blog/trash-talk",
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management"
+    ],
+    "technologyVersion": "现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q246": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
+    ],
+    "technologyVersion": "现代浏览器存储 API；V8 垃圾回收概念，非特定版本源码复刻",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q247": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/vitals"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q248": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Performance",
+      "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q249": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://webpack.js.org/guides/tree-shaking/",
+      "https://webpack.js.org/guides/code-splitting/"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q250": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q251": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers",
+      "https://web.dev/articles/optimize-long-tasks"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q252": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Lazy_loading"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q253": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q254": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/learn/images/"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q255": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/CDN",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q256": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q257": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q258": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/virtualize-long-lists-react-window"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q259": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/performance-http2"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q260": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://web.dev/articles/performance-http2"
+    ],
+    "technologyVersion": "Web Performance / Core Web Vitals（LCP、INP、CLS）；webpack 5；HTTP/1.1–3",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q261": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q262": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q263": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/MVC"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q264": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q265": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q266": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+      "https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q267": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Advanced_JavaScript_objects/Object-oriented_programming"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q268": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/SOLID"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q269": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/singleton"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q270": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/factory-method"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q271": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/builder"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q272": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/prototype"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q273": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/adapter"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q274": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/decorator"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q275": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/observer"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q276": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/strategy"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q277": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/command"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q278": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/state"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q279": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/visitor"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q280": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/template-method"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q281": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/mediator"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q282": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/memento"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q283": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Interpreter_pattern"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q284": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/flyweight"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q285": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/chain-of-responsibility"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q286": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/bridge"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q287": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/composite"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q288": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/iterator"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q289": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://refactoring.guru/design-patterns/proxy"
+    ],
+    "technologyVersion": "GoF 模式概念；JavaScript ES2024 示例；MVVM 教学模型",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q290": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number"
+    ],
+    "technologyVersion": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q291": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://man7.org/linux/man-pages/man7/pthreads.7.html"
+    ],
+    "technologyVersion": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q292": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management"
+    ],
+    "technologyVersion": "IEEE 754 binary64；ECMAScript Number；操作系统通用概念",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q293": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-9"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q294": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-9.3"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q295": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q296": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9111",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q297": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q298": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q299": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15.4"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q300": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9110#section-15.5"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q301": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/HTTPS",
+      "https://www.rfc-editor.org/rfc/rfc8446"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q302": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc8446#section-2"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q303": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q304": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q305": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293",
+      "https://www.rfc-editor.org/rfc/rfc768"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q306": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.5"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q307": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.5"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q308": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9293#section-3.6"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q309": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc5681"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q310": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q311": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q312": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+      "https://fetch.spec.whatwg.org/"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q313": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q314": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q315": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q316": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q317": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/AJAX"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q318": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q319": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest",
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q320": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://fetch.spec.whatwg.org/",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q321": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API",
+      "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q322": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
+      "https://react.dev/reference/react/StrictMode"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q323": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+      "https://www.rfc-editor.org/rfc/rfc6455"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q324": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc6455#section-4",
+      "https://www.rfc-editor.org/rfc/rfc8441"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q325": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send",
+      "https://www.rfc-editor.org/rfc/rfc6455#section-5"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q326": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q327": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events",
+      "https://nodejs.org/api/http.html"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q328": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events",
+      "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q329": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9113",
+      "https://developer.chrome.com/blog/removing-push"
+    ],
+    "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q330": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://c4model.com/",
+      "https://adr.github.io/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q331": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://eslint.org/docs/latest/use/configure/configuration-files"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q332": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git",
+      "https://git-scm.com/docs/git-add"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q333": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.conventionalcommits.org/en/v1.0.0/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q334": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nvie.com/posts/a-successful-git-branching-model/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q335": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-merge",
+      "https://git-scm.com/docs/git-rebase"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q336": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-reset",
+      "https://git-scm.com/docs/git-revert",
+      "https://git-scm.com/docs/git-restore"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q337": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-log",
+      "https://git-scm.com/docs/git-blame"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q338": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/gitignore",
+      "https://git-scm.com/docs/git-rm"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q339": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-fetch",
+      "https://git-scm.com/docs/git-pull"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q340": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-merge",
+      "https://git-scm.com/docs/git-rebase"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q341": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/docs/git-reset",
+      "https://git-scm.com/docs/git-revert",
+      "https://git-scm.com/docs/git-checkout"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q342": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control",
+      "https://svnbook.red-bean.com/en/1.8/svn.branchmerge.html"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q343": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://spec.openapis.org/oas/latest.html",
+      "https://docs.pact.io/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q344": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dora.dev/guides/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q345": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/",
+      "https://docs.docker.com/build/building/best-practices/"
+    ],
+    "technologyVersion": "Git 2.23+；ESLint 9+ flat config；Docker/Node 24 教学配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q346": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop",
+      "https://nodejs.org/api/worker_threads.html"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q347": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q348": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://expressjs.com/en/resources/middleware/cors/"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q349": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.npmjs.com/cli/v11/configuring-npm/package-json"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q350": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://pnpm.io/symlinked-node-modules-structure",
+      "https://docs.npmjs.com/cli/v11/commands/npm-ci"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q351": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nodejs.org/api/http.html",
+      "https://expressjs.com/en/guide/using-middleware.html"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q352": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://expressjs.com/en/guide/error-handling.html",
+      "https://koajs.com/"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q353": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nginx.org/en/docs/beginners_guide.html"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q354": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q355": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+    ],
+    "technologyVersion": "Node 24；Express 5；Koa async 中间件；Nginx HTTP 配置",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q356": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Database_normalization"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q357": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/introduction.html",
+      "https://www.mongodb.com/docs/manual/core/data-modeling-introduction/"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q358": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/multiple-column-indexes.html",
+      "https://dev.mysql.com/doc/refman/8.4/en/using-explain.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q359": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/optimization-indexes.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q360": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/storage-engines.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q361": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/innodb-introduction.html",
+      "https://dev.mysql.com/doc/refman/8.4/en/myisam-storage-engine.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q362": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/sql-statements.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q363": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/join.html"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q364": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://redis.io/docs/latest/develop/get-started/",
+      "https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q365": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://kafka.apache.org/documentation/#intro_concepts_and_terms"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q366": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://redis.io/docs/latest/develop/data-types/streams/",
+      "https://kafka.apache.org/documentation/#intro_concepts_and_terms"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q367": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://dev.mysql.com/doc/refman/8.4/en/innodb-auto-increment-handling.html",
+      "https://www.rfc-editor.org/rfc/rfc9562"
+    ],
+    "technologyVersion": "MySQL 8.4 / InnoDB；MongoDB 文档模型；Redis 与 Kafka 通用语义；UUID RFC 9562",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q368": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://huggingface.co/learn/llm-course/chapter1/1"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q369": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://platform.openai.com/docs/models",
+      "https://ai.google.dev/gemini-api/docs/models",
+      "https://huggingface.co/models"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q370": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/",
+      "https://www.anthropic.com/news/model-context-protocol",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q371": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://samnewman.io/patterns/architectural/bff/",
+      "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q372": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents",
+      "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q373": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://arxiv.org/abs/2311.05232",
+      "https://platform.openai.com/docs/guides/evaluation-best-practices"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q374": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://arxiv.org/abs/2005.11401",
+      "https://platform.openai.com/docs/guides/retrieval"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q375": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://platform.openai.com/docs/guides/retrieval",
+      "https://arxiv.org/abs/2005.11401"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q376": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q377": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q378": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q379": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q380": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.anthropic.com/news/model-context-protocol",
+      "https://modelcontextprotocol.io/specification/2025-06-18/"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q381": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+      "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q382": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q383": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+      "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+      "https://platform.openai.com/docs/guides/function-calling"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q384": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q385": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q386": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.anthropic.com/engineering/building-effective-agents",
+      "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q387": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://huggingface.co/docs/transformers/training"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q388": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://huggingface.co/docs/peft/index",
+      "https://arxiv.org/abs/2305.14314"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q389": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://arxiv.org/abs/2106.09685",
+      "https://huggingface.co/docs/peft/conceptual_guides/lora"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q390": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://huggingface.co/docs/trl/sft_trainer"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q391": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/getting-started/introduction",
+      "https://github.com/langgenius/dify/blob/main/LICENSE"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q392": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow",
+      "https://docs.dify.ai/en/cloud/use-dify/build/orchestrate-node"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q393": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/http-request",
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/tools"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q394": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/knowledge-retrieval"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q395": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/llm",
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/variable-assigner",
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q396": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://docs.dify.ai/en/cloud/use-dify/nodes/agent",
+      "https://docs.dify.ai/en/cloud/use-dify/build/workflow-chatflow"
+    ],
+    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q397": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q398": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9700#section-4.14",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q399": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+      "https://react.dev/reference/react/useEffect#fetching-data-with-effects"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q400": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q401": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q402": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://tanstack.com/virtual/latest/docs/api/virtualizer",
+      "https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
+    "reviewedAt": "2026-10-09"
+  },
+  "Q403": {
+    "status": "published",
+    "quality": "complete",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled",
+      "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static"
+    ],
+    "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
     "reviewedAt": "2026-10-09"
   }
 }

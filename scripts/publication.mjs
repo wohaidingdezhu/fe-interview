@@ -54,7 +54,14 @@ export function publishedQuestionContent(article, questions, library) {
       if (!definitions.has(node.identifier)) definitions.set(node.identifier, article.content.slice(node.position.start.offset, node.position.end.offset));
     } else if (published.some(question => node.position.start.offset >= question.start && node.position.start.offset < question.end)) needed.add(node.identifier);
   }
-  const content = published.map(question => withoutDefinitions(question.raw)).join('\n\n---\n\n');
+  const content = published.map(question => {
+    const text = withoutDefinitions(question.raw);
+    const nodes = parseMarkdown(text).children;
+    let end = text.length;
+    // 每题导入时已有末尾分隔线，拼接时统一生成；代码里的横线不属于 thematicBreak。
+    for (let index = nodes.length - 1; index >= 0 && nodes[index].type === 'thematicBreak'; index--) end = nodes[index].position.start.offset;
+    return text.slice(0, end).trimEnd();
+  }).join('\n\n---\n\n');
   const references = [...needed].map(id => definitions.get(id)).filter(Boolean);
   return [content, ...references].filter(Boolean).join('\n\n');
 }
@@ -121,11 +128,12 @@ export function selectPublished(library) {
         if (errors.length) throw new Error(`${article.id} Q${question.number} 不能公开：${errors.join('；')}`);
       }
       const labels = published.map((question) => `Q${question.number}`);
-      const description = labels.length <= 8
-        ? `已审核发布 ${labels.length} 道题：${labels.join('、')}。`
-        : `已审核发布 ${labels.length} 道题，其他题目仍在草稿审核中。`;
+      const description = published.length === questions.length
+        ? `共 ${questions.length} 道题，已全部完成技术复核。`
+        : `共 ${questions.length} 道题，已完成技术复核 ${published.length} 道${labels.length <= 8 ? `（${labels.join('、')}）` : ''}，待处理 ${questions.length - published.length} 道。`;
+      const reviewedAt = published.map(question => questionPublicationFor(library, question.number).reviewedAt).sort()[0];
       articles.push({ ...article, description, content: publishedQuestionContent(article, questions, library),
-        questionCount: questions.length, publishedQuestionCount: published.length, status: 'published', quality: 'complete' });
+        questionCount: questions.length, publishedQuestionCount: published.length, reviewedAt, status: 'published', quality: 'complete' });
       continue;
     }
     if (article.status !== 'published') continue;
@@ -162,7 +170,17 @@ export async function validateContent(library, publicDirectory) {
       else if (publiclyVisible && !publishedIds.has(relatedId)) warnings.push(`${article.id} 的相关文章仍是草稿：${relatedId}`);
     }
     const latestChange = article.updatedAt ?? article.addedAt;
-    if (article.reviewedAt && article.reviewedAt < latestChange) {
+    if (perQuestion && questions.length) {
+      const published = questions.filter(question => questionPublicationFor(library, question.number).status === 'published');
+      const stale = published.filter(question => {
+        const date = questionPublicationFor(library, question.number).reviewedAt;
+        return date && date < latestChange;
+      });
+      if (stale.length) {
+        staleReviews++;
+        warnings.push(`${article.id} 的 ${stale.map(question => `Q${question.number}`).join('、')} 更新晚于最近审核，需要重新复核`);
+      }
+    } else if (article.reviewedAt && article.reviewedAt < latestChange) {
       staleReviews++;
       warnings.push(`${article.id} 更新晚于最近审核，需要重新复核`);
     } else if (publiclyVisible && !article.reviewedAt) {

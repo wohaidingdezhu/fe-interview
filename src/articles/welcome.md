@@ -8,6 +8,7 @@ tags: ["阅读指南"]
 aliases: ["使用指南", "资料库入口", "知识库导航"]
 related: ["closure", "react-state", "http-cache"]
 addedAt: "2026-10-08"
+reviewedAt: "2026-10-09"
 order: 0
 status: published
 quality: complete
@@ -21,7 +22,9 @@ technologyVersion: "本站资料库维护流程（2026-10-09）"
 
 不必一次读完所有内容。遇到一个不熟悉的知识点，顺着它的上下文多走一步，逐渐建立自己的知识体系。
 
-> **这是一份起步资料库。** 当前收录的是示例资料、文章与题解，后续可以持续补充自己的收藏、理解和项目经验。面试是其中一个专题，可以通过“面试”标签查找。
+> 资料库包含按主题整理的面试题与独立知识笔记，也可以持续补充文章、工具和自己的项目经验。题号只属于面试题库，新增知识文章使用独立标题和链接。
+
+顶部搜索可输入题号（如 `Q134`）或关键词，直接打开对应答案。题目右侧的“题目链接”可以保存或分享；标题调整后，题号链接仍然有效。
 
 ## 选择一个起点
 
@@ -33,6 +36,8 @@ technologyVersion: "本站资料库维护流程（2026-10-09）"
 | 高频手写题 | [手写防抖函数](?article=debounce) |
 | 算法思路与复杂度 | [两数之和](?article=two-sum) |
 | 浏览器与网络 | [理解 HTTP 缓存](?article=http-cache) |
+| Chrome 调试流程 | [Chrome DevTools 调试操作流程](?article=chrome-devtools-workflow) |
+| React 稳定回调 | [usePersistFn](?article=use-persist-fn) |
 
 ## 怎样读一道题
 
