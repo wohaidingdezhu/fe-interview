@@ -6,6 +6,7 @@ import { searchDocuments } from '../src/search-utils.ts';
 test('目录不携带正文，正文变更只改变对应资产地址；搜索保留正文关键词', () => {
   const article = { id: 'test', title: 'React 笔记', category: '框架', tags: ['性能'], aliases: ['状态管理快照', '旧闭包'], description: '介绍', content: '## 依赖\n介绍 AbortController 与取消请求。' };
   const first = contentAssets({ articles: [article], resources: [] });
+  assert.equal(first.catalog.resources, undefined);
   assert.equal(first.catalog.articles[0].content, undefined);
   const changed = contentAssets({ articles: [{ ...article, content: `${article.content}\n补充` }], resources: [] });
   assert.notEqual(changed.catalog.articles[0].bodyPath, first.catalog.articles[0].bodyPath);

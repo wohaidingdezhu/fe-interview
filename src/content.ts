@@ -4,7 +4,6 @@ import type { ArticleMetadata } from './data-utils';
 import { searchHits, type SearchDocument } from './search-utils';
 import type { QuestionEntry } from './library-utils';
 export const articles = library.articles.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, 'zh-CN'));
-export const resources = library.resources;
 const bodies = new Map<string, Promise<string>>();
 let searchRequest: Promise<SearchDocument[]> | undefined;
 let questionRequest: Promise<QuestionEntry[]> | undefined;

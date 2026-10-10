@@ -21,6 +21,9 @@ test('题目渲染保留旧标题锚点并增加稳定链接，代码里的题�
     assert.notEqual(attr(heading, 'id'), 'q134');
     assert.equal(nodes.filter(node => attr(node, 'id') === 'q134').length, 1);
     assert.equal(nodes.filter(node => attr(node, 'href') === '#q134').length, 1);
+    const permalink = nodes.find(node => String(attr(node, 'class') || '').includes('question-permalink'));
+    assert.equal(attr(permalink, 'aria-label'), '复制 Q134 题目链接');
+    assert.equal(permalink.childNodes[0].value, '复制链接');
     assert.equal(nodes.filter(node => attr(node, 'id') === 'q999').length, 0);
     assert.ok(nodes.some(node => attr(node, 'id') === '普通章节'));
     assert.match(html, /class="hljs language-js"/);

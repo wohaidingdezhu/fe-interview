@@ -29,8 +29,8 @@ export function LearningPage({ learning, navigate }: { learning: Learning; navig
     <div className="learning-tabs" aria-label="学习记录筛选">{[['bookmarked','已收藏'],['read','已读'],['review','待复习']].map(([key,label]) => <button key={key} aria-pressed={filter === key} onClick={() => { setFilter(key); setPage(1); }}>{label} <span>{targets.filter(item => key === 'bookmarked' ? learning.data.entries[item.key]?.bookmarked : learning.data.entries[item.key]?.status === key).length}</span></button>)}</div>
     {catalog.error && <p role="alert">{catalog.error}<button onClick={catalog.retry}>重试题目目录</button></p>}
     {catalog.loading && <p role="status">正在加载题目目录…</p>}
-    <div className="resource-list">{matching.slice((current - 1) * 12, current * 12).map(item => <article className="resource-card" key={item.key}><small>{item.category}</small><h2><Link navigate={navigate} href={item.href}>{item.title} ↗</Link></h2><LearningControls itemKey={item.key} learning={learning} /></article>)}</div>
-    {!matching.length && !catalog.loading && <div className="empty-state"><h2>书架上还没有这类记录</h2><p>从一道感兴趣的题目开始，点击收藏或标记阅读状态。</p><Link navigate={navigate} href="?view=questions">去看看全部题目 →</Link></div>}
+    <div className="resource-list">{matching.slice((current - 1) * 12, current * 12).map(item => <article className="resource-card" key={item.key}><small>{item.category}</small><h2><Link navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} /></article>)}</div>
+    {!matching.length && !catalog.loading && !catalog.error && <div className="empty-state"><h2>书架上还没有这类记录</h2><p>从一道感兴趣的题目开始，点击收藏或标记阅读状态。</p><Link navigate={navigate} href="?view=questions">去看看全部题目 →</Link></div>}
     {pages > 1 && <nav className="list-pagination" aria-label="学习记录分页"><button disabled={current === 1} onClick={() => setPage(current - 1)}>← 上一页</button><span>{current} / {pages}</span><button disabled={current === pages} onClick={() => setPage(current + 1)}>下一页 →</button></nav>}
   </>;
 }

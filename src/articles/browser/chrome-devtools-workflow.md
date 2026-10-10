@@ -2,22 +2,24 @@
 id: "chrome-devtools-workflow"
 title: "Chrome DevTools 调试操作流程"
 category: "浏览器"
-description: "从复现问题到断点定位、网络分析、性能排查、内存检查和远程调试的完整流程。"
+description: "配合真实 DevTools 截图，练习控制台、断点、网络、性能、内存与远程调试的操作流程。"
 kind: "知识文章"
 tags: ["Chrome DevTools","调试","性能","浏览器"]
 aliases: ["Google 浏览器调试","Chrome 开发者工具","F12 调试","前端调试流程"]
 related: ["http-cache","interview-browser","interview-performance"]
 addedAt: "2026-10-09"
-updatedAt: "2026-10-09"
+updatedAt: "2026-10-10"
 reviewedAt: "2026-10-09"
 order: 1000
 status: published
 quality: complete
-sources: ["https://developer.chrome.com/docs/devtools/","https://developer.chrome.com/docs/devtools/javascript/breakpoints/","https://developer.chrome.com/docs/devtools/network/","https://developer.chrome.com/docs/devtools/performance/","https://developer.chrome.com/docs/devtools/memory-problems/","https://developer.chrome.com/docs/devtools/remote-debugging/"]
+sources: ["https://developer.chrome.com/docs/devtools/","https://developer.chrome.com/docs/devtools/console/","https://developer.chrome.com/docs/devtools/css/","https://developer.chrome.com/docs/devtools/javascript/","https://developer.chrome.com/docs/devtools/javascript/breakpoints/","https://developer.chrome.com/docs/devtools/network/","https://developer.chrome.com/docs/devtools/storage/localstorage/","https://developer.chrome.com/docs/devtools/performance/","https://developer.chrome.com/docs/devtools/memory-problems/","https://developer.chrome.com/docs/devtools/remote-debugging/"]
 technologyVersion: "Chrome DevTools 稳定版；界面名称可能随 Chrome 更新调整"
 ---
 
 > Chrome DevTools 的界面会随版本调整，但调试方法基本稳定：先稳定复现并保留证据，再缩小问题范围，最后用断点、网络记录或性能时间线验证原因。不要一开始就随意修改代码和存储，否则很容易破坏现场。
+
+本文配图是 Chrome 官方文档中的真实界面截图，使用英文面板名方便与文档对照；图中的演示网站、数据和旧版布局不代表本项目的运行状态。每张图下都有操作入口和观察重点，可以在自己的页面上按相同路径练习。
 
 ## 一套可复用的调试闭环
 
@@ -64,6 +66,12 @@ technologyVersion: "Chrome DevTools 稳定版；界面名称可能随 Chrome 更
 - Box model：内容、padding、border、margin 和实际尺寸。
 - Event Listeners：元素或祖先上注册了哪些事件监听器。
 - Accessibility：角色、名称、状态等可访问性信息。
+
+![图 1：Elements 中选中的 DOM 节点与 Styles 中的背景色规则](./images/chrome-devtools/elements.png)
+
+**对照图操作：** 右键目标元素 → 检查 → Elements。上方蓝色区域是选中的 DOM 节点，下方 Styles 显示它的规则；图中的蓝框标出临时添加的 `background-color`。点击相邻的 Computed 查看最终值。若你的窗口更宽，Styles 可能出现在右侧。
+
+*图 1 来源：[Chrome 官方 CSS 教程](https://developer.chrome.com/docs/devtools/css/)。*
 
 在 Console 中，`$0` 代表 Elements 面板当前选中的节点：
 
@@ -114,6 +122,14 @@ getComputedStyle($0).display;
 4. 使用 Step over 跳过当前函数调用，Step into 进入调用，Step out 返回调用者。
 5. 找到第一处状态偏离预期的位置，不要只停留在最终报错行。
 
+![图 2：Sources 在第 32 行暂停，展示断点、局部变量和调用栈](./images/chrome-devtools/sources-breakpoint.png)
+
+**对照图操作：** Sources → 打开目标 JS 文件 → 点击行号 → 回到页面触发操作。图中第 32 行蓝色高亮表示执行暂停；Scope 中 `addend1`、`addend2` 是字符串，`sum` 变成了 `"51"`。下方 Call Stack 显示当前函数 `updateLabel` 和调用者 `onClick`，可逐层点击追踪。
+
+这个例子说明为什么不能只看结果：本来想计算 `5 + 1`，输入值却是字符串。先用 `typeof` 确认类型，再回源码修正转换和输入校验，而不是只修改显示文本。
+
+*图 2 来源：[Chrome 官方 JavaScript 调试教程](https://developer.chrome.com/docs/devtools/javascript/)。*
+
 源码中也可以临时加入：
 
 ```js
@@ -125,6 +141,25 @@ debugger;
 ## Console：验证假设与观察运行状态
 
 Console 适合做小范围验证，不适合在生产页面粘贴来源不明的大段代码。
+
+![图 3：Console 的日志、断言错误、表格输出、源码位置和输入提示符](./images/chrome-devtools/console.png)
+
+**先认清位置：** 上方 Filter 用于筛选日志，All levels 控制可见级别；中间红色行是断言失败，右侧 `(index):12` 是源码位置；表格来自 `console.table`，底部 `>` 是输入 JavaScript 的位置。
+
+### 一分钟控制台练习
+
+在你自己的本地测试页面打开 Console，逐条输入以下代码：
+
+```js
+const devtoolsDemo = [{ name: 'React', count: 2 }, { name: 'JavaScript', count: 3 }];
+console.table(devtoolsDemo);
+console.assert(devtoolsDemo.length === 3, '演示断言：实际只有两条记录');
+document.title;
+```
+
+你应该看到两行表格、一条故意触发的红色断言消息，以及当前页面标题。点击消息右侧的来源位置可以跳到对应代码；输入 `devtoolsDemo[0].name` 则会返回 `"React"`。图 3 使用另一组演示数据，但输出区域相同。
+
+*图 3 来源：[Chrome 官方 Console 概览](https://developer.chrome.com/docs/devtools/console/)。*
 
 常用方式：
 
@@ -158,6 +193,16 @@ DevTools Command Line API 还提供：
 6. 检查 Initiator：哪段代码或哪个资源触发了请求。
 7. 检查 Timing：DNS、连接、等待响应和内容下载耗时分别是多少。
 
+![图 4：Network 请求列表与 Headers 详情，工具栏包含 Preserve log 和 Disable cache](./images/chrome-devtools/network-headers.png)
+
+**对照图操作：** Network → 刷新页面 → 点击左侧一条请求 → Headers。图中上方能找到 Preserve log、Disable cache 和 Fetch/XHR；右侧 General 显示 URL、方法和状态码，下面是 Response Headers。图中选中的是 HTML 请求；检查业务接口时改选 Fetch/XHR，再触发一次业务操作。
+
+![图 5：同一请求的 Timing 页签，展示排队、DNS、连接和等待响应等阶段](./images/chrome-devtools/network-timing.png)
+
+**接着看耗时：** 保持请求选中，点击 Timing。对比 DNS Lookup、Initial connection、Waiting for server response 等阶段的条形长度和时间，先确定慢在哪个阶段；等待响应包含网络往返与服务端处理，不能直接当成后端执行时间。具体数值以你自己的请求为准。
+
+*图 4–5 来源：[Chrome 官方 Network 教程](https://developer.chrome.com/docs/devtools/network/)。*
+
 判断分支：
 
 - 请求没有出现：检查事件是否触发、条件分支、前置校验和 Console 异常。
@@ -180,6 +225,12 @@ Application 面板常用于检查：
 - Service Workers
 - Manifest
 
+![图 6：Application 的 Local Storage，左侧选择 Origin，右侧查看键值和选中值的预览](./images/chrome-devtools/application-storage.png)
+
+**对照图操作：** Application → Local Storage → 你的页面 Origin → 点击一个键。图中右侧表格是 Key/Value，下方展开选中值；查本项目时应选择 `http://127.0.0.1:5173` 或线上域名，图中的 YouTube 只是官方示例。先查看和记录，不需要点击顶部删除或清空按钮。
+
+*图 6 来源：[Chrome 官方 Local Storage 教程](https://developer.chrome.com/docs/devtools/storage/localstorage/)。*
+
 遇到“退出后仍有旧状态”“接口更新但页面还是旧资源”“不同账号数据串用”时：
 
 1. 确认当前 Origin，避免清错环境。
@@ -199,6 +250,12 @@ Application 面板常用于检查：
 3. 只执行一次关键交互，例如打开弹窗、滚动列表或提交表单。
 4. 立即停止，避免时间线过长。
 5. 在 Overview 中框选问题时间段，再查看 Main、Network、Screenshots 和相关详情。
+
+![图 7：Performance 录制结果，上方为时间概览和截图，下方蓝框标出 Main 主线程火焰图](./images/chrome-devtools/performance-main.png)
+
+**对照图操作：** Performance → 录制 → 执行一次交互 → 停止。上方是时间范围和页面截图，下方 Main 展开主线程事件；先缩小到卡顿时段，再点一个事件查看详情。横向越宽表示事件持续越久，纵向堆叠展示嵌套调用，不能只凭颜色认定原因。
+
+*图 7 来源：[Chrome 官方 Performance 教程](https://developer.chrome.com/docs/devtools/performance/)。*
 
 重点观察：
 
@@ -222,6 +279,10 @@ Application 面板常用于检查：
 - Allocation instrumentation on timeline：观察某段时间内分配且未释放的对象。
 - Allocation sampling：按函数统计内存分配，开销通常更低。
 
+![图 8：Memory 面板选择 Heap snapshot 与 Take snapshot 按钮的位置](./images/chrome-devtools/memory-snapshot.png)
+
+**对照图操作：** Memory → 选择 Heap snapshot → 选择目标页面的 JavaScript VM → Take snapshot。图中下方蓝色按钮就是拍快照的入口；不要误选扩展或其他页面的运行实例。
+
 Heap snapshot 对比流程：
 
 1. 进入稳定状态，必要时执行垃圾回收，拍第一张快照。
@@ -229,6 +290,12 @@ Heap snapshot 对比流程：
 3. 执行垃圾回收，拍第二张快照。
 4. 使用 Comparison 查找持续增加的对象。
 5. 沿 Retainers 查看为什么对象仍然可达。
+
+![图 9：堆快照中筛选 Detached 节点，并在 Retainers 中查看保留它的引用](./images/chrome-devtools/memory-retainers.png)
+
+**对照图操作：** 打开快照 → 在类筛选框输入 `Detached` → 展开并选中一个节点 → 查看下方 Retainers。它帮助你寻找“是谁还持有这个节点”；要结合重复操作后的快照变化判断，单张图出现 Detached 节点并不自动证明泄漏。
+
+*图 8–9 来源：[Chrome 官方内存问题排查](https://developer.chrome.com/docs/devtools/memory-problems/)。*
 
 常见根因包括未移除的事件监听器、定时器、订阅、闭包引用、全局缓存和 Detached DOM tree。快照中对象数量增加不等于泄漏，关键是它们是否在不再需要后仍被引用。
 
@@ -255,6 +322,12 @@ Android 真机流程：
 4. 电脑 Chrome 打开 `chrome://inspect/#devices`。
 5. 在对应设备和标签页下选择 Inspect。
 6. 使用桌面 DevTools 检查手机页面的 Console、Network、Elements 和 Sources。
+
+![图 10：chrome://inspect/#devices 中已连接设备、远程页面和 inspect 入口](./images/chrome-devtools/remote-devices.png)
+
+**对照图操作：** 先完成手机授权，再在电脑打开 `chrome://inspect/#devices`。在设备名称下找到手机 Chrome 当前打开的页面，点击该页面下面的 inspect；这会打开检查手机页面的 DevTools。列表没有页面时，先确认手机上已打开 Chrome 标签页。
+
+*图 10 来源：[Chrome 官方 Android 远程调试教程](https://developer.chrome.com/docs/devtools/remote-debugging/)。*
 
 若设备未出现，依次确认数据线、USB 模式、授权弹窗、ADB/驱动、桌面与手机 Chrome 版本。调试完成后应撤销不再使用的 USB 调试授权。
 
@@ -318,9 +391,15 @@ Android 真机流程：
 
 ## 参考资料
 
+截图署名：Google / Chrome for Developers；按官方文档标注的 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 许可引用，图片内容未修改，仅在页面中缩放展示。各图下方链接指向原始文档；中文操作说明为本文补充。不同版本的面板布局和按钮名称可能有变化。
+
 - [Chrome DevTools 官方文档](https://developer.chrome.com/docs/devtools/)
+- [Console 面板与输出](https://developer.chrome.com/docs/devtools/console/)
+- [Elements 与 CSS 调试](https://developer.chrome.com/docs/devtools/css/)
+- [JavaScript 断点操作示例](https://developer.chrome.com/docs/devtools/javascript/)
 - [JavaScript 断点类型](https://developer.chrome.com/docs/devtools/javascript/breakpoints/)
 - [Network 面板](https://developer.chrome.com/docs/devtools/network/)
+- [Local Storage 查看流程](https://developer.chrome.com/docs/devtools/storage/localstorage/)
 - [Performance 面板](https://developer.chrome.com/docs/devtools/performance/)
 - [内存问题排查](https://developer.chrome.com/docs/devtools/memory-problems/)
 - [Android 远程调试](https://developer.chrome.com/docs/devtools/remote-debugging/)

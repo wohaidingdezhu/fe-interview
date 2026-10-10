@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeCodeHighlight from './rehype-code-highlight';
+import { NavigationLink as Link } from './NavigationLink';
 export type Heading = { id: string; title: string; level: number };
 function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
   const ref = useRef<HTMLPreElement>(null), [status, setStatus] = useState('复制代码');
@@ -18,7 +19,7 @@ function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
   }} aria-live="polite">{status}</button><pre {...props} ref={ref} tabIndex={0} aria-label="代码示例">{children}</pre></div>;
 }
 function QuestionPermalink({ href, number }: { href: string; number: string }) {
-  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle'), timer = useRef<number>();
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle'), timer = useRef<number | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   function announce(next: 'copied' | 'failed') {
     clearTimeout(timer.current); setStatus(next); timer.current = window.setTimeout(() => setStatus('idle'), 1800);
@@ -30,7 +31,7 @@ function QuestionPermalink({ href, number }: { href: string; number: string }) {
     catch { announce('failed'); }
   }
   const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
-  return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '✓' : status === 'failed' ? '!' : '#'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
+  return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
 }
 function ArticleContent({ content, navigate, onHeadings, hash = '', articleId }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,9 +64,10 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId }:
       const href = articleId ? `?article=${encodeURIComponent(articleId)}#${anchor}` : `#${anchor}`;
       return <h2 {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={question![1]} />}</h2>;
     },
-    a: ({ node: _node, href, children, ...props }) => <a {...props} href={href} onClick={(event) => {
-      if (href?.startsWith('?article=') && !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) { event.preventDefault(); navigate(href); }
-    }}>{children}</a>,
+    a: ({ node: _node, href, children, ...props }) => {
+      const target = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${href}` : href;
+      return <Link {...props} href={target ?? ''} navigate={navigate}>{children}</Link>;
+    },
   }}>{content}</Markdown>, [content, articleId, navigate]);
   return <div className="article-body" ref={ref}>{markup}</div>;
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { libraryCounts, questionPage, articleHref, articleIdFromLocation } from '../src/library-utils.ts';
+import { libraryCounts, questionPage, articleHref, articleIdFromLocation, publicView } from '../src/library-utils.ts';
 import { contentAssets } from '../scripts/content-assets.mjs';
 import { selectPublished } from '../scripts/publication.mjs';
 const questions = Array.from({ length: 30 }, (_, i) => ({ number: i + 1, title: `题目${i + 1}`, articleId: 'topic', category: i % 2 ? 'React' : 'JS', tags: i % 2 ? ['Hooks'] : ['基础'], status: 'published' }));
@@ -24,6 +24,9 @@ test('静态文章路径和旧查询链接都可恢复，view 可以返回首页
   assert.equal(articleIdFromLocation('/articles/test/','?view=home'),undefined);
   assert.equal(articleIdFromLocation('/','?article=welcome'),'welcome');
   assert.equal(articleHref('test','中文 标题'),'?article=test#%E4%B8%AD%E6%96%87%20%E6%A0%87%E9%A2%98');
+  assert.equal(publicView('notes'),'notes');
+  assert.equal(publicView('resources'),'home');
+  assert.equal(publicView('unknown'),'home');
 });
 test('轻量题目目录不含正文，生产目录只包含可发布题目', () => {
   const article={id:'topic',title:'专题',category:'JS',tags:['基础'],description:'专题描述',status:'draft',quality:'incomplete',content:'## Q1｜公开题\n这是完整的参考答案，解释了相关的适用条件、实现思路以及需要注意的边界情况。\n\n## Q2｜私有题\nDRAFT_SECRET'};

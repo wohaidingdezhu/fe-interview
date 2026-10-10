@@ -2,6 +2,10 @@ import type { ArticleMetadata } from './data-utils';
 import type { SearchDocument } from './search-utils';
 import { searchHits } from './search-utils.ts';
 export type QuestionEntry = { number: number; title: string; articleId: string; category: string; tags: string[]; status: 'draft' | 'published' };
+export type LibraryView = 'home' | 'questions' | 'learning' | 'notes';
+export function publicView(value: string | null): LibraryView {
+  return value === 'questions' || value === 'learning' || value === 'notes' ? value : 'home';
+}
 export function libraryCounts(articles: ArticleMetadata[], resources: unknown[]) {
   const topics = articles.filter(article => article.questionCount > 0);
   return { questions: topics.reduce((sum, article) => sum + article.publishedQuestionCount, 0), topics: topics.length, notes: articles.length - topics.length, resources: resources.length };

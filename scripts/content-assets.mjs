@@ -39,5 +39,6 @@ export function contentAssets(library) {
   })));
   const questionSource = JSON.stringify(questions), questionsPath = assetPath('content/questions', questionSource);
   assets.push({ fileName: questionsPath, source: questionSource });
-  return { catalog: { articles, resources: library.resources, searchPath, questionsPath }, assets };
+  // 外部资料的源数据继续由维护脚本管理，但不进入公开客户端目录。
+  return { catalog: { articles, searchPath, questionsPath }, assets };
 }
