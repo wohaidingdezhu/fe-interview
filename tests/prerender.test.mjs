@@ -9,9 +9,11 @@ test('静态预渲染保留真实正文与分享元信息，排除草稿且可�
   try {
     await writeFile(join(output,'index.html'),'<html><head><title>旧标题</title><meta name="description" content="old"><script src="./assets/app.js"></script></head><body><div id="root"></div></body></html>');
     const full={id:'visible',title:'标题 <script>',description:'描述 "内容"',category:'JS',tags:[],addedAt:'2026-10-09',status:'published',quality:'complete',sources:['https://example.com'],technologyVersion:'ES2024',content:'这是完整的公开正文，包含详细概念解释、使用方法、适用场景以及注意事项等知识。'};
-    const library={articles:[full,{...full,id:'secret',status:'draft',content:'PRIVATE_SENTINEL'}],resources:[]};
-    const run=()=>prerender({output,library,siteURL:'https://example.com/notes/',renderArticle:a=>`<p>${a.content}</p><a href="#q1">定位</a><a href="?article=visible#q1">链接</a>`});
-    await run();await run();
+    const draft={...full,id:'secret',status:'draft',content:'PRIVATE_SENTINEL'};
+    const run=articles=>prerender({output,library:{articles,resources:[]},siteURL:'https://example.com/notes/',renderArticle:a=>`<p>${a.content}</p><a href="#q1">定位</a><a href="?article=visible#q1">链接</a>`});
+    await run([full,{...full,id:'removed'}]);
+    assert.deepEqual((await readdir(join(output,'articles'))).sort(),['removed','visible']);
+    await run([full,draft]);await run([full,draft]);
     const html=await readFile(join(output,'articles/visible/index.html'),'utf8');
     assert.match(html,/完整的公开正文/);assert.match(html,/<base href="\.\.\/\.\.\/">/);
     assert.match(html,/rel="canonical" href="https:\/\/example.com\/notes\/articles\/visible\/"/);
@@ -22,4 +24,8 @@ test('静态预渲染保留真实正文与分享元信息，排除草稿且可�
     assert.deepEqual(await readdir(join(output,'articles')),['visible']);
     const home=await readFile(join(output,'index.html'),'utf8');assert.equal((home.match(/rel="canonical"/g)||[]).length,1);assert.match(home,/articles\/visible\//);
   } finally { await rm(output,{recursive:true,force:true}); }
+});
+
+test('预渲染拒绝把文件系统根目录作为输出目录', async () => {
+  await assert.rejects(prerender({ output: '/', library:{articles:[],resources:[]}, siteURL:'https://example.com/', renderArticle:()=>'' }), /不能是文件系统根目录/);
 });

@@ -7,6 +7,9 @@ import type { Learning } from './useLearning';
 export function LearningPage({ learning, navigate }: { learning: Learning; navigate: Navigate }) {
   const catalog = useQuestions(), [filter, setFilter] = useState('bookmarked'), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const targets = [...catalog.questions.map(q => ({ key: `q:${q.number}`, title: `Q${q.number}｜${q.title}`, category: q.category, href: articleHref(q.articleId, `q${q.number}`) })), ...articles.filter(a => !a.questionCount).map(a => ({ key: `a:${a.id}`, title: a.title, category: a.category, href: articleHref(a.id) }))];
+  const validKeys = new Set(targets.map(item => item.key)), validArticles = new Set(articles.map(article => article.id));
+  const catalogReady = !catalog.loading && !catalog.error;
+  const staleCount = catalogReady ? Object.keys(learning.data.entries).filter(key => !validKeys.has(key)).length + (learning.data.lastRead && !validArticles.has(learning.data.lastRead.articleId) ? 1 : 0) : 0;
   const matching = targets.filter(item => { const e = learning.data.entries[item.key]; return filter === 'bookmarked' ? e?.bookmarked : e?.status === filter; }).sort((a,b) => (learning.data.entries[b.key]?.updatedAt ?? '').localeCompare(learning.data.entries[a.key]?.updatedAt ?? ''));
   const [page, setPage] = useState(1), pages = Math.max(1, Math.ceil(matching.length / 12)), current = Math.min(page, pages);
   const last = learning.data.lastRead;
@@ -22,6 +25,7 @@ export function LearningPage({ learning, navigate }: { learning: Learning; navig
       try { if (file.size > 4_000_000) throw new Error('备份不能超过 4 MB'); learning.restore(await file.text()); setMessage('备份已合并。'); }
       catch (error) { setMessage(`导入失败：${error instanceof Error ? error.message : '文件无效'}`); }
     }} /></div><p role="status" className="backup-message">{message}</p>
+    <div className="learning-maintenance"><button disabled={!staleCount} onClick={() => { learning.prune(validKeys, validArticles); setMessage(`已清理 ${staleCount} 条失效记录。`); }}>清理失效记录{staleCount ? `（${staleCount}）` : ''}</button><button className="danger-text" onClick={() => { if (window.confirm('确定清空全部收藏、阅读状态和继续阅读位置吗？建议先导出备份。')) { learning.clear(); setMessage('学习记录已清空。'); setPage(1); } }}>清空全部记录</button></div>
     <div className="learning-tabs" aria-label="学习记录筛选">{[['bookmarked','已收藏'],['read','已读'],['review','待复习']].map(([key,label]) => <button key={key} aria-pressed={filter === key} onClick={() => { setFilter(key); setPage(1); }}>{label} <span>{targets.filter(item => key === 'bookmarked' ? learning.data.entries[item.key]?.bookmarked : learning.data.entries[item.key]?.status === key).length}</span></button>)}</div>
     {catalog.error && <p role="alert">{catalog.error}<button onClick={catalog.retry}>重试题目目录</button></p>}
     {catalog.loading && <p role="status">正在加载题目目录…</p>}

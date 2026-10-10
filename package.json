@@ -16,16 +16,17 @@
     "fetch:resource": "node scripts/fetch-resource.mjs",
     "import:resources": "node scripts/import-resources.mjs",
     "new:article": "node scripts/new-article.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "validate:snippets": "node scripts/validate-snippets.mjs",
     "review:progress": "node scripts/review-progress.mjs",
     "prerender": "node scripts/prerender.mjs"
   },
   "dependencies": {
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-markdown": "^10.1.0",
-    "rehype-highlight": "^7.0.2",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "yaml": "^2.9.1"

@@ -55,3 +55,8 @@ export function createRunnerDocument(code: string, channel: string) {
 </body>
 </html>`;
 }
+
+export function nextRunner(currentKey: number, code: string, channel: string) {
+  if (!Number.isSafeInteger(currentKey) || currentKey < 0) throw new RangeError('运行序号必须是非负安全整数');
+  return { key: currentKey + 1, document: createRunnerDocument(code, channel) };
+}

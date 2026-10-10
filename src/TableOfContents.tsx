@@ -4,7 +4,7 @@ import { articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import type { Learning } from './useLearning';
 import { LearningControls } from './LearningControls';
-export function TableOfContents({ headings, articleId, navigate, onActive, learning }: { headings: Heading[]; articleId: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning }) {
+export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning }) {
   const [active, setActive] = useState(''), [collapsed, setCollapsed] = useState(false);
   const nav = useRef<HTMLElement>(null), dialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -13,10 +13,13 @@ export function TableOfContents({ headings, articleId, navigate, onActive, learn
     let frame = 0;
     const update = () => { frame = 0; const current = [...nodes].reverse().find(node => node.getBoundingClientRect().top <= 145) || nodes[0]; setActive(current?.id || ''); };
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
-    update(); window.addEventListener('scroll', onScroll, { passive: true });
+    let hashId = '';
+    try { hashId = decodeURIComponent(hash.replace(/^#/, '')); } catch { /* 无效编码退回滚动位置判断。 */ }
+    if (hashId && headings.some(heading => heading.id === hashId)) setActive(hashId); else update();
+    window.addEventListener('scroll', onScroll, { passive: true });
     const observer = new ResizeObserver(onScroll); const body = document.querySelector('.article-body'); if (body) observer.observe(body);
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame); observer.disconnect(); };
-  }, [headings]);
+  }, [headings, hash]);
   useEffect(() => { onActive(headings.find(heading => heading.id === active)); }, [active, headings, onActive]);
   useEffect(() => {
     const link = nav.current?.querySelector<HTMLElement>('[aria-current="location"]');

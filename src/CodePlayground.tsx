@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { createRunnerDocument } from './playground-utils';
+import { createRunnerDocument, nextRunner } from './playground-utils';
 
 type LogLevel = 'log' | 'info' | 'warn' | 'error' | 'system';
 type LogEntry = { id: number; level: LogLevel; text: string };
@@ -38,7 +38,7 @@ export function CodePlayground() {
 
   function run(nextCode = code) {
     setLogs([]);
-    setRunner((current) => ({ key: current.key + 1, document: createRunnerDocument(nextCode, channelRef.current) }));
+    setRunner((current) => nextRunner(current.key, nextCode, channelRef.current));
   }
 
   function reset() {

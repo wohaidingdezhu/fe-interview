@@ -63,7 +63,7 @@ function App() {
     setLocation(window.location.href); setQuery(''); setMenuOpen(false);
     if (!replace && !window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' });
-      if (changesPage) requestAnimationFrame(() => document.getElementById('main')?.focus({ preventScroll: true }));
+      if (changesPage) setTimeout(() => document.getElementById('main')?.focus({ preventScroll: true }), 0);
     }
     if (window.location.hash) {
       try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView(); } catch { /* invalid anchor */ }
@@ -84,7 +84,7 @@ function App() {
     return () => { window.removeEventListener('popstate', onPopState); window.removeEventListener('hashchange', onPopState); window.removeEventListener('keydown', onKey); };
   }, []);
   useEffect(() => {
-    const title = id ? article?.title || '笔记未找到' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '我的笔记', resources: '资料收藏' }[view] || '首页');
+    const title = id ? article?.title || '笔记未找到' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '我的笔记', resources: '外部资料' }[view] || '首页');
     document.title = `${title} · 前端资料库`;
     const description = article?.description || '按题查找、按主题学习，收藏值得反复阅读的前端知识。';
     for (const selector of ['meta[name=description]', 'meta[property="og:description"]']) document.querySelector(selector)?.setAttribute('content', description);
@@ -135,17 +135,18 @@ function App() {
           {noteResults.slice(0, 6).map((item) => <a key={item.href} href={item.href} onClick={(event) => { if (modified(event)) return; event.preventDefault(); navigate(item.href); }}><small>{item.questionNumber ? '题目' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></a>)}
           {search.error && <p role="alert">{search.error}<button onClick={search.retry}>重试搜索</button></p>}
           {!search.loading && !search.error && !resourceResults.total && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
-          <div className="search-all">{link(`?view=resources&q=${encodeURIComponent(query)}`, '查看全部资料结果 →')}{link(`?view=notes&q=${encodeURIComponent(query)}`, '查看笔记列表 →')}{link(`?view=questions&q=${encodeURIComponent(query)}`, '查看全部题目结果 →')}</div>
+          <div className="search-all">{link(`?view=resources&q=${encodeURIComponent(query)}`, '查看外部资料结果 →')}{link(`?view=notes&q=${encodeURIComponent(query)}`, '查看笔记列表 →')}{link(`?view=questions&q=${encodeURIComponent(query)}`, '查看全部题目结果 →')}</div>
         </div>}
-      </div><span className="header-note"><i />收藏资料，沉淀理解</span><button ref={menuButtonRef} className="menu-button" aria-label={menuOpen ? '关闭导航' : '打开导航'} aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '关闭' : '导航'}</button>
+      </div><span className="header-note"><i />整理知识，沉淀理解</span><button ref={menuButtonRef} className="menu-button" aria-label={menuOpen ? '关闭导航' : '打开导航'} aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '关闭' : '导航'}</button>
     </header>
     {menuOpen && <button className="menu-overlay" aria-label="关闭导航遮罩" onClick={() => setMenuOpen(false)} />}
     <aside id="sidebar" className={`sidebar ${menuOpen ? 'is-open' : ''}`} aria-label="资料库导航">
       <div className="sidebar-label">LIBRARY <span>{counts.questions} 题 · {counts.notes} 笔记</span></div>
-      <nav className="section-nav" aria-label="资料库入口">{link('?view=home', '首页', view === 'home' ? 'section-link active' : 'section-link')}{link('?view=questions', '全部题目', view === 'questions' ? 'section-link active' : 'section-link')}{link('?view=learning', '我的学习', view === 'learning' ? 'section-link active' : 'section-link')}{link('?view=resources', '↗ 资料收藏', view === 'resources' ? 'section-link active' : 'section-link')}{link('?view=notes', '▤ 我的笔记', view === 'notes' || view === 'article' ? 'section-link active' : 'section-link')}</nav>
+      <nav className="section-nav" aria-label="资料库入口">{link('?view=home', '首页', view === 'home' ? 'section-link active' : 'section-link')}{link('?view=questions', '全部题目', view === 'questions' ? 'section-link active' : 'section-link')}{link('?view=learning', '我的学习', view === 'learning' ? 'section-link active' : 'section-link')}{link('?view=notes', '▤ 我的笔记', view === 'notes' || view === 'article' ? 'section-link active' : 'section-link')}</nav>
+      <nav className="section-nav external-nav" aria-label="扩展内容入口">{link('?view=resources', '↗ 外部资料', view === 'resources' ? 'section-link active' : 'section-link')}</nav>
       <div className="sidebar-label category-label">按分类浏览</div>
       <nav aria-label="分类导航">{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : isNotes ? 'notes' : 'resources'}`, '全部分类', !category ? 'nav-link active' : 'nav-link')}{categories.map((value) => <div className="category-row" key={value}>{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : isNotes ? 'notes' : 'resources'}&category=${encodeURIComponent(value)}`, value, category === value ? 'nav-link active' : 'nav-link')}<span>{view === 'home' || view === 'questions' ? articles.filter(a => a.category === value).reduce((sum,a) => sum+a.publishedQuestionCount,0) : collection.filter((item) => item.category === value).length}</span></div>)}</nav>
-      <div className="sidebar-footer"><span className="footer-mark">↗</span><p>收藏有价值的资料<small>文章 · 文档 · 视频 · 工具 · 开源项目</small></p></div>
+      <div className="sidebar-footer"><span className="footer-mark">↗</span><p>延伸到可靠来源<small>文章 · 文档 · 视频 · 工具 · 开源项目</small></p></div>
     </aside>
     <div className={`workspace ${!id ? 'list-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} /> : view === 'learning' ? <LearningPage learning={learning} navigate={navigate} /> : ['notes','resources'].includes(view) ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} /> : article ? <>
@@ -162,8 +163,8 @@ function App() {
         {relatedArticles.length > 0 && <section className="related-articles" aria-labelledby="related-title"><div className="related-heading"><span>KEEP EXPLORING</span><h2 id="related-title">继续阅读</h2></div><div className="related-grid">{relatedArticles.map((related) => <a key={related.id} href={articleHref(related.id)} onClick={(event) => { if (modified(event)) return; event.preventDefault(); navigate(articleHref(related.id)); }}><small>{related.category}</small><strong>{related.title}</strong><p>{related.description}</p><span aria-hidden="true">↗</span></a>)}</div></section>}
         <div className="article-end"><span />把读过的内容，变成自己的理解。<span /></div><nav className="pagination" aria-label="上一篇和下一篇">{currentIndex > 0 ? <div><small>← 上一篇</small>{link(articleHref(articles[currentIndex - 1].id), articles[currentIndex - 1].title)}</div> : <div />}{currentIndex < articles.length - 1 && <div><small>下一篇 →</small>{link(articleHref(articles[currentIndex + 1].id), articles[currentIndex + 1].title)}</div>}</nav>
       </> : <div className="not-found"><span className="pill">404</span><h1>这篇笔记还不存在</h1><p>链接可能有误，或笔记已经移动。</p>{link('?view=notes', '返回我的笔记 →')}</div>}
-      <footer className="page-footer">前端资料库 <span>收藏资料 · 沉淀笔记</span></footer>
-    </main>{id && article && <TableOfContents key={id} articleId={id} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} />}</div>
+      <footer className="page-footer">前端资料库 <span>整理知识 · 沉淀理解</span></footer>
+    </main>{id && article && <TableOfContents key={id} articleId={id} hash={route.hash} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} />}</div>
   </>;
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
