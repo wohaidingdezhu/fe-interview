@@ -130,6 +130,8 @@ ECMAScript 原始类型有 Undefined、Null、Boolean、String、Symbol、Number
 
 适用：ECMAScript 值传递语义；内存布局属引擎实现。
 
+![本轮修订图：JavaScript 对象引用值与局部重新赋值](./images/review/value-and-reference.svg)
+
 ECMAScript 只定义值和对象语义，不要求引擎按“原始值进栈、引用类型进堆”实现。栈帧、寄存器、逃逸分析、指针压缩和对象内联都可能改变物理布局。面试真正要说明的是：参数按值传递；对象变量中传递的值能引用同一个对象。
 
 ```js

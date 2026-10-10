@@ -2,10 +2,29 @@ import { useEffect, useState } from 'react';
 import library from 'virtual:library';
 import type { ArticleMetadata } from './data-utils';
 import { searchHits, type SearchDocument } from './search-utils';
+import type { QuestionEntry } from './library-utils';
 export const articles = library.articles.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, 'zh-CN'));
 export const resources = library.resources;
 const bodies = new Map<string, Promise<string>>();
 let searchRequest: Promise<SearchDocument[]> | undefined;
+let questionRequest: Promise<QuestionEntry[]> | undefined;
+export function useQuestions() {
+  const [questions, setQuestions] = useState<QuestionEntry[]>([]), [error, setError] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    setError('');
+    questionRequest ??= readJSON(library.questionsPath).then(data => {
+      if (!Array.isArray(data) || data.some(item => !item || !Number.isSafeInteger(item.number) || item.number < 1 || typeof item.title !== 'string'
+        || !articles.some(article => article.id === item.articleId) || !Array.isArray(item.tags))) throw new Error('题目目录格式错误');
+      return data as QuestionEntry[];
+    }).catch(error => { questionRequest = undefined; throw error; });
+    questionRequest.then(data => { if (active) { setQuestions(data); setLoaded(true); } }, error => { if (active) setError(error.message); });
+    return () => { active = false; };
+  }, [attempt]);
+  return { questions, error, loading: !loaded && !error, retry: () => setAttempt(n => n + 1) };
+}
 async function readJSON(path: string): Promise<unknown> {
   const response = await fetch(new URL(`${import.meta.env.BASE_URL}${path}`, document.baseURI));
   if (!response.ok) throw new Error(`加载失败（${response.status}），请重试。`);

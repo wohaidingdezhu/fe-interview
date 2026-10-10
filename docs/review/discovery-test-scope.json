@@ -1,0 +1,15 @@
+{
+  "scope_type": "non_diff",
+  "LANG": "javascript",
+  "EXEC_SOURCE": "",
+  "context": "复用已读 node:test、断言和项目规则；新功能与整体修复由用户授权",
+  "TARGETS": [
+    {"file_path":"src/library-utils.ts","target_type":"file","symbol":"libraryCounts, questionPage, articleIdFromLocation","locator":"export function","source":"explicit","reason":"真实计数、题目过滤分页和静态路由","hunks":[]},
+    {"file_path":"src/learning-utils.ts","target_type":"file","symbol":"parseLearning, importLearning, mergeLearning","locator":"export function","source":"explicit","reason":"本地备份校验、导入合并、数据隔离","hunks":[]},
+    {"file_path":"scripts/content-assets.mjs","target_type":"function","symbol":"contentAssets","locator":"export function","source":"explicit","reason":"轻量目录与草稿过滤","hunks":[]},
+    {"file_path":"scripts/prerender.mjs","target_type":"file","symbol":"prerender","locator":"export async function","source":"explicit","reason":"静态 HTML、canonical、sitemap、资源相对路径和草稿隔离","hunks":[]}
+  ],
+  "BUG_MAP": [],
+  "candidate_filter": "本轮为新增功能，尚未用假设认定现有缺陷；备份输入、失效路径、静态输出可见性属于实现验收范围。",
+  "coverage": "无覆盖率门槛，Step6 skip"
+}

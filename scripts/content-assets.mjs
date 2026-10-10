@@ -33,5 +33,11 @@ export function contentAssets(library) {
   });
   const source = JSON.stringify(documents), searchPath = assetPath('search/index', source);
   assets.push({ fileName: searchPath, source });
-  return { catalog: { articles, resources: library.resources, searchPath }, assets };
+  const questions = library.articles.flatMap(article => inspectQuestions(article).map(question => ({
+    number: question.number, title: question.title, articleId: article.id, category: article.category, tags: article.tags,
+    status: library.questionPublication === undefined ? article.status : questionPublicationFor(library, question.number).status,
+  })));
+  const questionSource = JSON.stringify(questions), questionsPath = assetPath('content/questions', questionSource);
+  assets.push({ fileName: questionsPath, source: questionSource });
+  return { catalog: { articles, resources: library.resources, searchPath, questionsPath }, assets };
 }

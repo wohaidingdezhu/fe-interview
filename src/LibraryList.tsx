@@ -6,7 +6,9 @@ import { normalizeCategory } from './categories';
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
 export function LibraryList({ params, navigate }: Props) {
   const isNotes = params.get('view') === 'notes';
-  const items: ListItem[] = isNotes ? articles.map((item) => ({ ...item, type: item.kind, source: '我的笔记' })) : resources;
+  const collection = params.get('collection') || '';
+  const noteArticles = articles.filter(article => collection === 'topics' ? article.questionCount > 0 : collection === 'notes' ? article.questionCount === 0 : true);
+  const items: ListItem[] = isNotes ? noteArticles.map((item) => ({ ...item, type: item.kind, source: '我的笔记' })) : resources;
   const category = normalizeCategory(params.get('category') || '');
   const selectedTags = params.getAll('tag');
   const query = params.get('q') || '';
@@ -46,7 +48,8 @@ export function LibraryList({ params, navigate }: Props) {
 
   return <>
     <div className="breadcrumb">前端资料库 <span>/</span> <b>{isNotes ? '我的笔记' : '资料收藏'}</b></div>
-    <div className="list-heading"><div><span className="eyebrow">{isNotes ? 'NOTES & IDEAS' : 'READ · LEARN · BUILD'}</span><h1>{isNotes ? '我的笔记' : '资料收藏'}</h1><p className="description">{isNotes ? '留下自己的理解，让零散的知识连成体系。' : '值得阅读的文章、文档与工具，在需要时更容易找到。'}</p></div><span className="collection-count">{items.length}<small>{isNotes ? '篇笔记' : '条资料'}</small></span></div>
+    <div className="list-heading"><div><span className="eyebrow">{isNotes ? 'NOTES & IDEAS' : 'READ · LEARN · BUILD'}</span><h1>{isNotes ? collection === 'topics' ? '专题阅读' : collection === 'notes' ? '知识笔记' : '我的笔记' : '资料收藏'}</h1><p className="description">{isNotes ? '留下自己的理解，让零散的知识连成体系。' : '值得阅读的文章、文档与工具，在需要时更容易找到。'}</p></div><span className="collection-count">{items.length}<small>{isNotes ? '篇笔记' : '条资料'}</small></span></div>
+    {isNotes && <nav className="collection-tabs" aria-label="笔记类型">{[['','全部'],['topics','面试专题'],['notes','独立笔记']].map(([value,label]) => <button key={value} aria-pressed={collection === value} onClick={() => update('collection', value)}>{label}</button>)}</nav>}
     <section className="filters" aria-label="资料筛选">
       <label className="list-search"><span>关键词</span><input type="search" aria-label="检索当前列表" placeholder={isNotes ? '题号、标题、标签或正文关键词' : '标题、简介、来源或标签'} value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
       <div className={`filter-selects ${showMaintenance ? 'has-maintenance' : ''}`}>

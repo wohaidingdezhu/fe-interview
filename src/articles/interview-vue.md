@@ -575,6 +575,8 @@ v2.0.0 的 signal 返回函数，零参数调用读取，带一个参数调用�
 
 适用：Alien Signals v2.0.0，commit 1937d80cbb2e7581a5e194a4c59df3ec8d3a3916；Q197 为独立教学实现。
 
+![本轮修订图：Alien Signals v2.0.0 依赖边结构](./images/review/signal-dependency-links.svg)
+
 v2.0.0 的 ReactiveNode 保存 deps/depsTail 和 subs/subsTail，Link 保存 dep/sub 两端以及 prevDep/nextDep、prevSub/nextSub 两组双向指针。同一边同时属于订阅者的依赖链与源的订阅链。
 
 已知 Link 时可局部调整相邻指针完成拆链，并维护头尾；最后订阅者移除还触发 unwatched 清理。建立关系仍需去重或重用判断，遍历成本与边数有关；每条边也要分配对象，不能未经基准就承诺比 Set 总省内存。

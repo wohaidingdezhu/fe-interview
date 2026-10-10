@@ -184,7 +184,9 @@ test('实际生产构建排除草稿正文、搜索数据、私人文件及草�
   assert.doesNotMatch(code, /PUBLIC_BODY_SENTINEL/);
   assert.doesNotMatch(code, /DRAFT_BODY_SENTINEL|DRAFT_RESOURCE_SENTINEL|PRIVATE_NOTES_SENTINEL|PUBLIC_QUESTION_SENTINEL|DRAFT_QUESTION_SENTINEL/);
   const content = await readdir(join(root, 'dist/content'));
-  assert.equal(content.length, 2);
+  assert.equal(content.filter(file => !file.startsWith('questions-')).length, 2);
+  const questionDirectory = JSON.parse(await readFile(join(root, 'dist/content', content.find(file => file.startsWith('questions-'))), 'utf8'));
+  assert.deepEqual(questionDirectory.map(question => question.number), [10]);
   const bodies = (await Promise.all(content.map((file) => readFile(join(root, 'dist/content', file), 'utf8')))).join('\n');
   assert.match(bodies, /PUBLIC_BODY_SENTINEL/); assert.match(bodies, /PUBLIC_QUESTION_SENTINEL/);
   assert.match(bodies, /Q999｜示例标题/);
