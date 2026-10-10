@@ -15,6 +15,7 @@ async function fixture(t) {
   await mkdir(join(directory, 'src/data'));
   await cp(join(root, 'scripts'), join(directory, 'scripts'), { recursive: true });
   await cp(join(root, 'src/data-utils.ts'), join(directory, 'src/data-utils.ts'));
+  await cp(join(root, 'src/categories.ts'), join(directory, 'src/categories.ts'));
   await symlink(join(root, 'node_modules'), join(directory, 'node_modules'), 'dir');
   await writeFile(join(directory, 'package.json'), '{"type":"module"}');
   const target = join(directory, 'src/data/resources.json');

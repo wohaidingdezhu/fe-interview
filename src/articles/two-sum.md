@@ -1,7 +1,7 @@
 ---
 id: "two-sum"
 title: "两数之和"
-category: "手写题"
+category: "算法与手写"
 kind: "手写题解"
 description: "用哈希表把嵌套遍历变成一次遍历，并解释复杂度。"
 tags: ["算法", "手写题", "面试"]

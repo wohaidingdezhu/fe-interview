@@ -1,7 +1,7 @@
 ---
 id: "interview-coding"
 title: "代码编程与算法题"
-category: "代码编程"
+category: "算法与手写"
 description: "收录 Q123–Q158 的参考答案、原理说明与配图。"
 kind: "手写题解"
 tags: ["JavaScript","算法","手写题"]

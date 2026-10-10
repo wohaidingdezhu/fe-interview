@@ -1,7 +1,7 @@
 ---
 id: "http-cache"
 title: "理解 HTTP 缓存"
-category: "浏览器与网络"
+category: "网络"
 kind: "知识文章"
 description: "沿着一次请求，理解新鲜度检查、条件请求与 304。"
 tags: ["网络", "性能", "面试"]

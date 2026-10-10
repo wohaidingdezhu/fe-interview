@@ -1,7 +1,7 @@
 ---
 id: "interview-network"
 title: "计算机网络面试题"
-category: "计算机网络"
+category: "网络"
 description: "收录 Q293–Q329 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["HTTP","TCP","网络安全"]

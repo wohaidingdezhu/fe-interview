@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { canonicalURL, validateResource, validateLibrary, parseArticle, filterItems } from '../src/data-utils.ts';
+import { normalizeCategory } from '../src/categories.ts';
 
 const resource = { id: 'react-guide', title: 'React 指南', url: 'https://react.dev/learn', description: '状态与渲染', source: 'React 官方', type: '官方文档', category: 'React', tags: ['React', '面试'], addedAt: '2026-10-08' };
 test('URL 去重移除定位片段、默认端口、跟踪参数，并保留业务查询参数', () => {
@@ -80,4 +81,33 @@ test('维护状态筛选区分待补充、待审核、草稿和已公开内容',
 test('笔记列表搜索正文，与全站全文检索保持一致', () => {
   const result = filterItems([{ ...resource, content: '这段正文提到了事件循环' }], { query: '事件循环', category: '', tags: [], type: '', sort: 'newest', page: 1, pageSize: 6 });
   assert.equal(result.total, 1);
+});
+
+test('分类别名合并主题，旧书签仍匹配新旧内容且保留其他筛选条件', () => {
+  const items = [
+    { ...resource, id: 'note', category: 'React', tags: ['Hooks'] },
+    { ...resource, id: 'topic', category: 'React 生态', tags: ['面试'] },
+    { ...resource, id: 'vue', category: 'Vue', tags: ['面试'] },
+  ];
+  const filters = { query: '', category: 'React 生态', tags: [], type: '', sort: 'title', page: 1, pageSize: 6 };
+  assert.deepEqual(filterItems(items, filters).items.map(item => item.id), ['note', 'topic']);
+  assert.deepEqual(filterItems(items, { ...filters, category: 'React', tags: ['面试'] }).items.map(item => item.id), ['topic']);
+  assert.equal(normalizeCategory('浏览器与网络'), '网络');
+  assert.equal(normalizeCategory('计算机网络'), '网络');
+  assert.equal(normalizeCategory('浏览器'), '浏览器');
+  assert.equal(normalizeCategory(' 新主题 '), '新主题');
+  assert.equal(normalizeCategory('constructor'), 'constructor');
+  assert.equal(items[1].category, 'React 生态');
+});
+
+test('文章与外部资料录入统一分类，不改变稳定 ID 和标签', () => {
+  const parsedResource = validateResource({ ...resource, category: 'React 生态' });
+  assert.equal(parsedResource.category, 'React');
+  assert.equal(parsedResource.id, resource.id);
+  assert.deepEqual(parsedResource.tags, resource.tags);
+  const article = parseArticle('---\nid: coding\ntitle: 编程题\ncategory: 代码编程\ndescription: 说明\nkind: 手写题解\ntags: [JavaScript, 手写题]\naddedAt: "2026-10-09"\n---\n## Q134｜实现函数\n正文', 'coding.md');
+  assert.equal(article.category, '算法与手写');
+  assert.equal(article.id, 'coding');
+  assert.deepEqual(article.tags, ['JavaScript', '手写题']);
+  assert.match(article.content, /Q134/);
 });

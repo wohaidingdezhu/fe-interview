@@ -1,7 +1,7 @@
 ---
 id: "debounce"
 title: "手写防抖函数"
-category: "手写题"
+category: "算法与手写"
 kind: "手写题解"
 description: "从搜索输入场景开始，写出支持参数、this 和取消的防抖函数。"
 tags: ["JavaScript", "手写题", "面试"]

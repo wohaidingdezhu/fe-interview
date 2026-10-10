@@ -1,4 +1,5 @@
 import { parse } from 'yaml';
+import { normalizeCategory } from './categories.ts';
 
 export const resourceTypes = ['文章', '官方文档', '视频', '工具', '开源项目'] as const;
 export type PublicationStatus = 'draft' | 'published';
@@ -101,7 +102,7 @@ export function validateResource(value: unknown, label = '资料'): Resource {
     id: identifier(data.id, `${label} ID`), title: text(data.title, `${label}标题`),
     url: validateURL(data.url), description: text(data.description, `${label}简介`),
     source: text(data.source, `${label}来源`), type: type as Resource['type'],
-    category: text(data.category, `${label}分类`), tags: tags(data.tags, `${label}标签`),
+    category: normalizeCategory(text(data.category, `${label}分类`)), tags: tags(data.tags, `${label}标签`),
     addedAt: date(data.addedAt, `${label}收录日期`),
     status: publicationStatus(data, label),
   };
@@ -123,7 +124,7 @@ export function parseArticle(raw: string, path: string): Article {
   if (updatedAt && updatedAt < addedAt) throw new Error(`${path} 的 updatedAt 不能早于 addedAt`);
   return {
     id: identifier(data.id, `${path} ID`), title: text(data.title, `${path}标题`),
-    category: text(data.category, `${path}分类`), description: text(data.description, `${path}简介`),
+    category: normalizeCategory(text(data.category, `${path}分类`)), description: text(data.description, `${path}简介`),
     kind: kind as Article['kind'], tags: tags(data.tags, `${path}标签`),
     addedAt, order, content: text(match[2], `${path}正文`),
     status: publicationStatus(data, path), quality,
@@ -165,7 +166,7 @@ export function filterItems(items: ListItem[], filters: Filters) {
       || filters.maintenance === 'incomplete' && item.quality === 'incomplete'
       || filters.maintenance === 'draft' && item.status === 'draft'
       || filters.maintenance === 'published' && (item.status === 'published' || (item.publishedQuestionCount ?? 0) > 0);
-    return (!filters.category || item.category === filters.category)
+    return (!filters.category || normalizeCategory(item.category) === normalizeCategory(filters.category))
       && (!filters.type || item.type === filters.type)
       && maintenanceMatches
       && filters.tags.every((tag) => item.tags.includes(tag))

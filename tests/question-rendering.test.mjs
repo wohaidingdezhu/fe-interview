@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react';
 import { parse } from 'parse5';
 
 test('题目渲染保留旧标题锚点并增加稳定链接，代码里的题号不生成锚点', async () => {
-  const server = await createServer({ configFile: false, cacheDir: '.reports/vite-ssr-test-cache', plugins: [react()], server: { middlewareMode: true }, appType: 'custom' });
+  const server = await createServer({ configFile: false, cacheDir: '.reports/vite-ssr-test-cache', plugins: [react()], server: { middlewareMode: true, hmr: false }, appType: 'custom' });
   try {
     const { default: ArticleContent } = await server.ssrLoadModule('/src/ArticleContent.tsx');
     const content = '## Q134｜链式调用\n\n答案正文。\n\n![流程](./images/flow.png)\n\n## 普通章节\n\n```md\n## Q999｜代码示例\n```';

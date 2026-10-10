@@ -68,7 +68,7 @@
     "description": "了解缓存新鲜度、验证器与 Cache-Control 的使用方式。",
     "source": "MDN",
     "type": "官方文档",
-    "category": "浏览器与网络",
+    "category": "网络",
     "tags": [
       "网络",
       "性能",

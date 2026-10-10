@@ -1,7 +1,7 @@
 ---
 id: "interview-performance"
 title: "前端性能面试题"
-category: "前端性能"
+category: "性能优化"
 description: "收录 Q247–Q260 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["性能优化","缓存","渲染"]

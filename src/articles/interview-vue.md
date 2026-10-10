@@ -1,7 +1,7 @@
 ---
 id: "interview-vue"
 title: "Vue 生态面试题"
-category: "Vue 生态"
+category: "Vue"
 description: "收录 Q159–Q203 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["Vue","响应式","面试"]

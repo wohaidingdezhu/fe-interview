@@ -6,6 +6,7 @@ import type { Heading } from './ArticleContent';
 import { filterItems } from './data-utils';
 import { LibraryList } from './LibraryList';
 import { ReaderBoundary } from './ReaderBoundary';
+import { normalizeCategory } from './categories';
 import './style.css';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
@@ -18,6 +19,8 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toc, setToc] = useState<Heading[]>([]);
   const searchRef = useRef<HTMLInputElement>(null);
+  const searchWrapRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [body, setBody] = useState<{ id: string; content?: string; error?: string }>({ id: '' });
   const [loadAttempt, setLoadAttempt] = useState(0);
   const search = useSearchIndex(query);
@@ -29,14 +32,20 @@ function App() {
   const relatedArticles = article?.related.map((relatedId) => articles.find((item) => item.id === relatedId)).filter((item): item is (typeof articles)[number] => Boolean(item)) ?? [];
   const collection = isNotes ? articles : resources;
   const categories = [...new Set(collection.map((item) => item.category))];
-  const category = article?.category || params.get('category') || '';
+  const category = article?.category || normalizeCategory(params.get('category') || '');
   const noteResults = query.trim() ? searchArticles(query, search.documents) : [];
   const resourceResults = query.trim() ? filterItems(resources, { query, category: '', tags: [], type: '', sort: 'newest', page: 1, pageSize: 5 }) : { items: [], total: 0 };
 
   function navigate(href: string, replace = false) {
+    const nextParams = new URL(href, window.location.href).searchParams;
+    const changesPage = params.get('article') !== nextParams.get('article')
+      || (params.get('view') || 'resources') !== (nextParams.get('view') || 'resources');
     window.history[replace ? 'replaceState' : 'pushState']({}, '', href);
     setLocation(window.location.search + window.location.hash); setQuery(''); setMenuOpen(false);
-    if (!replace && !window.location.hash) window.scrollTo({ top: 0, behavior: 'instant' });
+    if (!replace && !window.location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (changesPage) requestAnimationFrame(() => document.getElementById('main')?.focus({ preventScroll: true }));
+    }
     if (window.location.hash) {
       try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView(); } catch { /* invalid anchor */ }
     }
@@ -44,8 +53,13 @@ function App() {
   useEffect(() => {
     const onPopState = () => { setLocation(window.location.search + window.location.hash); setQuery(''); setMenuOpen(false); };
     const onKey = (event: KeyboardEvent) => {
+      if (event.isComposing) return;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); searchRef.current?.focus(); }
-      if (event.key === 'Escape') { setQuery(''); setMenuOpen(false); }
+      if (event.key === 'Escape') {
+        if (searchWrapRef.current?.contains(document.activeElement)) searchRef.current?.focus();
+        if (document.getElementById('sidebar')?.contains(document.activeElement)) menuButtonRef.current?.focus();
+        setQuery(''); setMenuOpen(false);
+      }
     };
     window.addEventListener('popstate', onPopState); window.addEventListener('hashchange', onPopState); window.addEventListener('keydown', onKey);
     return () => { window.removeEventListener('popstate', onPopState); window.removeEventListener('hashchange', onPopState); window.removeEventListener('keydown', onKey); };
@@ -68,7 +82,15 @@ function App() {
     <a className="skip-link" href="#main">跳到正文</a>
     <header className="header">
       <a className="brand" href="?view=resources" onClick={(event) => { if (modified(event)) return; event.preventDefault(); navigate('?view=resources'); }}><span className="brand-icon" aria-hidden="true">&lt;/&gt;</span><span>前端资料库<small>FE LIBRARY</small></span></a>
-      <div className="search-wrap"><span className="search-icon" aria-hidden="true">⌕</span><input ref={searchRef} type="search" aria-label="搜索全部资料和笔记" placeholder="搜索题号（如 Q134）、关键词、资料…" value={query} onChange={(event) => setQuery(event.target.value)} /><kbd>⌘ K</kbd>
+      <div className="search-wrap" ref={searchWrapRef} onKeyDown={(event) => {
+        if (event.nativeEvent.isComposing) return;
+        const links = [...searchWrapRef.current?.querySelectorAll<HTMLAnchorElement>('.search-results a') ?? []];
+        if (!links.length) return;
+        const index = links.indexOf(document.activeElement as HTMLAnchorElement);
+        if (event.key === 'ArrowDown') { event.preventDefault(); links[Math.min(index + 1, links.length - 1)]?.focus(); }
+        if (event.key === 'ArrowUp') { event.preventDefault(); (index <= 0 ? searchRef.current : links[index - 1])?.focus(); }
+        if (event.key === 'Enter' && event.target === searchRef.current) { event.preventDefault(); links[0]?.click(); }
+      }}><span className="search-icon" aria-hidden="true">⌕</span><input ref={searchRef} type="search" aria-label="搜索全部资料和笔记" aria-describedby="search-help" placeholder="搜索题号（如 Q134）、关键词、资料…" value={query} onChange={(event) => setQuery(event.target.value)} /><span id="search-help" className="sr-only">输入关键词后，用上下方向键选择结果，回车打开，Escape 关闭。</span><kbd>⌘ K</kbd>
         {query.trim() && <div className="search-results" aria-label="搜索结果"><div className="result-count" role="status">{resourceResults.total} 条资料 · {search.loading ? '正在搜索笔记…' : `${noteResults.length} 个知识结果`}</div>
           {resourceResults.items.map((item) => <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"><small>资料 · {item.source}</small><strong>{item.title} ↗</strong><span>{item.description}</span></a>)}
           {noteResults.slice(0, 6).map((item) => <a key={item.href} href={item.href} onClick={(event) => { if (modified(event)) return; event.preventDefault(); navigate(item.href); }}><small>{item.questionNumber ? '题目' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></a>)}
@@ -76,7 +98,7 @@ function App() {
           {!search.loading && !search.error && !resourceResults.total && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
           <div className="search-all">{link(`?view=resources&q=${encodeURIComponent(query)}`, '查看全部资料结果 →')}{link(`?view=notes&q=${encodeURIComponent(query)}`, '查看笔记列表 →')}</div>
         </div>}
-      </div><span className="header-note"><i />收藏资料，沉淀理解</span><button className="menu-button" aria-label={menuOpen ? '关闭导航' : '打开导航'} aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '关闭' : '目录'}</button>
+      </div><span className="header-note"><i />收藏资料，沉淀理解</span><button ref={menuButtonRef} className="menu-button" aria-label={menuOpen ? '关闭导航' : '打开导航'} aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '关闭' : '导航'}</button>
     </header>
     {menuOpen && <button className="menu-overlay" aria-label="关闭导航遮罩" onClick={() => setMenuOpen(false)} />}
     <aside id="sidebar" className={`sidebar ${menuOpen ? 'is-open' : ''}`} aria-label="资料库导航">
@@ -87,7 +109,7 @@ function App() {
       <div className="sidebar-footer"><span className="footer-mark">↗</span><p>收藏有价值的资料<small>文章 · 文档 · 视频 · 工具 · 开源项目</small></p></div>
     </aside>
     <div className={`workspace ${!id ? 'list-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
-      {!id ? <LibraryList params={params} navigate={navigate} /> : article ? <>
+      {!id ? <LibraryList key={isNotes ? 'notes' : 'resources'} params={params} navigate={navigate} /> : article ? <>
         <div className="breadcrumb">{link('?view=notes', '我的笔记')}<span>/</span>{article.category}<span>/</span><b>{article.title}</b></div>
         <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}{article.questionCount > 0 && <span>共 {article.questionCount} 题 · 已复核 {article.publishedQuestionCount} · 待处理 {article.questionCount - article.publishedQuestionCount}</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.updatedAt ?? article.addedAt}>{article.updatedAt ? `更新 ${article.updatedAt}` : `收录 ${article.addedAt}`}</time>{article.reviewedAt && <time dateTime={article.reviewedAt}>审核 {article.reviewedAt}</time>}</div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}

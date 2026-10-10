@@ -1,7 +1,7 @@
 ---
 id: "interview-engineering"
 title: "前端构建与工程化面试题"
-category: "前端构建 & 工程化"
+category: "工程化"
 description: "收录 Q228–Q244 的参考答案、原理说明与配图。"
 kind: "知识文章"
 tags: ["Webpack","Vite","工程化"]
