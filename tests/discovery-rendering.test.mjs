@@ -41,7 +41,8 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   const noteToc=renderToStaticMarkup(createElement(TableOfContents,{headings:articleHeadings,articleId:'note',hash:'',navigate(){},onActive(){},learning}));
   assert.match(noteToc,/上一节/);assert.match(noteToc,/下一节/);assert.doesNotMatch(noteToc,/上一题|下一题/);
   const {QuestionList}=await server.ssrLoadModule('/src/QuestionList.tsx');
-  const questionList=renderToStaticMarkup(createElement(QuestionList,{params:new URLSearchParams(),navigate(){},learning:{...learning,error:'浏览器无法保存，当前记录仅在本次访问有效，请导出备份。'}}));
+  const questionList=renderToStaticMarkup(createElement(QuestionList,{params:new URLSearchParams(),navigate(){},study:{session:undefined,error:''},startStudy(){},learning:{...learning,error:'浏览器无法保存，当前记录仅在本次访问有效，请导出备份。'}}));
   assert.match(questionList,/role="alert">浏览器无法保存/);
+  assert.doesNotMatch(questionList,/aria-label="题库连续学习"|学习清单范围/);
  }finally{await server.close();}
 });

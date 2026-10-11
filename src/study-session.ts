@@ -12,7 +12,7 @@ export function parseStudySession(text: string): StudySession {
     || value.keys.some((key: unknown) => typeof key !== 'string' || !keyPattern.test(key))
     || typeof value.returnSearch !== 'string' || value.returnSearch.length > 10_000 || !value.returnSearch.startsWith('?')) throw new Error('学习清单无效');
   const params = new URLSearchParams(value.returnSearch);
-  if (params.get('view') !== 'learning' || params.has('article')) throw new Error('学习清单返回地址无效');
+  if (!['learning', 'questions'].includes(params.get('view') ?? '') || params.has('article')) throw new Error('学习清单返回地址无效');
   const keys = [...new Set<string>(value.keys)];
   if (value.currentKey !== undefined && (typeof value.currentKey !== 'string' || !keys.includes(value.currentKey))) throw new Error('学习清单位置无效');
   return { version: 1, keys, returnSearch: `?${params}`, currentKey: value.currentKey ?? keys[0] };
@@ -20,7 +20,7 @@ export function parseStudySession(text: string): StudySession {
 
 export function createStudySession(targets: LearningTarget[], params: URLSearchParams, currentKey = targets[0]?.key): StudySession {
   const back = new URLSearchParams(params);
-  back.set('view', 'learning'); back.delete('article'); back.delete('study');
+  back.set('view', params.get('view') === 'questions' ? 'questions' : 'learning'); back.delete('article'); back.delete('study');
   return parseStudySession(JSON.stringify({ version: 1, keys: targets.map(target => target.key), returnSearch: `?${back}`, currentKey }));
 }
 

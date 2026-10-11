@@ -121,6 +121,7 @@ function App() {
   }, [article?.id, body.id, body.content, activeHeading?.id, learning.remember]);
   const link = (href: string, title: string, className?: string) => <Link href={href} className={className} navigate={navigate}>{title}</Link>;
   function startStudy(targets: LearningTarget[], filters: URLSearchParams, random = false) {
+    if (!targets.length) throw new Error('当前筛选没有可学习的内容');
     const target = targets[random ? Math.floor(Math.random() * targets.length) : 0];
     const session = createStudySession(targets, filters, target?.key);
     study.start(session);
@@ -161,7 +162,7 @@ function App() {
     </aside>
     {inStudy && <StudySessionBar key={`${id}${route.hash}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
-      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <nav className="breadcrumb" aria-label="面包屑">{link('?view=notes', '专题与笔记')}<span>/</span>{link(`?view=notes&category=${encodeURIComponent(article.category)}`, article.category)}<span>/</span><b aria-current="page">{article.title}</b></nav>
         <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}{article.questionCount > 0 && <span>共 {article.questionCount} 题 · 已复核 {article.publishedQuestionCount} · 待处理 {article.questionCount - article.publishedQuestionCount}</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.updatedAt ?? article.addedAt}>{article.updatedAt ? `更新 ${article.updatedAt}` : `收录 ${article.addedAt}`}</time>{article.reviewedAt && <time dateTime={article.reviewedAt}>审核 {article.reviewedAt}</time>}</div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
         <ShareButton articleId={article.id} />

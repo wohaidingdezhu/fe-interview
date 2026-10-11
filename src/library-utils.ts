@@ -30,5 +30,5 @@ export function questionPage(questions: QuestionEntry[], options: { query: strin
   const size = [12, 24, 48].includes(options.size) ? options.size : 12;
   const pages = Math.max(1, Math.ceil(all.length / size));
   const page = Math.min(pages, Math.max(1, Number.isFinite(options.page) ? Math.floor(options.page) : 1));
-  return { items: all.slice((page - 1) * size, page * size), total: all.length, page, pages };
+  return { items: all.slice((page - 1) * size, page * size), queue: all, total: all.length, page, pages };
 }

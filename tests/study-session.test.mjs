@@ -37,13 +37,25 @@ test('地址保留题号且标明清单模式，跨文章与静态子路径正�
   assert.equal(studyIndex(targets, new URL('https://example.com/articles/closure/?study=1#section')), 2);
 });
 
-test('非法清单和返回阅读地址被拒绝，返回链接始终为学习页查询参数', () => {
+test('非法清单和返回阅读地址被拒绝，返回链接只能指向题库或学习页', () => {
   const valid = { version: 1, keys: ['q:2'], returnSearch: '?view=learning' };
   for (const invalid of [null, [], { ...valid, version: 2 }, { ...valid, keys: [] }, { ...valid, keys: ['__proto__'] }, { ...valid, keys: [1] }, { ...valid, keys: Array.from({ length: 1001 }, () => 'q:2') }, { ...valid, returnSearch: 'https://evil.invalid/?view=learning' }, { ...valid, returnSearch: '//evil.invalid/' }, { ...valid, returnSearch: '?view=learning&article=css' }, { ...valid, returnSearch: '?view=home' }]) assert.throws(() => parseStudySession(JSON.stringify(invalid)));
   assert.throws(() => parseStudySession('x'.repeat(100_001)));
   assert.throws(() => parseStudySession('{bad'));
   const maliciousQuery = parseStudySession(JSON.stringify({ ...valid, returnSearch: '?view=learning&next=https://evil.invalid/' }));
   assert.ok(maliciousQuery.returnSearch.startsWith('?view=learning&'));
+});
+
+test('题库清单返回保留全文、标签、阅读筛选、原分页和学习范围，兼容旧学习页清单', () => {
+  const params = new URLSearchParams('view=questions&q=React+状态&category=React&tag=Hooks&progress=unread&page=2&size=24&studyRange=page');
+  const before = params.toString(), session = createStudySession(targets.slice(0, 2), params);
+  assert.equal(session.returnSearch, `?${before}`);
+  assert.equal(params.toString(), before);
+  assert.deepEqual(parseStudySession(JSON.stringify(session)), session);
+  assert.equal(new URLSearchParams(createStudySession(targets, new URLSearchParams('view=notes&article=css&study=1')).returnSearch).get('view'), 'learning');
+  assert.equal(createStudySession(targets, new URLSearchParams('view=questions&article=css&study=1')).returnSearch, '?view=questions');
+  for (const view of ['notes', 'home', 'https://evil.invalid/']) assert.throws(() => parseStudySession(JSON.stringify({ ...session, returnSearch: `?view=${view}` })));
+  assert.throws(() => parseStudySession(JSON.stringify({ ...session, returnSearch: '?view=questions&article=css' })));
 });
 
 test('旧清单兼容默认位置，新清单保存随机或指定位置并拒绝清单外游标', () => {

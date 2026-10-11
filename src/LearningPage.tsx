@@ -9,6 +9,7 @@ import type { Learning } from './useLearning';
 import type { LearningBatchUndo, LearningStatus } from './learning-utils';
 import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
+import { StudyStartActions } from './StudyStartActions';
 export function LearningPage({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
@@ -28,10 +29,6 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
   const catalogReady = !catalog.loading && !catalog.error;
   const staleCount = catalogReady ? Object.keys(learning.data.entries).filter(key => !validKeys.has(key)).length + (learning.data.lastRead && !validArticles.has(learning.data.lastRead.articleId) ? 1 : 0) : 0;
   const last = learning.data.lastRead;
-  function begin(random = false) {
-    try { startStudy(result.queue, params, random); }
-    catch (error) { setMessage(`无法开始学习：${error instanceof Error ? error.message : '清单无效'}`); }
-  }
   function markPage(status: LearningStatus) {
     const saved = learning.updateMany(result.items.map(item => item.key), status);
     if (saved.count) setUndo(saved.undo);
@@ -71,12 +68,7 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
     {catalog.loading && <p role="status">正在加载题目目录…</p>}
     {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category || result.kind) && <button className="text-button" onClick={() => { const next = new URLSearchParams(params); for (const key of ['q', 'category', 'kind', 'page']) next.delete(key); next.set('view', 'learning'); navigate(`?${next}`); }}>清除筛选 ×</button>}</div>
       {!!result.total && <section className="learning-actions" aria-label="学习与批量标记">
-        <div>
-          <button className="primary-learning-action" onClick={() => begin()}>{result.filter === 'review' ? '开始复习' : '开始学习'} →</button>
-          <button onClick={() => begin(true)}>随机学习</button>
-          <small>{result.filter === 'review' && !['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? '默认先复习较早标记的内容。' : '从当前筛选结果中选择内容。'}</small>
-          {study?.session && <small>开始学习会替换当前清单，已有阅读标记保留。</small>}
-        </div>
+        <StudyStartActions queue={result.queue} items={result.items} params={params} navigate={navigate} startStudy={startStudy} hasSession={Boolean(study?.session)} review={result.filter === 'review'} />
         <div>
           <span>本页 {result.items.length} 条</span>
           <button disabled={result.items.every(item => learning.data.entries[item.key]?.status === 'read')} onClick={() => markPage('read')}>本页标记已读</button>
