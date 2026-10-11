@@ -51,3 +51,26 @@ test('没有记录与显式取消已读的项目都列入未读，分页越界�
   assert.equal(learningShelf(items, state, new URLSearchParams('filter=unread&page=999')).page, 3);
   for (const page of ['-1', 'NaN', 'Infinity', '0']) assert.equal(learningShelf(items, state, new URLSearchParams(`filter=unread&page=${page}`)).page, 1);
 });
+
+test('复习队列默认较早标记优先，显式排序覆盖默认并支持自然题号顺序', () => {
+  const state = { version: 1, entries: { 'q:1': { ...entry, status: 'review', updatedAt: '2026-10-11T02:00:00.000Z' }, 'q:10': { ...entry, status: 'review', updatedAt: '2026-10-11T01:00:00.000Z' } } };
+  assert.deepEqual(learningShelf(targets, state, new URLSearchParams('filter=review')).queue.map(item => item.key), ['q:10', 'q:1']);
+  assert.deepEqual(learningShelf(targets, state, new URLSearchParams('filter=review&sort=recent')).queue.map(item => item.key), ['q:1', 'q:10']);
+  assert.deepEqual(learningShelf(targets, state, new URLSearchParams('filter=review&sort=title')).queue.map(item => item.key), ['q:1', 'q:10']);
+  assert.equal(learningShelf(targets, state, new URLSearchParams('filter=review&sort=bad')).sort, 'oldest');
+});
+
+test('内容类型、每页数量与队列遵循同一组筛选，异常参数回退', () => {
+  const items = Array.from({ length: 50 }, (_, i) => ({ key: `q:${i + 1}`, title: `Q${i + 1}`, category: 'JS', href: `?article=js#q${i + 1}` }));
+  items.push({ key: 'a:note', title: '笔记', category: 'JS', href: '?article=note' });
+  const result = learningShelf(items, { version: 1, entries: {} }, new URLSearchParams('filter=unread&kind=questions&size=24&page=2'));
+  assert.equal(result.total, 50);
+  assert.equal(result.queue.length, 50);
+  assert.equal(result.pages, 3);
+  assert.equal(result.items.length, 24);
+  assert.equal(result.items[0].key, 'q:25');
+  assert.deepEqual(learningShelf(items, { version: 1, entries: {} }, new URLSearchParams('filter=unread&kind=notes')).queue.map(item => item.key), ['a:note']);
+  assert.equal(learningShelf(items, { version: 1, entries: {} }, new URLSearchParams('filter=unread&size=48')).items.length, 48);
+  for (const size of ['0', '13', '-1', 'Infinity', '100000']) assert.equal(learningShelf(items, data, new URLSearchParams(`kind=bad&size=${size}`)).size, 12);
+  assert.equal(learningShelf(items, data, new URLSearchParams('kind=bad')).kind, '');
+});

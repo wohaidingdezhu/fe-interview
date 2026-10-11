@@ -65,6 +65,35 @@ export function clearLearning(data: LearningData): LearningData {
   return { ...emptyLearning(), resetAt: learningTimestamp(data) };
 }
 
+export type LearningBatchUndo = { appliedAt: string; previous: Record<string, LearningEntry | undefined> };
+
+export function updateLearningBatch(data: LearningData, keys: readonly string[], status: LearningStatus) {
+  const unique = [...new Set(keys)];
+  if (unique.length > 48 || unique.some(key => !keyPattern.test(key)) || !['unread', 'read', 'review'].includes(status)) throw new Error('批量标记内容无效');
+  const changed = unique.filter(key => (data.entries[key]?.status ?? 'unread') !== status);
+  const undo: LearningBatchUndo = { appliedAt: changed.length ? learningTimestamp(data) : '', previous: {} };
+  if (!changed.length) return { data, undo, count: 0 };
+  const entries = { ...data.entries };
+  for (const key of changed) {
+    undo.previous[key] = data.entries[key];
+    entries[key] = { bookmarked: data.entries[key]?.bookmarked ?? false, status, updatedAt: undo.appliedAt };
+  }
+  return { data: { ...data, entries }, undo, count: changed.length };
+}
+
+export function undoLearningBatch(data: LearningData, undo: LearningBatchUndo) {
+  // 后续单项编辑或跨标签页更新不属于本次撤销，保留较新的记录。
+  const keys = Object.keys(undo.previous).filter(key => data.entries[key]?.updatedAt === undo.appliedAt);
+  if (!keys.length) return { data, count: 0 };
+  const time = learningTimestamp(data), entries = { ...data.entries }, removed = { ...data.removed };
+  for (const key of keys) {
+    const previous = undo.previous[key];
+    if (previous) entries[key] = { ...previous, updatedAt: time };
+    else { delete entries[key]; removed[key] = time; }
+  }
+  return { data: { ...data, entries, removed }, count: keys.length };
+}
+
 export function pruneLearning(data: LearningData, validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>): LearningData {
   const time = learningTimestamp(data), removed: Record<string, string> = {};
   for (const key of Object.keys(data.entries)) if (!validKeys.has(key)) removed[key] = time;

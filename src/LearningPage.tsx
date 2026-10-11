@@ -6,8 +6,10 @@ import { LearningControls } from './LearningControls';
 import { LearningOverview } from './LearningOverview';
 import { learningFilters, learningOverview, learningShelf, learningTargets } from './learning-view';
 import type { Learning } from './useLearning';
+import type { LearningBatchUndo, LearningStatus } from './learning-utils';
 export function LearningPage({ learning, navigate, params }: { learning: Learning; navigate: Navigate; params: URLSearchParams }) {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
+  const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const targets = learningTargets(catalog.questions, articles);
   const result = learningShelf(targets, learning.data, params);
   const counts = learningOverview(targets, learning.data);
@@ -24,6 +26,17 @@ export function LearningPage({ learning, navigate, params }: { learning: Learnin
   const catalogReady = !catalog.loading && !catalog.error;
   const staleCount = catalogReady ? Object.keys(learning.data.entries).filter(key => !validKeys.has(key)).length + (learning.data.lastRead && !validArticles.has(learning.data.lastRead.articleId) ? 1 : 0) : 0;
   const last = learning.data.lastRead;
+  function markPage(status: LearningStatus) {
+    const saved = learning.updateMany(result.items.map(item => item.key), status);
+    if (saved.count) setUndo(saved.undo);
+    setMessage(saved.count ? `本页已将 ${saved.count} 条内容标记为${status === 'read' ? '已读' : '待复习'}。${saved.error ? '尚未保存到浏览器，请导出备份。' : ''}` : '本页内容已是这个状态，无需重复标记。');
+  }
+  function undoBatch() {
+    if (!undo) return;
+    const saved = learning.undoMany(undo), expected = Object.keys(undo.previous).length;
+    setUndo(null);
+    setMessage(`已撤销 ${saved.count} 条标记。${saved.count < expected ? '其余记录已有后续修改，已保留。' : ''}${saved.error ? '尚未保存到浏览器，请导出备份。' : ''}`);
+  }
   function download() {
     const blob = new Blob([JSON.stringify(learning.data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `前端资料库-学习记录-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setMessage('备份已导出。');
@@ -34,20 +47,36 @@ export function LearningPage({ learning, navigate, params }: { learning: Learnin
     {catalogReady && <LearningOverview targets={targets} data={learning.data} navigate={navigate} />}
     <div className="learning-backup"><div><strong>记录只保存在当前浏览器</strong><p>换设备时先导出，再在新设备导入。导入会合并记录，同一项保留较新的状态。</p></div><div><button onClick={download}>导出备份</button><button onClick={() => input.current?.click()}>导入备份</button></div><input hidden ref={input} type="file" accept="application/json,.json" onChange={async event => {
       const file = event.target.files?.[0]; event.target.value = ''; if (!file) return;
-      try { if (file.size > 4_000_000) throw new Error('备份不能超过 4 MB'); const restored = learning.restore(await file.text()); setMessage(restored.error ? '备份已合并到本次访问，但尚未保存到浏览器；请保留备份文件。' : '备份已合并并保存。'); }
+      try { if (file.size > 4_000_000) throw new Error('备份不能超过 4 MB'); const restored = learning.restore(await file.text()); setUndo(null); setMessage(restored.error ? '备份已合并到本次访问，但尚未保存到浏览器；请保留备份文件。' : '备份已合并并保存。'); }
       catch (error) { setMessage(`导入失败：${error instanceof Error ? error.message : '文件无效'}`); }
-    }} /></div><p role="status" className="backup-message">{message}</p>
-    <div className="learning-maintenance"><button disabled={!staleCount} onClick={() => { const saved = learning.prune(validKeys, validArticles); setMessage(saved.error ? `本次访问已清理 ${staleCount} 条失效记录，但尚未保存到浏览器。` : `已清理 ${staleCount} 条失效记录。`); }}>清理失效记录{staleCount ? `（${staleCount}）` : ''}</button><button className="danger-text" onClick={() => { if (window.confirm('确定清空全部收藏、阅读状态和继续阅读位置吗？建议先导出备份。')) { const saved = learning.clear(); setMessage(saved.error ? '本次访问的学习记录已清空，但尚未保存到浏览器。' : '学习记录已清空。'); update('page', ''); } }}>清空全部记录</button></div>
+    }} /></div>
+    <div className="learning-maintenance"><button disabled={!staleCount} onClick={() => { const saved = learning.prune(validKeys, validArticles); setMessage(saved.error ? `本次访问已清理 ${staleCount} 条失效记录，但尚未保存到浏览器。` : `已清理 ${staleCount} 条失效记录。`); }}>清理失效记录{staleCount ? `（${staleCount}）` : ''}</button><button className="danger-text" onClick={() => { if (window.confirm('确定清空全部收藏、阅读状态和继续阅读位置吗？建议先导出备份。')) { const saved = learning.clear(); setUndo(null); setMessage(saved.error ? '本次访问的学习记录已清空，但尚未保存到浏览器。' : '学习记录已清空。'); update('page', ''); } }}>清空全部记录</button></div>
     <div className="learning-tabs" aria-label="学习记录筛选">{learningFilters.map(({ value, label }) => <button key={value} aria-pressed={result.filter === value} onClick={() => update('filter', value)}>{label} <span>{catalogReady ? counts.total[value] : '—'}</span></button>)}</div>
     <section className="filters learning-filters" aria-label="筛选学习记录">
       <label>题号或标题<input type="search" aria-label="搜索学习记录" placeholder="例如 Q134、闭包" value={query} onChange={event => update('q', event.target.value, true)} /></label>
       <label>分类<select aria-label="学习记录分类" value={result.category} onChange={event => update('category', event.target.value)}><option value="">全部分类</option>{categories.map(category => <option key={category}>{category}</option>)}{result.category && !categories.includes(result.category) && <option>{result.category}</option>}</select></label>
+      <label>内容类型<select aria-label="学习内容类型" value={result.kind} onChange={event => update('kind', event.target.value)}><option value="">题目和笔记</option><option value="questions">仅题目</option><option value="notes">仅笔记</option></select></label>
+      <label>排序<select aria-label="学习记录排序" value={result.sort} onChange={event => update('sort', event.target.value)}><option value="recent">最近标记优先</option><option value="oldest">较早标记优先</option><option value="title">题号与标题顺序</option></select></label>
+      <label>每页数量<select aria-label="学习记录每页数量" value={result.size} onChange={event => update('size', event.target.value)}>{[12, 24, 48].map(size => <option key={size} value={size}>{size} 条</option>)}</select></label>
     </section>
+    <div className="learning-feedback"><p role="status" className="backup-message">{message}</p>{undo && <button onClick={undoBatch}>撤销上次批量标记</button>}</div>
     {catalog.error && <p role="alert">{catalog.error}<button onClick={catalog.retry}>重试题目目录</button></p>}
     {catalog.loading && <p role="status">正在加载题目目录…</p>}
-    {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category) && <button className="text-button" onClick={() => navigate(`?view=learning&filter=${result.filter}`)}>清除筛选 ×</button>}</div>
+    {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category || result.kind) && <button className="text-button" onClick={() => { const next = new URLSearchParams(params); for (const key of ['q', 'category', 'kind', 'page']) next.delete(key); next.set('view', 'learning'); navigate(`?${next}`); }}>清除筛选 ×</button>}</div>
+      {!!result.total && <section className="learning-actions" aria-label="学习与批量标记">
+        <div>
+          <Link className="primary-learning-action" navigate={navigate} href={result.queue[0].href}>{result.filter === 'review' ? '开始复习' : '开始学习'} →</Link>
+          <button onClick={() => navigate(result.queue[Math.floor(Math.random() * result.queue.length)].href)}>随机学习</button>
+          <small>{result.filter === 'review' && !['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? '默认先复习较早标记的内容。' : '从当前筛选结果中选择内容。'}</small>
+        </div>
+        <div>
+          <span>本页 {result.items.length} 条</span>
+          <button disabled={result.items.every(item => learning.data.entries[item.key]?.status === 'read')} onClick={() => markPage('read')}>本页标记已读</button>
+          <button disabled={result.items.every(item => learning.data.entries[item.key]?.status === 'review')} onClick={() => markPage('review')}>本页标记待复习</button>
+        </div>
+      </section>}
       <div className="resource-list">{result.items.map(item => <article className="resource-card" key={item.key}><small>{item.category}</small><h2><Link navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} /></article>)}</div>
-      {!result.total && <div className="empty-state"><h2>{query || result.category ? '没有匹配的学习内容' : result.filter === 'unread' ? '当前内容都已标记' : '书架上还没有这类记录'}</h2><p>{query || result.category ? '试试其他关键词或清除分类筛选。' : '从一道感兴趣的题目开始，点击收藏或标记阅读状态。'}</p><Link navigate={navigate} href="?view=questions">去看看全部题目 →</Link></div>}
+      {!result.total && <div className="empty-state"><h2>{query || result.category || result.kind ? '没有匹配的学习内容' : result.filter === 'unread' ? '当前内容都已标记' : '书架上还没有这类记录'}</h2><p>{query || result.category || result.kind ? '试试其他关键词或清除分类、类型筛选。' : '从一道感兴趣的题目开始，点击收藏或标记阅读状态。'}</p><Link navigate={navigate} href="?view=questions">去看看全部题目 →</Link></div>}
       {result.pages > 1 && <nav className="list-pagination" aria-label="学习记录分页"><button disabled={result.page === 1} onClick={() => update('page', String(result.page - 1))}>← 上一页</button><span>{result.page} / {result.pages}</span><button disabled={result.page === result.pages} onClick={() => update('page', String(result.page + 1))}>下一页 →</button></nav>}
     </>}
   </>;

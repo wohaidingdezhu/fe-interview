@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { clearLearning, emptyLearning, importLearning, learningTimestamp, mergeLearning, persistLearning, pruneLearning, type LearningData, type LearningEntry, type ReadingPosition } from './learning-utils';
+import { clearLearning, emptyLearning, importLearning, learningTimestamp, mergeLearning, persistLearning, pruneLearning, updateLearningBatch, undoLearningBatch, type LearningBatchUndo, type LearningStatus, type LearningData, type LearningEntry, type ReadingPosition } from './learning-utils';
 const storageKey = 'fe-library-learning-v1';
 function load() { const text = localStorage.getItem(storageKey); return text ? importLearning(text) : emptyLearning(); }
 export function useLearning() {
@@ -27,6 +27,16 @@ export function useLearning() {
   const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
   const clear = useCallback(() => commit(clearLearning, true), [commit]);
-  return { data, update, remember, restore, prune, clear, error };
+  const updateMany = useCallback((keys: readonly string[], status: LearningStatus) => {
+    let undo: LearningBatchUndo = { appliedAt: '', previous: {} }, count = 0;
+    const saved = commit(base => { const batch = updateLearningBatch(base, keys, status); undo = batch.undo; count = batch.count; return batch.data; });
+    return { ...saved, undo, count };
+  }, [commit]);
+  const undoMany = useCallback((undo: LearningBatchUndo) => {
+    let count = 0;
+    const saved = commit(base => { const result = undoLearningBatch(base, undo); count = result.count; return result.data; });
+    return { ...saved, count };
+  }, [commit]);
+  return { data, update, updateMany, undoMany, remember, restore, prune, clear, error };
 }
 export type Learning = ReturnType<typeof useLearning>;

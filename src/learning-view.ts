@@ -45,12 +45,18 @@ export function learningShelf(targets: LearningTarget[], data: LearningData, par
   const category = normalizeCategory(params.get('category') || '');
   const query = (params.get('q') || '').trim().toLocaleLowerCase();
   const exact = /^q([1-9]\d*)$/.exec(query);
+  const kind = ['questions', 'notes'].includes(params.get('kind') ?? '') ? params.get('kind')! : '';
+  const sort = ['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? params.get('sort')! : filter === 'review' ? 'oldest' : 'recent';
+  const size = [12, 24, 48].includes(Number(params.get('size'))) ? Number(params.get('size')) : 12;
   const matching = targets.filter(target => matchesLearning(data, target.key, filter)
+    && (!kind || target.key.startsWith(kind === 'questions' ? 'q:' : 'a:'))
     && (!category || normalizeCategory(target.category) === category)
     && (!query || (exact ? target.key === `q:${exact[1]}` : query.split(/\s+/).every(word => `${target.title} ${target.category}`.toLocaleLowerCase().includes(word)))))
-    .sort((a, b) => (data.entries[b.key]?.updatedAt ?? '').localeCompare(data.entries[a.key]?.updatedAt ?? ''));
-  const pages = Math.max(1, Math.ceil(matching.length / 12));
+    .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title, 'zh-CN', { numeric: true }) : sort === 'oldest'
+      ? (data.entries[a.key]?.updatedAt ?? '').localeCompare(data.entries[b.key]?.updatedAt ?? '')
+      : (data.entries[b.key]?.updatedAt ?? '').localeCompare(data.entries[a.key]?.updatedAt ?? ''));
+  const pages = Math.max(1, Math.ceil(matching.length / size));
   const requested = Number(params.get('page'));
   const page = Math.min(pages, Math.max(1, Number.isFinite(requested) ? Math.floor(requested) : 1));
-  return { filter, category, total: matching.length, pages, page, items: matching.slice((page - 1) * 12, page * 12) };
+  return { filter, category, kind, sort, size, total: matching.length, pages, page, queue: matching, items: matching.slice((page - 1) * size, page * size) };
 }

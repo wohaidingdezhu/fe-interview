@@ -92,7 +92,8 @@
 .category-progress-grid span { color:#6d7d70; font-size:11px; }
 .category-progress-grid progress { margin:14px 0 8px; }
 .category-progress-actions a { display:inline-flex; align-items:center; min-height:36px; color:var(--green); font-size:12px; }
-.learning-filters { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; }
+.learning-filters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.learning-filters label:first-child { grid-column:span 2; }
 .learning-filters label { display:flex; flex-direction:column; gap:10px; min-width:0; font-size:12px; color:#71816e; }
 .learning-filters :is(input,select) { width:100%; min-width:0; }
 @media(max-width:760px) {
@@ -101,6 +102,16 @@
   .learning-stats { gap:8px; }
   .learning-stats a { padding:12px 9px; }
   .learning-stats strong { font-size:27px; }
-  .category-progress-grid,.learning-filters { grid-template-columns:1fr; }
+  .category-progress-grid { grid-template-columns:1fr; }
+  .learning-filters { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .category-progress-actions a { min-height:44px; }
 }
+.learning-actions { display:grid; gap:14px; padding:18px; margin:0 0 18px; border:1px solid var(--line); border-radius:8px; background:#f6f8f3; }
+.learning-actions > div,.learning-feedback { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.learning-actions :is(button,a),.learning-feedback button { min-height:44px; padding:10px 12px; font-size:12px; border:1px solid #cddcc8; border-radius:5px; background:white; color:var(--green); text-decoration:none; }
+.learning-actions .primary-learning-action { background:var(--green); border-color:var(--green); color:white; font-weight:600; }
+.learning-actions :is(small,span) { font-size:12px; color:#71816e; }
+.learning-actions small { flex-basis:100%; }
+.learning-actions button:disabled { opacity:.5; cursor:not-allowed; }
+.learning-feedback .backup-message { margin:10px 0; }
+@media(max-width:760px) { .learning-actions { padding:14px; }.learning-actions > div:last-child span { flex-basis:100%; }.learning-feedback { margin-bottom:14px; } }
