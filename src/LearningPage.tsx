@@ -4,10 +4,10 @@ import { articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import { LearningControls } from './LearningControls';
 import { LearningOverview } from './LearningOverview';
-import { learningFilters, learningOverview, learningShelf, learningTargets } from './learning-view';
+import { learningFilters, learningOverview, learningShelf, learningTargets, type LearningTarget } from './learning-view';
 import type { Learning } from './useLearning';
 import type { LearningBatchUndo, LearningStatus } from './learning-utils';
-export function LearningPage({ learning, navigate, params }: { learning: Learning; navigate: Navigate; params: URLSearchParams }) {
+export function LearningPage({ learning, navigate, params, startStudy }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void }) {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const targets = learningTargets(catalog.questions, articles);
@@ -26,6 +26,10 @@ export function LearningPage({ learning, navigate, params }: { learning: Learnin
   const catalogReady = !catalog.loading && !catalog.error;
   const staleCount = catalogReady ? Object.keys(learning.data.entries).filter(key => !validKeys.has(key)).length + (learning.data.lastRead && !validArticles.has(learning.data.lastRead.articleId) ? 1 : 0) : 0;
   const last = learning.data.lastRead;
+  function begin(random = false) {
+    try { startStudy(result.queue, params, random); }
+    catch (error) { setMessage(`无法开始学习：${error instanceof Error ? error.message : '清单无效'}`); }
+  }
   function markPage(status: LearningStatus) {
     const saved = learning.updateMany(result.items.map(item => item.key), status);
     if (saved.count) setUndo(saved.undo);
@@ -65,8 +69,8 @@ export function LearningPage({ learning, navigate, params }: { learning: Learnin
     {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category || result.kind) && <button className="text-button" onClick={() => { const next = new URLSearchParams(params); for (const key of ['q', 'category', 'kind', 'page']) next.delete(key); next.set('view', 'learning'); navigate(`?${next}`); }}>清除筛选 ×</button>}</div>
       {!!result.total && <section className="learning-actions" aria-label="学习与批量标记">
         <div>
-          <Link className="primary-learning-action" navigate={navigate} href={result.queue[0].href}>{result.filter === 'review' ? '开始复习' : '开始学习'} →</Link>
-          <button onClick={() => navigate(result.queue[Math.floor(Math.random() * result.queue.length)].href)}>随机学习</button>
+          <button className="primary-learning-action" onClick={() => begin()}>{result.filter === 'review' ? '开始复习' : '开始学习'} →</button>
+          <button onClick={() => begin(true)}>随机学习</button>
           <small>{result.filter === 'review' && !['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? '默认先复习较早标记的内容。' : '从当前筛选结果中选择内容。'}</small>
         </div>
         <div>

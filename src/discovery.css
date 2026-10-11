@@ -115,3 +115,17 @@
 .learning-actions button:disabled { opacity:.5; cursor:not-allowed; }
 .learning-feedback .backup-message { margin:10px 0; }
 @media(max-width:760px) { .learning-actions { padding:14px; }.learning-actions > div:last-child span { flex-basis:100%; }.learning-feedback { margin-bottom:14px; } }
+.study-session { position:fixed; bottom:0; left:var(--side); right:0; z-index:21; padding:14px 26px calc(12px + env(safe-area-inset-bottom)); background:#f6f9f3f5; border-top:1px solid #cddcc8; backdrop-filter:blur(10px); box-shadow:0 -4px 16px #24462c0b; }
+.study-session-heading,.study-session-footer,.study-session nav { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.study-session-heading { justify-content:space-between; font-size:13px; }
+.study-session-heading span,.study-session > small { font-size:11px; color:#71816e; }
+.study-session .study-session-title { margin:8px 0; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.study-session :is(a,button) { display:inline-flex; align-items:center; min-height:40px; padding:9px 12px; border:1px solid #cddcc8; border-radius:5px; color:var(--green); background:white; text-decoration:none; font-size:12px; }
+.study-session .study-session-primary { color:white; border-color:var(--green); background:var(--green); }
+.study-session button:disabled { opacity:.45; cursor:not-allowed; }
+.study-session-footer { margin-top:8px; }
+.study-session-footer :is(a,button) { border:0; background:transparent; padding:4px 0; min-height:30px; }
+.study-session > small { display:block; margin-top:4px; }
+.study-session p[role=alert] { font-size:12px; margin:6px 0; }
+.workspace.study-workspace { padding-bottom:260px; }
+@media(max-width:760px) { .study-session { left:0; padding:12px 16px calc(10px + env(safe-area-inset-bottom)); }.study-session nav { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }.study-session nav :is(a,button) { justify-content:center; min-height:44px; }.study-session-primary { grid-column:span 2; }.study-session-footer { justify-content:space-between; }.study-session-footer :is(a,button) { min-height:36px; }.study-session > small { display:none; }.workspace.study-workspace { padding-bottom:280px; } }

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { Heading } from './ArticleContent';
 import { articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import type { Learning } from './useLearning';
 import { LearningControls } from './LearningControls';
+import { studyHref } from './study-session';
 
 const isQuestion = (heading: Heading) => /^q[1-9]\d*$/.test(heading.id);
 
@@ -30,9 +31,10 @@ function headingLabel(heading: Heading) {
   return <><span className="toc-question-number">{number}</span><span className="toc-question-title">{title || heading.title}</span></>;
 }
 
-export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning }) {
+export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; dialogRef?: RefObject<HTMLDialogElement | null> }) {
   const [active, setActive] = useState(''), [collapsed, setCollapsed] = useState(false);
-  const nav = useRef<HTMLElement>(null), dialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
+  const nav = useRef<HTMLElement>(null), ownDialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
+  const dialog = dialogRef ?? ownDialog;
   const toggle = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const nodes = headings.map(heading => document.getElementById(heading.id)).filter((node): node is HTMLElement => Boolean(node));
@@ -62,7 +64,8 @@ export function TableOfContents({ headings, articleId, hash, navigate, onActive,
   const index = steps.findIndex(heading => heading.id === reading?.id);
   const unit = questions.length ? '题' : '节';
   function close() { dialog.current?.close(); button.current?.focus(); }
-  const links = (items: Heading[], mobile = false) => items.map(heading => <Link key={heading.id} navigate={navigate} onClick={mobile ? close : undefined} className={[heading.level === 3 ? 'toc-sub' : '', isQuestion(heading) ? 'toc-question' : ''].filter(Boolean).join(' ')} href={articleHref(articleId, heading.id)} aria-current={active === heading.id || !mobile && current?.id === heading.id ? 'location' : undefined}>{headingLabel(heading)}</Link>);
+  const readingHref = (anchor: string) => studyMode ? studyHref({ href: articleHref(articleId, anchor) }) : articleHref(articleId, anchor);
+  const links = (items: Heading[], mobile = false) => items.map(heading => <Link key={heading.id} navigate={navigate} onClick={mobile ? close : undefined} className={[heading.level === 3 ? 'toc-sub' : '', isQuestion(heading) ? 'toc-question' : ''].filter(Boolean).join(' ')} href={readingHref(heading.id)} aria-current={active === heading.id || !mobile && current?.id === heading.id ? 'location' : undefined}>{headingLabel(heading)}</Link>);
   const desktopHeadings = visibleDesktopHeadings(headings, active);
   const countLabel = questions.length ? `${questions.length} 道` : `${headings.filter(heading => heading.level === 2).length} 节`;
   const previous = index > 0 ? steps[index - 1] : undefined, next = index >= 0 && index < steps.length - 1 ? steps[index + 1] : undefined;
@@ -73,7 +76,7 @@ export function TableOfContents({ headings, articleId, hash, navigate, onActive,
     {!collapsed && <nav id="toc-links" className="toc-links desktop-toc-links" ref={nav}>{links(desktopHeadings)}</nav>}
     {!collapsed && current && <div className="toc-study"><small><span>阅读定位</span><strong>{current.id.toUpperCase()}</strong></small><LearningControls itemKey={`q:${current.id.slice(1)}`} learning={learning} compact /></div>}
   </aside>
-  <nav className="mobile-reading-bar" aria-label="手机阅读导航"><button ref={button} onClick={() => dialog.current?.showModal()} aria-haspopup="dialog">☰ 目录 <span>{current?.id.toUpperCase() ?? (index >= 0 ? `${index + 1}/${steps.length}` : '正文')}</span></button>{previous ? <Link href={articleHref(articleId, previous.id)} navigate={navigate}>← 上一{unit}</Link> : <button disabled>← 上一{unit}</button>}{next ? <Link href={articleHref(articleId, next.id)} navigate={navigate}>下一{unit} →</Link> : <button disabled>下一{unit} →</button>}</nav>
+  {!studyMode && <nav className="mobile-reading-bar" aria-label="手机阅读导航"><button ref={button} onClick={() => dialog.current?.showModal()} aria-haspopup="dialog">☰ 目录 <span>{current?.id.toUpperCase() ?? (index >= 0 ? `${index + 1}/${steps.length}` : '正文')}</span></button>{previous ? <Link href={articleHref(articleId, previous.id)} navigate={navigate}>← 上一{unit}</Link> : <button disabled>← 上一{unit}</button>}{next ? <Link href={articleHref(articleId, next.id)} navigate={navigate}>下一{unit} →</Link> : <button disabled>下一{unit} →</button>}</nav>}
   <dialog className="mobile-toc-dialog" ref={dialog} aria-labelledby="mobile-toc-title" onClick={event => { if (event.target === dialog.current) close(); }} onClose={() => button.current?.focus()}><div className="mobile-toc-header"><h2 id="mobile-toc-title">本页目录 <small>{questions.length ? `${questions.length} 道题` : ''}</small></h2><button onClick={close} aria-label="关闭正文目录">关闭 ×</button></div>
     {current && <div className="mobile-current-question"><strong>{current.title}</strong><LearningControls itemKey={`q:${current.id.slice(1)}`} learning={learning} /></div>}
     <nav className="toc-links">{links(headings, true)}</nav>

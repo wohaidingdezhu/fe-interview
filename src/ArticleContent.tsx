@@ -33,7 +33,7 @@ function QuestionPermalink({ href, number }: { href: string; number: string }) {
   const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
   return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
 }
-function ArticleContent({ content, navigate, onHeadings, hash = '', articleId }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string }) {
+function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, studyMode = false }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string; studyMode?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     onHeadings(Array.from(ref.current?.querySelectorAll('h2, h3') || []).map((heading) => {
@@ -65,10 +65,10 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId }:
       return <h2 {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={question![1]} />}</h2>;
     },
     a: ({ node: _node, href, children, ...props }) => {
-      const target = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${href}` : href;
+      const target = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${studyMode ? '&study=1' : ''}${href}` : href;
       return <Link {...props} href={target ?? ''} navigate={navigate}>{children}</Link>;
     },
-  }}>{content}</Markdown>, [content, articleId, navigate]);
+  }}>{content}</Markdown>, [content, articleId, navigate, studyMode]);
   return <div className="article-body" ref={ref}>{markup}</div>;
 }
 

@@ -15,6 +15,10 @@ import { QuestionList } from './QuestionList';
 import { LearningPage } from './LearningPage';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
+import { useStudySession } from './useStudySession';
+import { createStudySession, studyHref } from './study-session';
+import { StudySessionBar } from './StudySessionBar';
+import type { LearningTarget } from './learning-view';
 import { articleIdFromLocation, libraryCounts, publicView } from './library-utils';
 import { NavigationLink as Link } from './NavigationLink';
 const ArticleContent = lazy(() => import('./ArticleContent'));
@@ -28,6 +32,7 @@ if (!baseElement.parentNode) document.head.prepend(baseElement);
 function App() {
   const [location, setLocation] = useState(window.location.href);
   const learning = useLearning();
+  const study = useStudySession();
   const [activeHeading, setActiveHeading] = useState<Heading>();
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -36,6 +41,7 @@ function App() {
   const searchRef = useRef<HTMLInputElement>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const studyDirectoryRef = useRef<HTMLDialogElement>(null);
   const [body, setBody] = useState<{ id: string; content?: string; error?: string }>({ id: '' });
   const [loadAttempt, setLoadAttempt] = useState(0);
   const search = useSearchIndex(query);
@@ -114,6 +120,12 @@ function App() {
     return () => clearTimeout(timer);
   }, [article?.id, body.id, body.content, activeHeading?.id, learning.remember]);
   const link = (href: string, title: string, className?: string) => <Link href={href} className={className} navigate={navigate}>{title}</Link>;
+  function startStudy(targets: LearningTarget[], filters: URLSearchParams, random = false) {
+    const session = createStudySession(targets, filters);
+    study.start(session);
+    navigate(studyHref(targets[random ? Math.floor(Math.random() * targets.length) : 0]));
+  }
+  const inStudy = Boolean(article && params.get('study') === '1');
 
   return <>
     <a className="skip-link" href={`${route.pathname}${route.search}#main`}>跳到正文</a>
@@ -146,8 +158,9 @@ function App() {
       <div className="sidebar-label category-label">按分类浏览</div>
       <nav aria-label="分类导航">{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : 'notes'}`, '全部分类', !category ? 'nav-link active' : 'nav-link')}{categories.map((value) => <div className="category-row" key={value}>{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : 'notes'}&category=${encodeURIComponent(value)}`, value, category === value ? 'nav-link active' : 'nav-link')}<span>{view === 'home' || view === 'questions' ? articles.filter(a => a.category === value).reduce((sum,a) => sum+a.publishedQuestionCount,0) : collection.filter((item) => item.category === value).length}</span></div>)}</nav>
     </aside>
-    <div className={`workspace ${!id ? 'list-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
-      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} /> : view === 'learning' ? <LearningPage learning={learning} navigate={navigate} params={params} /> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} /> : article ? <>
+    {inStudy && <StudySessionBar key={`${id}${route.hash}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} />}
+    <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
+      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} /> : article ? <>
         <nav className="breadcrumb" aria-label="面包屑">{link('?view=notes', '专题与笔记')}<span>/</span>{link(`?view=notes&category=${encodeURIComponent(article.category)}`, article.category)}<span>/</span><b aria-current="page">{article.title}</b></nav>
         <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}{article.questionCount > 0 && <span>共 {article.questionCount} 题 · 已复核 {article.publishedQuestionCount} · 待处理 {article.questionCount - article.publishedQuestionCount}</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.updatedAt ?? article.addedAt}>{article.updatedAt ? `更新 ${article.updatedAt}` : `收录 ${article.addedAt}`}</time>{article.reviewedAt && <time dateTime={article.reviewedAt}>审核 {article.reviewedAt}</time>}</div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
         <ShareButton articleId={article.id} />
@@ -156,13 +169,13 @@ function App() {
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}
         {article.category === 'JavaScript' && <ReaderBoundary key={`playground-${article.id}`}><Suspense fallback={<p role="status">正在加载代码运行工具…</p>}><CodePlayground /></Suspense></ReaderBoundary>}
         {body.id === article.id && body.error ? <p role="alert">{body.error}<button className="text-button" onClick={() => setLoadAttempt((value) => value + 1)}>重新加载正文</button></p>
-          : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} /></Suspense></ReaderBoundary>
+          : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} studyMode={inStudy} /></Suspense></ReaderBoundary>
           : <p role="status">正在加载正文…</p>}
         {relatedArticles.length > 0 && <section className="related-articles" aria-labelledby="related-title"><div className="related-heading"><span>KEEP EXPLORING</span><h2 id="related-title">继续阅读</h2></div><div className="related-grid">{relatedArticles.map((related) => <Link key={related.id} href={articleHref(related.id)} navigate={navigate}><small>{related.category}</small><strong>{related.title}</strong><p>{related.description}</p><span aria-hidden="true">→</span></Link>)}</div></section>}
         <div className="article-end"><span />把读过的内容，变成自己的理解。<span /></div><nav className="pagination" aria-label="上一篇和下一篇">{currentIndex > 0 ? <div><small>← 上一篇</small>{link(articleHref(articles[currentIndex - 1].id), articles[currentIndex - 1].title)}</div> : <div />}{currentIndex < articles.length - 1 && <div><small>下一篇 →</small>{link(articleHref(articles[currentIndex + 1].id), articles[currentIndex + 1].title)}</div>}</nav>
       </> : <div className="not-found"><span className="pill">404</span><h1>这篇内容还不存在</h1><p>链接可能有误，或内容已经移动。</p>{link('?view=notes', '返回专题与笔记 →')}</div>}
       <footer className="page-footer">前端资料库 <span>整理知识 · 沉淀理解</span></footer>
-    </main>{id && article && <TableOfContents key={id} articleId={id} hash={route.hash} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} />}</div>
+    </main>{id && article && <TableOfContents key={id} articleId={id} hash={route.hash} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} studyMode={inStudy} dialogRef={studyDirectoryRef} />}</div>
   </>;
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

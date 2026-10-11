@@ -36,6 +36,8 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   assert.deepEqual(visibleDesktopHeadings([{id:'q1',title:'Q1｜第一题',level:2},{id:'detail',title:'补充',level:3},{id:'q2',title:'Q2｜第二题',level:2}],'q2').map(heading=>heading.id),['q1','q2']);
   const toc=renderToStaticMarkup(createElement(TableOfContents,{headings:[{id:'q1',title:'Q1｜第一题',level:2},{id:'q2',title:'Q2｜第二题',level:2}],articleId:'test',hash:'#q2',navigate(){},onActive(){},learning}));
   assert.match(toc,/<dialog/);assert.match(toc,/aria-haspopup="dialog"/);assert.match(toc,/手机阅读导航/);assert.match(toc,/上一题/);assert.match(toc,/下一题/);assert.match(toc,/\?article=test#q2/);assert.match(toc,/toc-question-number">Q2/);assert.match(toc,/toc-question-title">第二题/);
+  const studyToc=renderToStaticMarkup(createElement(TableOfContents,{headings:[{id:'q1',title:'Q1｜第一题',level:2}],articleId:'test',hash:'#q1',navigate(){},onActive(){},learning,studyMode:true}));
+  assert.match(studyToc,/\?article=test&amp;study=1#q1/);assert.match(studyToc,/<dialog/);assert.doesNotMatch(studyToc,/手机阅读导航/);
   const noteToc=renderToStaticMarkup(createElement(TableOfContents,{headings:articleHeadings,articleId:'note',hash:'',navigate(){},onActive(){},learning}));
   assert.match(noteToc,/上一节/);assert.match(noteToc,/下一节/);assert.doesNotMatch(noteToc,/上一题|下一题/);
   const {QuestionList}=await server.ssrLoadModule('/src/QuestionList.tsx');
