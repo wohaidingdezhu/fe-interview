@@ -59,7 +59,7 @@ export function useSearchIndex(query: string) {
     loadSearchIndex().then((data) => { if (current) setDocuments(data); }, (error: Error) => { if (current) setError(error.message); });
     return () => { current = false; };
   }, [active, documents, attempt]);
-  return { documents, error, loading: active && !documents && !error, retry: () => setAttempt((value) => value + 1) };
+  return { documents, error: active ? error : '', loading: active && !documents && !error, retry: () => setAttempt((value) => value + 1) };
 }
 export function searchArticles(query: string, documents: SearchDocument[] = []) {
   const byId = new Map(articles.map(article => [article.id, article]));

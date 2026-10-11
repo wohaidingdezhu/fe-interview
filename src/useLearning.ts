@@ -11,6 +11,7 @@ export function useLearning() {
     const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) };
     const result = persistLearning(storage, storageKey, current.current, change, recover);
     current.current = result.data; setData(result.data); setError(result.error);
+    return result;
   }, []);
   useEffect(() => {
     try { load(); } catch { setError('本地记录无法读取，请导入备份恢复；新记录仍可在本次访问使用。'); }
@@ -23,7 +24,7 @@ export function useLearning() {
   const update = useCallback((key: string, patch: Partial<Pick<LearningEntry, 'bookmarked' | 'status'>>) => commit(base => ({ ...base, entries: { ...base.entries,
     [key]: { ...(base.entries[key] ?? { bookmarked: false, status: 'unread' }), ...patch, updatedAt: learningTimestamp(base) } } })), [commit]);
   const remember = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => commit(base => ({ ...base, lastRead: { ...position, updatedAt: learningTimestamp(base) } })), [commit]);
-  const restore = useCallback((text: string) => { const incoming = importLearning(text); commit(base => mergeLearning(base, incoming), true); }, [commit]);
+  const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
   const clear = useCallback(() => commit(clearLearning, true), [commit]);
   return { data, update, remember, restore, prune, clear, error };

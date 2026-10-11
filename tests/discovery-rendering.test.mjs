@@ -18,9 +18,17 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   for(const path of ['?view=questions','?view=notes&amp;collection=topics','?view=notes&amp;collection=notes','?view=learning'])assert.ok(home.includes(path));
   assert.doesNotMatch(home,/\?view=resources/);
   const {LearningPage}=await server.ssrLoadModule('/src/LearningPage.tsx');
-  const shelf=renderToStaticMarkup(createElement(LearningPage,{navigate(){},learning:{...learning,data:{version:1,entries:{'q:1':{bookmarked:true,status:'read',updatedAt:'2026-10-09T10:00:00.000Z'}}}}}));
+  const shelf=renderToStaticMarkup(createElement(LearningPage,{navigate(){},params:new URLSearchParams(),learning:{...learning,data:{version:1,entries:{'q:1':{bookmarked:true,status:'read',updatedAt:'2026-10-09T10:00:00.000Z'}}}}}));
   assert.match(shelf,/<button disabled="">清理失效记录<\/button>/);
   assert.match(shelf,/正在加载题目目录/);
+  assert.doesNotMatch(shelf,/整体已读进度/);
+  const {LearningOverview}=await server.ssrLoadModule('/src/LearningOverview.tsx');
+  const overview=renderToStaticMarkup(createElement(LearningOverview,{navigate(){},targets:[{key:'q:1',title:'第一题',category:'React',href:'?article=react#q1'}],data:{version:1,entries:{'q:1':{bookmarked:true,status:'review',updatedAt:'2026-10-11T00:00:00.000Z'}}}}));
+  assert.match(overview,/aria-label="整体已读进度"/);
+  assert.match(overview,/value="0" max="1"/);
+  assert.match(overview,/\?view=learning&amp;filter=review&amp;category=React/);
+  assert.match(overview,/复习 1 条/);
+  assert.doesNotMatch(overview,/学习未读 0/);
   const {TableOfContents,visibleDesktopHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
   const articleHeadings=[{id:'overview',title:'概览',level:2},{id:'prepare',title:'准备工作',level:3},{id:'network',title:'网络调试',level:2},{id:'headers',title:'请求头',level:3}];
   assert.deepEqual(visibleDesktopHeadings(articleHeadings,'headers').map(heading=>heading.id),['overview','network','headers']);
