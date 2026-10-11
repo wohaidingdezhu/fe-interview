@@ -7,7 +7,9 @@ import { LearningOverview } from './LearningOverview';
 import { learningFilters, learningOverview, learningShelf, learningTargets, type LearningTarget } from './learning-view';
 import type { Learning } from './useLearning';
 import type { LearningBatchUndo, LearningStatus } from './learning-utils';
-export function LearningPage({ learning, navigate, params, startStudy }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void }) {
+import { StudyResumeCard } from './StudyResumeCard';
+import type { Study } from './useStudySession';
+export function LearningPage({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const targets = learningTargets(catalog.questions, articles);
@@ -47,6 +49,7 @@ export function LearningPage({ learning, navigate, params, startStudy }: { learn
   }
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
     {learning.error && <p role="alert">{learning.error}</p>}
+    {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && articles.some(a => a.id === last.articleId) && <section className="resume-card"><div><small>上次读到</small><h2>{last.title}</h2></div><Link navigate={navigate} href={articleHref(last.articleId, last.anchor)}>继续阅读 →</Link></section>}
     {catalogReady && <LearningOverview targets={targets} data={learning.data} navigate={navigate} />}
     <div className="learning-backup"><div><strong>记录只保存在当前浏览器</strong><p>换设备时先导出，再在新设备导入。导入会合并记录，同一项保留较新的状态。</p></div><div><button onClick={download}>导出备份</button><button onClick={() => input.current?.click()}>导入备份</button></div><input hidden ref={input} type="file" accept="application/json,.json" onChange={async event => {
@@ -72,6 +75,7 @@ export function LearningPage({ learning, navigate, params, startStudy }: { learn
           <button className="primary-learning-action" onClick={() => begin()}>{result.filter === 'review' ? '开始复习' : '开始学习'} →</button>
           <button onClick={() => begin(true)}>随机学习</button>
           <small>{result.filter === 'review' && !['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? '默认先复习较早标记的内容。' : '从当前筛选结果中选择内容。'}</small>
+          {study?.session && <small>开始学习会替换当前清单，已有阅读标记保留。</small>}
         </div>
         <div>
           <span>本页 {result.items.length} 条</span>

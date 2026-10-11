@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex } from '../src/study-session.ts';
+import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex, moveStudySession, studyResumeTarget, studyProgress, studyDirectory } from '../src/study-session.ts';
 
 const targets = [
   { key: 'q:2', title: 'Q2', category: 'CSS', href: '?article=css#q2' },
@@ -44,4 +44,45 @@ test('非法清单和返回阅读地址被拒绝，返回链接始终为学习�
   assert.throws(() => parseStudySession('{bad'));
   const maliciousQuery = parseStudySession(JSON.stringify({ ...valid, returnSearch: '?view=learning&next=https://evil.invalid/' }));
   assert.ok(maliciousQuery.returnSearch.startsWith('?view=learning&'));
+});
+
+test('旧清单兼容默认位置，新清单保存随机或指定位置并拒绝清单外游标', () => {
+  const legacy = { version: 1, keys: ['q:2', 'q:10'], returnSearch: '?view=learning' };
+  assert.equal(parseStudySession(JSON.stringify(legacy)).currentKey, 'q:2');
+  const selected = createStudySession(targets, new URLSearchParams(), 'a:closure');
+  assert.equal(selected.currentKey, 'a:closure');
+  assert.deepEqual(parseStudySession(JSON.stringify(selected)), selected);
+  for (const key of ['q:999', '__proto__', '', 1, null]) assert.throws(() => parseStudySession(JSON.stringify({ ...legacy, currentKey: key })));
+});
+
+test('更新游标不修改顺序和原对象，重复或清单外导航不写入，结束后不恢复清单', () => {
+  const session = createStudySession(targets, new URLSearchParams('page=2&size=24'));
+  const moved = moveStudySession(session, 'q:10');
+  assert.equal(moved.currentKey, 'q:10');
+  assert.equal(session.currentKey, 'q:2');
+  assert.deepEqual(moved.keys, session.keys);
+  assert.equal(moved.returnSearch, session.returnSearch);
+  assert.strictEqual(moveStudySession(moved, 'q:10'), moved);
+  assert.strictEqual(moveStudySession(moved, 'q:999'), moved);
+  assert.equal(moveStudySession(undefined, 'q:10'), undefined);
+});
+
+test('恢复使用保存位置，内容失效回退到首个有效项目，空清单不生成链接', () => {
+  const session = createStudySession(targets, new URLSearchParams(), 'q:10');
+  assert.equal(studyResumeTarget(session, studyQueue(session, targets)).key, 'q:10');
+  assert.equal(studyResumeTarget(session, studyQueue(session, targets.filter(target => target.key !== 'q:10'))).key, 'q:2');
+  assert.equal(studyResumeTarget(session, []), undefined);
+});
+
+test('清单目录按实际状态计数，组合搜索保留原序号，精确题号与外部记录隔离', () => {
+  const entry = { bookmarked: false, status: 'read', updatedAt: '2026-10-11T00:00:00.000Z' };
+  const data = { version: 1, entries: { 'q:2': entry, 'q:10': { ...entry, status: 'review' }, 'q:999': entry } };
+  assert.deepEqual(studyProgress(targets, data), { total: 3, read: 1, review: 1, unread: 1 });
+  assert.deepEqual(studyProgress([], data), { total: 0, read: 0, review: 0, unread: 0 });
+  const filtered = studyDirectory(targets, data, 'React Q10', 'review');
+  assert.deepEqual(filtered.map(target => [target.key, target.index, target.status]), [['q:10', 1, 'review']]);
+  assert.equal(studyDirectory(targets, data, 'Q1', '').length, 0);
+  assert.equal(studyDirectory(targets, data, 'Q10', 'unread').length, 0);
+  assert.equal(studyDirectory(targets, data, 'Q10', '').length, 1);
+  assert.deepEqual(studyDirectory(targets, data, '', 'unread').map(target => target.key), ['a:closure']);
 });
