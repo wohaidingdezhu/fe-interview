@@ -24,6 +24,27 @@ export function createStudySession(targets: LearningTarget[], params: URLSearchP
   return parseStudySession(JSON.stringify({ version: 1, keys: targets.map(target => target.key), returnSearch: `?${back}`, currentKey }));
 }
 
+export function shuffleStudyTargets(targets: LearningTarget[], random = Math.random) {
+  const shuffled = [...targets];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+export function studyQuestion(route: URL) {
+  const anchor = route.searchParams.get('question') || route.hash.slice(1);
+  return /^q[1-9]\d*$/.test(anchor) ? anchor : '';
+}
+
+export function readingInStudy(session: StudySession | undefined, position: { articleId: string; anchor: string } | undefined) {
+  if (!session || !position) return false;
+  if (session.keys.includes(`a:${position.articleId}`)) return true;
+  if (/^q[1-9]\d*$/.test(position.anchor)) return session.keys.includes(`q:${position.anchor.slice(1)}`);
+  return false;
+}
+
 export function moveStudySession(session: StudySession | undefined, key: string) {
   return !session || !session.keys.includes(key) || session.currentKey === key ? session : { ...session, currentKey: key };
 }
@@ -50,9 +71,11 @@ export function studyQueue(session: StudySession, targets: LearningTarget[]) {
   return session.keys.flatMap(key => { const target = byKey.get(key); return target ? [target] : []; });
 }
 
-export function studyHref(target: Pick<LearningTarget, 'href'>) {
+export function studyHref(target: Pick<LearningTarget, 'href'>, question = '') {
   const url = new URL(target.href, 'https://study.local/');
   url.searchParams.set('study', '1');
+  const anchor = /^#q[1-9]\d*$/.test(url.hash) ? url.hash.slice(1) : question;
+  if (anchor) url.searchParams.set('question', anchor);
   return `${url.search}${url.hash}`;
 }
 
@@ -60,6 +83,6 @@ export function studyIndex(queue: LearningTarget[], route: URL) {
   const articleId = articleIdFromLocation(route.pathname, route.search);
   return queue.findIndex(target => {
     const url = new URL(target.href, 'https://study.local/');
-    return url.searchParams.get('article') === articleId && (!target.key.startsWith('q:') || route.hash === url.hash);
+    return url.searchParams.get('article') === articleId && (!target.key.startsWith('q:') || studyQuestion(route) === url.hash.slice(1));
   });
 }

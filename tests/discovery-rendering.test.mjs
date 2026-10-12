@@ -29,6 +29,9 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   assert.match(overview,/\?view=learning&amp;filter=review&amp;category=React/);
   assert.match(overview,/复习 1 条/);
   assert.doesNotMatch(overview,/学习未读 0/);
+  const {StudySummary}=await server.ssrLoadModule('/src/StudySummary.tsx');
+  const summary=renderToStaticMarkup(createElement(StudySummary,{queue:[{key:'q:1'},{key:'q:2'},{key:'q:3'}],learning:{...learning,data:{version:1,entries:{'q:1':{status:'read'},'q:2':{status:'review'}}}},study:{session:{returnSearch:'?view=questions'}},navigate(){},onClose(){}}));
+  assert.match(summary,/继续剩余 1 项未读/);assert.match(summary,/复习 1 项/);assert.match(summary,/结束清单并返回列表/);assert.match(summary,/跳过的内容不会自动标记已读/);
   const {TableOfContents,visibleDesktopHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
   const articleHeadings=[{id:'overview',title:'概览',level:2},{id:'prepare',title:'准备工作',level:3},{id:'network',title:'网络调试',level:2},{id:'headers',title:'请求头',level:3}];
   assert.deepEqual(visibleDesktopHeadings(articleHeadings,'headers').map(heading=>heading.id),['overview','network','headers']);
@@ -37,7 +40,7 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   const toc=renderToStaticMarkup(createElement(TableOfContents,{headings:[{id:'q1',title:'Q1｜第一题',level:2},{id:'q2',title:'Q2｜第二题',level:2}],articleId:'test',hash:'#q2',navigate(){},onActive(){},learning}));
   assert.match(toc,/<dialog/);assert.match(toc,/aria-haspopup="dialog"/);assert.match(toc,/手机阅读导航/);assert.match(toc,/上一题/);assert.match(toc,/下一题/);assert.match(toc,/\?article=test#q2/);assert.match(toc,/toc-question-number">Q2/);assert.match(toc,/toc-question-title">第二题/);
   const studyToc=renderToStaticMarkup(createElement(TableOfContents,{headings:[{id:'q1',title:'Q1｜第一题',level:2}],articleId:'test',hash:'#q1',navigate(){},onActive(){},learning,studyMode:true}));
-  assert.match(studyToc,/\?article=test&amp;study=1#q1/);assert.match(studyToc,/<dialog/);assert.doesNotMatch(studyToc,/手机阅读导航/);
+  assert.match(studyToc,/\?article=test&amp;study=1&amp;question=q1#q1/);assert.match(studyToc,/<dialog/);assert.doesNotMatch(studyToc,/手机阅读导航/);
   const noteToc=renderToStaticMarkup(createElement(TableOfContents,{headings:articleHeadings,articleId:'note',hash:'',navigate(){},onActive(){},learning}));
   assert.match(noteToc,/上一节/);assert.match(noteToc,/下一节/);assert.doesNotMatch(noteToc,/上一题|下一题/);
   const {QuestionList}=await server.ssrLoadModule('/src/QuestionList.tsx');

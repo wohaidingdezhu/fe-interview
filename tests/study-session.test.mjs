@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex, moveStudySession, studyResumeTarget, studyProgress, studyDirectory } from '../src/study-session.ts';
+import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex, moveStudySession, studyResumeTarget, studyProgress, studyDirectory, shuffleStudyTargets, readingInStudy } from '../src/study-session.ts';
 
 const targets = [
   { key: 'q:2', title: 'Q2', category: 'CSS', href: '?article=css#q2' },
@@ -30,7 +30,7 @@ test('清单只解析当前目录中的键，忽略旧标题和外部链接', ()
 });
 
 test('地址保留题号且标明清单模式，跨文章与静态子路径正确定位', () => {
-  assert.equal(studyHref(targets[0]), '?article=css&study=1#q2');
+  assert.equal(studyHref(targets[0]), '?article=css&study=1&question=q2#q2');
   assert.equal(studyHref(targets[2]), '?article=closure&study=1');
   assert.equal(studyIndex(targets, new URL('https://example.com/?article=css&study=1#q10')), -1);
   assert.equal(studyIndex(targets, new URL('https://example.com/articles/react/?study=1#q10')), 1);
@@ -97,4 +97,31 @@ test('清单目录按实际状态计数，组合搜索保留原序号，精确�
   assert.equal(studyDirectory(targets, data, 'Q10', 'unread').length, 0);
   assert.equal(studyDirectory(targets, data, 'Q10', '').length, 1);
   assert.deepEqual(studyDirectory(targets, data, '', 'unread').map(target => target.key), ['a:closure']);
+});
+
+
+test('随机学习打乱完整清单，从首项开始且不修改原清单', () => {
+  const before = targets.map(target => target.key);
+  const shuffled = shuffleStudyTargets(targets, () => 0);
+  assert.notDeepEqual(shuffled.map(target => target.key), before);
+  assert.deepEqual([...shuffled.map(target => target.key)].sort(), [...before].sort());
+  assert.deepEqual(targets.map(target => target.key), before);
+  const session = createStudySession(shuffled, new URLSearchParams('view=questions'));
+  assert.equal(session.currentKey, shuffled[0].key);
+  assert.equal(studyQueue(session, targets).length, targets.length);
+});
+
+test('单题的小节定位不改变清单标记对象，旧题号链接仍可用', () => {
+  const href = studyHref({ href: '?article=css#示例' }, 'q2');
+  assert.equal(studyIndex(targets, new URL(href, 'https://example.com')), 0);
+  assert.equal(studyIndex(targets, new URL('?article=css&study=1#q2', 'https://example.com')), 0);
+  assert.equal(studyIndex(targets, new URL('?article=css&question=q999#q2', 'https://example.com')), -1);
+});
+
+test('同一学习内容只显示清单继续入口，自由阅读的其他内容保留入口', () => {
+  const session = createStudySession(targets, new URLSearchParams());
+  assert.equal(readingInStudy(session, {articleId:'css',anchor:'q2'}), true);
+  assert.equal(readingInStudy(session, {articleId:'closure',anchor:'示例'}), true);
+  assert.equal(readingInStudy(session, {articleId:'css',anchor:'q3'}), false);
+  assert.equal(readingInStudy(undefined, {articleId:'css',anchor:'q2'}), false);
 });

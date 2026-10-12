@@ -33,3 +33,20 @@ test('题目渲染保留旧标题锚点并增加稳定链接，代码里的题�
     assert.equal(attr(image, 'decoding'), 'async');
   } finally { await server.close(); }
 });
+
+test('单题学习只显示选中题，保留小节、代码和引用定义，专题阅读不受影响', async () => {
+  const server = await createServer({configFile:false,cacheDir:'.reports/vite-ssr-test-cache',optimizeDeps:{noDiscovery:true,include:[]},plugins:[react()],server:{middlewareMode:true,hmr:false},appType:'custom'});
+  try {
+    const {default:ArticleContent}=await server.ssrLoadModule('/src/ArticleContent.tsx');
+    const content='## Q1｜第一题\n不要显示的答案\n\n## Q2｜第二题\n保留的答案 [来源][source]\n\n### 示例\n[跳到示例](#示例)\n\n```md\n## Q3｜只是代码\n```\n\n## Q4｜第四题\n其他答案\n\n[source]: https://example.com/source';
+    const props={content,articleId:'test',navigate(){},onHeadings(){}};
+    const selected=renderToStaticMarkup(createElement(ArticleContent,{...props,question:'q2',studyMode:true}));
+    assert.doesNotMatch(selected,/不要显示的答案|其他答案|id="q1"|id="q4"/);
+    assert.match(selected,/保留的答案/);assert.match(selected,/https:\/\/example.com\/source/);
+    assert.ok(selected.includes(`question=q2#${encodeURIComponent('示例')}`));assert.match(selected,/只是代码/);
+    const all=renderToStaticMarkup(createElement(ArticleContent,props));
+    assert.match(all,/不要显示的答案/);assert.match(all,/其他答案/);
+    const missing=renderToStaticMarkup(createElement(ArticleContent,{...props,question:'q999'}));
+    assert.match(missing,/未找到这道题/);assert.doesNotMatch(missing,/保留的答案/);
+  } finally {await server.close();}
+});

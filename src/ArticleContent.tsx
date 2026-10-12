@@ -3,6 +3,8 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeCodeHighlight from './rehype-code-highlight';
+import remarkStudyQuestion from './remark-study-question';
+import { studyHref } from './study-session';
 import { NavigationLink as Link } from './NavigationLink';
 export type Heading = { id: string; title: string; level: number };
 function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
@@ -33,14 +35,14 @@ function QuestionPermalink({ href, number }: { href: string; number: string }) {
   const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
   return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
 }
-function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, studyMode = false }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string; studyMode?: boolean }) {
+function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     onHeadings(Array.from(ref.current?.querySelectorAll('h2, h3') || []).map((heading) => {
       const copy = heading.cloneNode(true) as HTMLElement; copy.querySelector('.question-link-control')?.remove();
       return { id: heading.querySelector('.question-anchor')?.id || heading.id, title: copy.textContent?.trim() || '', level: Number(heading.tagName.slice(1)) };
     }));
-  }, [content, onHeadings]);
+  }, [content, question, onHeadings]);
   useLayoutEffect(() => {
     if (!hash) return;
     // 下一任务再定位，避免后台标签页暂停 requestAnimationFrame 时深链接一直停在页首。
@@ -53,8 +55,8 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, s
       } catch { /* 无效编码不影响阅读。 */ }
     }, 0);
     return () => clearTimeout(timer);
-  }, [content, hash]);
-  const markup = useMemo(() => <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug, rehypeCodeHighlight]} components={{
+  }, [content, hash, question]);
+  const markup = useMemo(() => <Markdown remarkPlugins={[remarkGfm, [remarkStudyQuestion, { question }]]} rehypePlugins={[rehypeSlug, rehypeCodeHighlight]} components={{
     pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
     img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
     h2: ({ node, children, ...props }) => {
@@ -65,10 +67,11 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, s
       return <h2 {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={question![1]} />}</h2>;
     },
     a: ({ node: _node, href, children, ...props }) => {
-      const target = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${studyMode ? '&study=1' : ''}${href}` : href;
+      const localHref = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${href}` : href;
+      const target = studyMode && href?.startsWith('#') && localHref ? studyHref({ href: localHref }, question) : localHref;
       return <Link {...props} href={target ?? ''} navigate={navigate}>{children}</Link>;
     },
-  }}>{content}</Markdown>, [content, articleId, navigate, studyMode]);
+  }}>{content}</Markdown>, [content, articleId, navigate, studyMode, question]);
   return <div className="article-body" ref={ref}>{markup}</div>;
 }
 

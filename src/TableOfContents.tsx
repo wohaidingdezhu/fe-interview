@@ -31,7 +31,7 @@ function headingLabel(heading: Heading) {
   return <><span className="toc-question-number">{number}</span><span className="toc-question-title">{title || heading.title}</span></>;
 }
 
-export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; dialogRef?: RefObject<HTMLDialogElement | null> }) {
+export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, question, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; question?: string; dialogRef?: RefObject<HTMLDialogElement | null> }) {
   const [active, setActive] = useState(''), [collapsed, setCollapsed] = useState(false);
   const nav = useRef<HTMLElement>(null), ownDialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
   const dialog = dialogRef ?? ownDialog;
@@ -64,7 +64,7 @@ export function TableOfContents({ headings, articleId, hash, navigate, onActive,
   const index = steps.findIndex(heading => heading.id === reading?.id);
   const unit = questions.length ? '题' : '节';
   function close() { dialog.current?.close(); button.current?.focus(); }
-  const readingHref = (anchor: string) => studyMode ? studyHref({ href: articleHref(articleId, anchor) }) : articleHref(articleId, anchor);
+  const readingHref = (anchor: string) => studyMode ? studyHref({ href: articleHref(articleId, anchor) }, question) : articleHref(articleId, anchor);
   const links = (items: Heading[], mobile = false) => items.map(heading => <Link key={heading.id} navigate={navigate} onClick={mobile ? close : undefined} className={[heading.level === 3 ? 'toc-sub' : '', isQuestion(heading) ? 'toc-question' : ''].filter(Boolean).join(' ')} href={readingHref(heading.id)} aria-current={active === heading.id || !mobile && current?.id === heading.id ? 'location' : undefined}>{headingLabel(heading)}</Link>);
   const desktopHeadings = visibleDesktopHeadings(headings, active);
   const countLabel = questions.length ? `${questions.length} 道` : `${headings.filter(heading => heading.level === 2).length} 节`;
