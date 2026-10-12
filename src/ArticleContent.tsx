@@ -35,14 +35,16 @@ function QuestionPermalink({ href, number }: { href: string; number: string }) {
   const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
   return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
 }
-function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) {
+function ArticleContent({ content, navigate, onHeadings, onReady, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; onReady?: (ready: boolean) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     onHeadings(Array.from(ref.current?.querySelectorAll('h1, h2, h3') || []).map((heading) => {
       const copy = heading.cloneNode(true) as HTMLElement; copy.querySelector('.question-link-control')?.remove();
       return { id: heading.querySelector('.question-anchor')?.id || heading.id, title: copy.textContent?.trim() || '', level: Number(heading.tagName.slice(1)) };
     }));
-  }, [content, question, onHeadings]);
+    onReady?.(true);
+    return () => onReady?.(false);
+  }, [content, question, studyMode, onHeadings, onReady]);
   useLayoutEffect(() => {
     if (!hash) return;
     // 下一任务再定位，避免后台标签页暂停 requestAnimationFrame 时深链接一直停在页首。
@@ -64,7 +66,7 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, s
       const matchedQuestion = first?.type === 'text' ? /^Q([1-9]\d*)｜/.exec(first.value) : null;
       const anchor = matchedQuestion ? `q${matchedQuestion[1]}` : undefined;
       const href = articleId ? `?article=${encodeURIComponent(articleId)}#${anchor}` : `#${anchor}`;
-      const Heading = studyMode && anchor === question ? 'h1' : 'h2';
+      const Heading = studyMode && anchor && anchor === question ? 'h1' : 'h2';
       return <Heading {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={matchedQuestion![1]} />}</Heading>;
     },
     a: ({ node: _node, href, children, ...props }) => {

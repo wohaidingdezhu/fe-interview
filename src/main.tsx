@@ -16,7 +16,7 @@ import { LearningPage } from './LearningPage';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
 import { useStudySession } from './useStudySession';
-import { createStudySession, studyHref, shuffleStudyTargets, studyQuestion } from './study-session';
+import { createStudySession, studyHref, shuffleStudyTargets, studyQuestion, skipToContentHref } from './study-session';
 import { StudySessionBar } from './StudySessionBar';
 import type { LearningTarget } from './learning-view';
 import { articleIdFromLocation, libraryCounts, publicView } from './library-utils';
@@ -43,6 +43,7 @@ function App() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const studyDirectoryRef = useRef<HTMLDialogElement>(null);
   const [body, setBody] = useState<{ id: string; content?: string; error?: string }>({ id: '' });
+  const [rendered, setRendered] = useState<{ body: typeof body; question: string; studyMode: boolean }>();
   const [loadAttempt, setLoadAttempt] = useState(0);
   const search = useSearchIndex(query);
   const route = new URL(location);
@@ -60,6 +61,13 @@ function App() {
   const category = article?.category || normalizeCategory(params.get('category') || '');
   const noteResults = query.trim() ? searchArticles(query, search.documents) : [];
   const focusedHeading = question ? toc.find(heading => heading.id === question) : undefined;
+  const onReaderReady = useCallback((ready: boolean) => {
+    setRendered(ready ? { body, question, studyMode: inStudy } : undefined);
+  }, [body, question, inStudy]);
+  const onReaderError = useCallback(() => setRendered(undefined), []);
+  const readingReady = body.id === id && body.content !== undefined && rendered?.body === body
+    && rendered.question === question && rendered.studyMode === inStudy
+    && (!question || toc.some(heading => heading.id === question));
 
   const navigate = useCallback((href: string, replace = false) => {
     const target = new URL(href, document.baseURI);
@@ -74,6 +82,7 @@ function App() {
     }
     if (window.location.hash) {
       try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView(); } catch { /* invalid anchor */ }
+      if (window.location.hash === '#main') document.getElementById('main')?.focus({ preventScroll: true });
     }
   }, []);
   useEffect(() => {
@@ -133,7 +142,7 @@ function App() {
   }
 
   return <>
-    <a className="skip-link" href={`${route.pathname}${route.search}#main`}>跳到正文</a>
+    <Link className="skip-link" href={skipToContentHref(route)} navigate={navigate}>跳到正文</Link>
     <header className="header">
       <Link className="brand" href="?view=home" navigate={navigate}><span className="brand-icon" aria-hidden="true">&lt;/&gt;</span><span>前端资料库<small>FE LIBRARY</small></span></Link>
       <div className="search-wrap" ref={searchWrapRef} onFocus={() => setSearchOpen(true)} onBlur={event => {
@@ -163,7 +172,7 @@ function App() {
       <div className="sidebar-label category-label">按分类浏览</div>
       <nav aria-label="分类导航">{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : 'notes'}`, '全部分类', !category ? 'nav-link active' : 'nav-link')}{categories.map((value) => <div className="category-row" key={value}>{link(`?view=${view === 'questions' || view === 'home' ? 'questions' : 'notes'}&category=${encodeURIComponent(value)}`, value, category === value ? 'nav-link active' : 'nav-link')}<span>{view === 'home' || view === 'questions' ? articles.filter(a => a.category === value).reduce((sum,a) => sum+a.publishedQuestionCount,0) : collection.filter((item) => item.category === value).length}</span></div>)}</nav>
     </aside>
-    {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={body.id === id && body.content !== undefined && (!question || toc.some(heading => heading.id === question))} />}
+    {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
@@ -172,7 +181,7 @@ function App() {
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}
         {!inStudy && article.category === 'JavaScript' && <ReaderBoundary key={`playground-${article.id}`}><Suspense fallback={<p role="status">正在加载代码运行工具…</p>}><CodePlayground /></Suspense></ReaderBoundary>}
         {body.id === article.id && body.error ? <p role="alert">{body.error}<button className="text-button" onClick={() => setLoadAttempt((value) => value + 1)}>重新加载正文</button></p>
-          : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} studyMode={inStudy} question={question || (inStudy && article.questionCount ? "missing" : undefined)} /></Suspense></ReaderBoundary>
+          : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id} onError={onReaderError}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} onReady={onReaderReady} studyMode={inStudy} question={question || (inStudy && article.questionCount ? "missing" : undefined)} /></Suspense></ReaderBoundary>
           : <p role="status">正在加载正文…</p>}
         {!inStudy && relatedArticles.length > 0 && <section className="related-articles" aria-labelledby="related-title"><div className="related-heading"><span>KEEP EXPLORING</span><h2 id="related-title">继续阅读</h2></div><div className="related-grid">{relatedArticles.map((related) => <Link key={related.id} href={articleHref(related.id)} navigate={navigate}><small>{related.category}</small><strong>{related.title}</strong><p>{related.description}</p><span aria-hidden="true">→</span></Link>)}</div></section>}
         <div className="article-end"><span />把读过的内容，变成自己的理解。<span /></div>{!inStudy && <nav className="pagination" aria-label="上一篇和下一篇">{currentIndex > 0 ? <div><small>← 上一篇</small>{link(articleHref(articles[currentIndex - 1].id), articles[currentIndex - 1].title)}</div> : <div />}{currentIndex < articles.length - 1 && <div><small>下一篇 →</small>{link(articleHref(articles[currentIndex + 1].id), articles[currentIndex + 1].title)}</div>}</nav>}

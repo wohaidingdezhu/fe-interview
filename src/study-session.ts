@@ -38,6 +38,14 @@ export function studyQuestion(route: URL) {
   return /^q[1-9]\d*$/.test(anchor) ? anchor : '';
 }
 
+export function skipToContentHref(route: URL) {
+  const target = new URL(route.href);
+  const question = studyQuestion(route);
+  if (route.searchParams.get('study') === '1' && question) target.searchParams.set('question', question);
+  target.hash = 'main';
+  return `${target.pathname}${target.search}${target.hash}`;
+}
+
 export function readingInStudy(session: StudySession | undefined, position: { articleId: string; anchor: string } | undefined) {
   if (!session || !position) return false;
   if (session.keys.includes(`a:${position.articleId}`)) return true;

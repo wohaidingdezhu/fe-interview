@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex, moveStudySession, studyResumeTarget, studyProgress, studyDirectory, shuffleStudyTargets, readingInStudy } from '../src/study-session.ts';
+import { createStudySession, parseStudySession, studyQueue, studyHref, studyIndex, moveStudySession, studyResumeTarget, studyProgress, studyDirectory, shuffleStudyTargets, readingInStudy, skipToContentHref, studyQuestion } from '../src/study-session.ts';
 
 const targets = [
   { key: 'q:2', title: 'Q2', category: 'CSS', href: '?article=css#q2' },
@@ -124,4 +124,21 @@ test('同一学习内容只显示清单继续入口，自由阅读的其他内�
   assert.equal(readingInStudy(session, {articleId:'closure',anchor:'示例'}), true);
   assert.equal(readingInStudy(session, {articleId:'css',anchor:'q3'}), false);
   assert.equal(readingInStudy(undefined, {articleId:'css',anchor:'q2'}), false);
+});
+
+test('跳到正文保留旧学习题号、清单位置和静态路径，不修改原链接', () => {
+  for (const href of ['/?article=css&study=1#q2', '/articles/css/?study=1#q2', '/?article=css&study=1&question=q2#example']) {
+    const route = new URL(href, 'https://example.com');
+    const before = route.href;
+    const destination = new URL(skipToContentHref(route), route);
+    assert.equal(destination.hash, '#main');
+    assert.equal(destination.pathname, route.pathname);
+    assert.equal(studyQuestion(destination), 'q2');
+    assert.equal(studyIndex(targets, destination), 0);
+    assert.equal(route.href, before);
+  }
+  assert.equal(skipToContentHref(new URL('https://example.com/?article=closure&study=1')), '/?article=closure&study=1#main');
+  assert.equal(skipToContentHref(new URL('https://example.com/?article=css#q2')), '/?article=css#main');
+  assert.equal(skipToContentHref(new URL('https://example.com/?view=questions&page=2')), '/?view=questions&page=2#main');
+  assert.equal(skipToContentHref(new URL('https://example.com/?article=css&study=1&question=q10#q2')), '/?article=css&study=1&question=q10#main');
 });

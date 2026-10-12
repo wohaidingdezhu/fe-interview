@@ -49,5 +49,7 @@ test('单题学习只显示选中题，保留小节、代码和引用定义，�
     assert.match(all,/不要显示的答案/);assert.match(all,/其他答案/);assert.match(all,/<h2[^>]*>.*Q2｜第二题.*<\/h2>/);
     const missing=renderToStaticMarkup(createElement(ArticleContent,{...props,question:'q999'}));
     assert.match(missing,/未找到这道题/);assert.doesNotMatch(missing,/保留的答案/);
+    const note=renderToStaticMarkup(createElement(ArticleContent,{...props,content:'## 普通章节\n\n笔记正文',studyMode:true}));
+    assert.match(note,/<h2[^>]*>普通章节<\/h2>/);assert.doesNotMatch(note,/<h1/);
   } finally {await server.close();}
 });
