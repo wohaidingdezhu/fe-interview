@@ -38,7 +38,7 @@ function QuestionPermalink({ href, number }: { href: string; number: string }) {
 function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    onHeadings(Array.from(ref.current?.querySelectorAll('h2, h3') || []).map((heading) => {
+    onHeadings(Array.from(ref.current?.querySelectorAll('h1, h2, h3') || []).map((heading) => {
       const copy = heading.cloneNode(true) as HTMLElement; copy.querySelector('.question-link-control')?.remove();
       return { id: heading.querySelector('.question-anchor')?.id || heading.id, title: copy.textContent?.trim() || '', level: Number(heading.tagName.slice(1)) };
     }));
@@ -50,7 +50,7 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, s
       try {
         const anchor = document.getElementById(decodeURIComponent(hash.slice(1)));
         anchor?.scrollIntoView({ behavior: 'instant' });
-        const heading = anchor?.closest('h2, h3') ?? anchor;
+        const heading = anchor?.closest('h1, h2, h3') ?? anchor;
         if (heading instanceof HTMLElement) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
       } catch { /* 无效编码不影响阅读。 */ }
     }, 0);
@@ -61,10 +61,11 @@ function ArticleContent({ content, navigate, onHeadings, hash = '', articleId, s
     img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
     h2: ({ node, children, ...props }) => {
       const first = node?.children[0];
-      const question = first?.type === 'text' ? /^Q([1-9]\d*)｜/.exec(first.value) : null;
-      const anchor = question ? `q${question[1]}` : undefined;
+      const matchedQuestion = first?.type === 'text' ? /^Q([1-9]\d*)｜/.exec(first.value) : null;
+      const anchor = matchedQuestion ? `q${matchedQuestion[1]}` : undefined;
       const href = articleId ? `?article=${encodeURIComponent(articleId)}#${anchor}` : `#${anchor}`;
-      return <h2 {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={question![1]} />}</h2>;
+      const Heading = studyMode && anchor === question ? 'h1' : 'h2';
+      return <Heading {...props}>{anchor && <span id={anchor} className="question-anchor" aria-hidden="true" />}{children}{anchor && <QuestionPermalink href={href} number={matchedQuestion![1]} />}</Heading>;
     },
     a: ({ node: _node, href, children, ...props }) => {
       const localHref = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${href}` : href;

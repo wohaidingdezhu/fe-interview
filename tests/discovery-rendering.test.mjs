@@ -32,6 +32,13 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   const {StudySummary}=await server.ssrLoadModule('/src/StudySummary.tsx');
   const summary=renderToStaticMarkup(createElement(StudySummary,{queue:[{key:'q:1'},{key:'q:2'},{key:'q:3'}],learning:{...learning,data:{version:1,entries:{'q:1':{status:'read'},'q:2':{status:'review'}}}},study:{session:{returnSearch:'?view=questions'}},navigate(){},onClose(){}}));
   assert.match(summary,/继续剩余 1 项未读/);assert.match(summary,/复习 1 项/);assert.match(summary,/结束清单并返回列表/);assert.match(summary,/跳过的内容不会自动标记已读/);
+  const {ArticleHeader}=await server.ssrLoadModule('/src/ArticleHeader.tsx');
+  const headerArticle={id:'interview-html-css',title:'HTML + CSS 面试题',category:'HTML + CSS',description:'收录 Q1–Q39 的参考答案、原理说明与配图。',kind:'知识文章',tags:['HTML','CSS','面试'],status:'published',questionCount:39,publishedQuestionCount:39,contentLength:9000,addedAt:'2026-10-08',updatedAt:'2026-10-09',reviewedAt:'2026-10-09'};
+  const focusedHeader=renderToStaticMarkup(createElement(ArticleHeader,{article:headerArticle,navigate(){},study:{question:'q5',returnHref:'?view=questions&page=2'}}));
+  assert.match(focusedHeader,/study-article-header/);assert.match(focusedHeader,/单题学习/);assert.match(focusedHeader,/Q5/);assert.match(focusedHeader,/来源专题/);assert.match(focusedHeader,/HTML \+ CSS 面试题/);assert.match(focusedHeader,/articles\/interview-html-css\/#q5/);assert.match(focusedHeader,/复制题目链接/);
+  assert.doesNotMatch(focusedHeader,/共 39 题|分钟阅读|收录 Q1–Q39/);
+  const normalHeader=renderToStaticMarkup(createElement(ArticleHeader,{article:headerArticle,navigate(){}}));
+  assert.match(normalHeader,/共 39 题/);assert.match(normalHeader,/20 分钟阅读/);assert.match(normalHeader,/收录 Q1–Q39/);assert.match(normalHeader,/复制文章链接/);
   const {TableOfContents,visibleDesktopHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
   const articleHeadings=[{id:'overview',title:'概览',level:2},{id:'prepare',title:'准备工作',level:3},{id:'network',title:'网络调试',level:2},{id:'headers',title:'请求头',level:3}];
   assert.deepEqual(visibleDesktopHeadings(articleHeadings,'headers').map(heading=>heading.id),['overview','network','headers']);

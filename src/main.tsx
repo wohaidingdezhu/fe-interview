@@ -9,7 +9,7 @@ import { normalizeCategory } from './categories';
 import './style.css';
 import './discovery.css';
 import siteConfig from '../site.config.json';
-import { ShareButton } from './ShareButton';
+import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
 import { QuestionList } from './QuestionList';
 import { LearningPage } from './LearningPage';
@@ -59,6 +59,7 @@ function App() {
   const categories = [...new Set(collection.map((item) => item.category))];
   const category = article?.category || normalizeCategory(params.get('category') || '');
   const noteResults = query.trim() ? searchArticles(query, search.documents) : [];
+  const focusedHeading = question ? toc.find(heading => heading.id === question) : undefined;
 
   const navigate = useCallback((href: string, replace = false) => {
     const target = new URL(href, document.baseURI);
@@ -90,9 +91,9 @@ function App() {
     return () => { window.removeEventListener('popstate', onPopState); window.removeEventListener('hashchange', onPopState); window.removeEventListener('keydown', onKey); };
   }, []);
   useEffect(() => {
-    const title = id ? article?.title || '笔记未找到' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', article: '阅读文章' }[view] || '首页');
+    const title = id ? focusedHeading?.title || article?.title || '笔记未找到' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', article: '阅读文章' }[view] || '首页');
     document.title = `${title} · 前端资料库`;
-    const description = article?.description || '按题查找、按主题学习，收藏值得反复阅读的前端知识。';
+    const description = focusedHeading && article ? `${focusedHeading.title}，来自《${article.title}》。` : article?.description || '按题查找、按主题学习，收藏值得反复阅读的前端知识。';
     for (const selector of ['meta[name=description]', 'meta[property="og:description"]']) document.querySelector(selector)?.setAttribute('content', description);
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
     const canonical = new URL(article ? `articles/${article.id}/` : './', siteConfig.url).href;
@@ -107,7 +108,7 @@ function App() {
       if (!node.parentNode) document.head.append(node);
     } else structured?.remove();
 
-  }, [article, id, view]);
+  }, [article, id, view, focusedHeading?.title]);
   useEffect(() => {
     setToc([]); setActiveHeading(undefined);
     if (!article) return;
@@ -165,11 +166,8 @@ function App() {
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={body.id === id && body.content !== undefined && (!question || toc.some(heading => heading.id === question))} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
-        <nav className="breadcrumb" aria-label="面包屑">{link('?view=notes', '专题与笔记')}<span>/</span>{link(`?view=notes&category=${encodeURIComponent(article.category)}`, article.category)}<span>/</span><b aria-current="page">{article.title}</b></nav>
-        <div className="article-meta"><span className="pill">{article.kind}</span>{article.status === 'draft' && <span className="pill draft-label">草稿 · 仅本地预览</span>}{article.questionCount > 0 && <span>共 {article.questionCount} 题 · 已复核 {article.publishedQuestionCount} · 待处理 {article.questionCount - article.publishedQuestionCount}</span>}<span>约 {Math.max(1, Math.ceil(article.contentLength / 450))} 分钟阅读</span><time dateTime={article.updatedAt ?? article.addedAt}>{article.updatedAt ? `更新 ${article.updatedAt}` : `收录 ${article.addedAt}`}</time>{article.reviewedAt && <time dateTime={article.reviewedAt}>审核 {article.reviewedAt}</time>}</div><h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
-        <ShareButton articleId={article.id} />
-        {inStudy && <p className="study-reading-note">{question ? `当前仅显示 ${question.toUpperCase()}。` : "当前为清单阅读。"}{link(`?article=${article.id}${question ? `#${question}` : ""}`, "查看完整专题（暂停学习） →")}</p>}
-        {!article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
+        <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
+        {!inStudy && !article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}
         {!inStudy && article.category === 'JavaScript' && <ReaderBoundary key={`playground-${article.id}`}><Suspense fallback={<p role="status">正在加载代码运行工具…</p>}><CodePlayground /></Suspense></ReaderBoundary>}

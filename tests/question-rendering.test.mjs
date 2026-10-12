@@ -43,9 +43,10 @@ test('单题学习只显示选中题，保留小节、代码和引用定义，�
     const selected=renderToStaticMarkup(createElement(ArticleContent,{...props,question:'q2',studyMode:true}));
     assert.doesNotMatch(selected,/不要显示的答案|其他答案|id="q1"|id="q4"/);
     assert.match(selected,/保留的答案/);assert.match(selected,/https:\/\/example.com\/source/);
+    assert.match(selected,/<h1[^>]*>.*Q2｜第二题.*<\/h1>/);assert.doesNotMatch(selected,/<h2[^>]*>.*Q2｜第二题/);
     assert.ok(selected.includes(`question=q2#${encodeURIComponent('示例')}`));assert.match(selected,/只是代码/);
     const all=renderToStaticMarkup(createElement(ArticleContent,props));
-    assert.match(all,/不要显示的答案/);assert.match(all,/其他答案/);
+    assert.match(all,/不要显示的答案/);assert.match(all,/其他答案/);assert.match(all,/<h2[^>]*>.*Q2｜第二题.*<\/h2>/);
     const missing=renderToStaticMarkup(createElement(ArticleContent,{...props,question:'q999'}));
     assert.match(missing,/未找到这道题/);assert.doesNotMatch(missing,/保留的答案/);
   } finally {await server.close();}
