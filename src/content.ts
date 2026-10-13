@@ -44,6 +44,8 @@ export function loadArticle(article: ArticleMetadata) {
 export function loadSearchIndex() {
   return searchRequest ??= readJSON(library.searchPath).then((data) => {
     if (!Array.isArray(data) || data.some((item) => !item || typeof item.id !== 'string' || typeof item.text !== 'string'
+      || item.title !== undefined && typeof item.title !== 'string'
+      || item.aliases !== undefined && (!Array.isArray(item.aliases) || item.aliases.some((alias: unknown) => typeof alias !== 'string'))
       || item.questionNumber !== undefined && (!Number.isSafeInteger(item.questionNumber) || item.questionNumber < 1
         || typeof item.questionTitle !== 'string' || item.anchor !== `q${item.questionNumber}`))) throw new Error('搜索索引格式错误。');
     return data as SearchDocument[];

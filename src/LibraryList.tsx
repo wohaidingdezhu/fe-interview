@@ -22,9 +22,12 @@ export function LibraryList({ params, navigate }: Props) {
   const type = params.get('type') || '';
   const showMaintenance = import.meta.env.DEV;
   const maintenance = showMaintenance ? params.get('maintenance') || '' : '';
-  const sort = params.get('sort') || 'newest';
+  const requestedSort = params.get('sort') || '';
+  const sort = ['newest', 'oldest', 'title'].includes(requestedSort) ? requestedSort : query.trim() ? 'relevance' : 'newest';
   const pageSize = [6, 12, 24].includes(Number(params.get('size'))) ? Number(params.get('size')) : 6;
-  const result = filterItems(matches ? items.filter((item) => matches.has(item.id)) : items, { query: '', category, tags: selectedTags, type, maintenance, sort, page: Number(params.get('page')) || 1, pageSize });
+  const ranks = new Map([...matches?.keys() ?? []].map((id, rank) => [id, rank]));
+  const matchedItems = matches ? items.filter(item => matches.has(item.id)).sort((a, b) => ranks.get(a.id)! - ranks.get(b.id)!) : items;
+  const result = filterItems(matchedItems, { query: '', category, tags: selectedTags, type, maintenance, sort, page: Number(params.get('page')) || 1, pageSize });
   const categories = [...new Set(items.map((item) => item.category))];
   const types = [...new Set(items.map((item) => item.type))];
   const tags = [...new Set(items.flatMap((item) => item.tags))].sort((a, b) => a.localeCompare(b, 'zh-CN'));
@@ -56,7 +59,7 @@ export function LibraryList({ params, navigate }: Props) {
       <div className={`filter-selects ${showMaintenance ? 'has-maintenance' : ''}`}>
         <label>分类<select aria-label="按分类筛选" value={category} onChange={(event) => update('category', event.target.value)}><option value="">全部分类</option>{categories.map((value) => <option key={value}>{value}</option>)}{category && !categories.includes(category) && <option>{category}</option>}</select></label>
         <label>类型<select aria-label="按类型筛选" value={type} onChange={(event) => update('type', event.target.value)}><option value="">全部类型</option>{types.map((value) => <option key={value}>{value}</option>)}{type && !types.includes(type) && <option>{type}</option>}</select></label>
-        <label>排序<select aria-label="列表排序" value={sort} onChange={(event) => update('sort', event.target.value)}><option value="newest">最近收录</option><option value="oldest">最早收录</option><option value="title">标题顺序</option></select></label>
+        <label>排序<select aria-label="列表排序" value={sort} onChange={(event) => update('sort', event.target.value)}>{query.trim() && <option value="relevance">相关性优先</option>}<option value="newest">最近收录</option><option value="oldest">最早收录</option><option value="title">标题顺序</option></select></label>
         {showMaintenance && <label>维护状态<select aria-label="按维护状态筛选" value={maintenance} onChange={(event) => update('maintenance', event.target.value)}><option value="">全部状态</option><option value="incomplete">待补充</option><option value="ready">待审核</option><option value="draft">全部草稿</option><option value="published">已公开</option></select></label>}
       </div>
       <details className="tag-filter">

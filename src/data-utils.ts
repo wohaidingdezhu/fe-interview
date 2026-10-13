@@ -171,7 +171,7 @@ export function filterItems(items: ListItem[], filters: Filters) {
       && maintenanceMatches
       && filters.tags.every((tag) => item.tags.includes(tag))
       && terms.every((term) => searchable.includes(term));
-  }).sort((a, b) => filters.sort === 'title'
+  }).sort((a, b) => filters.sort === 'relevance' ? 0 : filters.sort === 'title'
     ? a.title.localeCompare(b.title, 'zh-CN')
     : filters.sort === 'oldest' ? a.addedAt.localeCompare(b.addedAt) || a.id.localeCompare(b.id)
       : b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id));

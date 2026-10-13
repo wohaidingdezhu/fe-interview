@@ -20,13 +20,13 @@ export function articleIdFromLocation(pathname: string, search: string) {
 export function questionPage(questions: QuestionEntry[], options: { query: string; category: string; tag: string; page: number; size: number; documents?: SearchDocument[]; ids?: Set<number> }) {
   const query = options.query.trim();
   const exact = /^q([1-9]\d*)$/i.exec(query);
-  const matches = query && !exact && options.documents ? new Set(searchHits(options.documents, query).map(hit => hit.questionNumber)) : undefined;
+  const matches = query && !exact && options.documents ? new Map(searchHits(options.documents, query).map((hit, rank) => [hit.questionNumber, rank])) : undefined;
   const words = query.toLocaleLowerCase().split(/\s+/);
   const all = questions.filter(question => (!options.category || question.category === options.category)
     && (!options.tag || question.tags.includes(options.tag)) && (!options.ids || options.ids.has(question.number))
     && (!query || (exact ? question.number === Number(exact[1]) : matches ? matches.has(question.number)
       : words.every(word => `${question.title} ${question.category} ${question.tags.join(' ')}`.toLocaleLowerCase().includes(word)))))
-    .sort((a, b) => a.number - b.number);
+    .sort((a, b) => matches ? matches.get(a.number)! - matches.get(b.number)! : a.number - b.number);
   const size = [12, 24, 48].includes(options.size) ? options.size : 12;
   const pages = Math.max(1, Math.ceil(all.length / size));
   const page = Math.min(pages, Math.max(1, Number.isFinite(options.page) ? Math.floor(options.page) : 1));

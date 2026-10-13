@@ -27,9 +27,9 @@ export function contentAssets(library) {
     const prefix = `${article.title} ${article.category} ${article.tags.join(' ')} ${(article.aliases ?? []).join(' ')} ${article.description}`;
     const questions = inspectQuestions(article);
     return questions.length ? questions.map(question => ({ id: article.id,
-      questionNumber: question.number, questionTitle: `Q${question.number}｜${question.title}`,
+      title: question.title, questionNumber: question.number, questionTitle: `Q${question.number}｜${question.title}`,
       anchor: `q${question.number}`, text: plainText(`${prefix}\n${question.raw}`),
-    })) : [{ id: article.id, text: plainText(`${prefix}\n${article.content}`) }];
+    })) : [{ id: article.id, title: article.title, aliases: article.aliases ?? [], text: plainText(`${prefix}\n${article.content}`) }];
   });
   const source = JSON.stringify(documents), searchPath = assetPath('search/index', source);
   assets.push({ fileName: searchPath, source });
