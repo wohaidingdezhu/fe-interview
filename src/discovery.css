@@ -11,6 +11,18 @@
 .hero-actions > a:last-child { font-size:12px; color:var(--green); }
 .primary-link { display:inline-flex; justify-content:space-between; gap:28px; align-items:center; min-height:44px; background:var(--green); color:white; border-radius:4px; padding:12px 20px; font-size:13px; }
 .primary-link:hover { background:#1b5f49; }
+.path-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:24px 0; }
+.path-actions button { border:0; font:inherit; font-size:14px; cursor:pointer; }
+.path-actions button:disabled { opacity:.5; cursor:not-allowed; }
+.path-actions span,.path-note { color:var(--muted); font-size:13px; line-height:1.8; }
+.path-progress progress { width:100%; accent-color:var(--green); }
+.learning-path-steps { padding-left:28px; margin:32px 0; }
+.learning-path-steps li { padding:20px 0 20px 12px; border-top:1px solid var(--line); }
+.learning-path-steps li::marker { color:var(--green); font-weight:600; }
+.learning-path-steps h2 { font-size:19px; line-height:1.6; margin:10px 0; overflow-wrap:anywhere; }
+.learning-path-steps h2 a { color:var(--green); }
+.learning-path-steps p { color:var(--muted); font-size:14px; line-height:1.8; margin:0; }
+.path-step-meta { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; font-size:12px; color:var(--muted); }
 .home-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid var(--line); margin-top:18px; }
 .home-stats a { padding:23px 20px; border-right:1px solid var(--line); display:flex; flex-wrap:wrap; gap:7px; align-items:baseline; }
 .home-stats a:last-child { border:0; }.home-stats a:hover { background:#f5f8f1; }

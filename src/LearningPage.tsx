@@ -12,6 +12,7 @@ import type { LearningBatchUndo, LearningStatus } from './learning-utils';
 import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
 import { StudyStartActions } from './StudyStartActions';
+import { reactPathHref } from './react-path';
 export function LearningPage({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
@@ -47,6 +48,7 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
     const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `前端资料库-学习记录-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setMessage('备份已导出。');
   }
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
+    <p><Link href={reactPathHref} navigate={navigate}>查看 React 学习路径 →</Link></p>
     {learning.error && <p role="alert">{learning.error}</p>}
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && !readingInStudy(study?.session, last) && articles.some(a => a.id === last.articleId) && <section className="resume-card"><div><small>上次读到</small><h2>{last.title}</h2></div><Link navigate={navigate} href={articleHref(last.articleId, last.anchor)}>继续自由阅读 →</Link></section>}

@@ -14,6 +14,7 @@ import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
 import { QuestionList } from './QuestionList';
 import { LearningPage } from './LearningPage';
+import { ReactLearningPath } from './ReactLearningPath';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
 import { useStudySession } from './useStudySession';
@@ -53,6 +54,7 @@ function App() {
   const inStudy = Boolean(id && params.get('study') === '1');
   const question = inStudy ? studyQuestion(route) : '';
   const view = id ? 'article' : publicView(params.get('view'));
+  const isReactPath = view === 'learning' && params.get('path') === 'react-basics';
   const counts = libraryCounts(articles, []);
   const article = articles.find((item) => item.id === id);
   const currentIndex = articles.findIndex((item) => item.id === id);
@@ -101,7 +103,7 @@ function App() {
     return () => { window.removeEventListener('popstate', onPopState); window.removeEventListener('hashchange', onPopState); window.removeEventListener('keydown', onKey); };
   }, []);
   useEffect(() => {
-    const title = id ? focusedHeading?.title || article?.title || '笔记未找到' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', article: '阅读文章' }[view] || '首页');
+    const title = id ? focusedHeading?.title || article?.title || '笔记未找到' : isReactPath ? 'React 基础学习路径' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', article: '阅读文章' }[view] || '首页');
     document.title = `${title} · 前端资料库`;
     const description = focusedHeading && article ? `${focusedHeading.title}，来自《${article.title}》。` : article?.description || '按题查找、按主题学习，收藏值得反复阅读的前端知识。';
     for (const selector of ['meta[name=description]', 'meta[property="og:description"]']) document.querySelector(selector)?.setAttribute('content', description);
@@ -118,7 +120,7 @@ function App() {
       if (!node.parentNode) document.head.append(node);
     } else structured?.remove();
 
-  }, [article, id, view, focusedHeading?.title]);
+  }, [article, id, view, isReactPath, focusedHeading?.title]);
   useEffect(() => {
     setToc([]); setActiveHeading(undefined);
     if (!article) return;
@@ -176,7 +178,7 @@ function App() {
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery />
-      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
