@@ -204,7 +204,11 @@ npm run import:resources -- /tmp/resource.json --dry-run
 
 源码仓库：`https://github.com/wohaidingdezhu/fe-interview`，当前为公开仓库。文档转换草稿 `draft_*_folder/` 仅保留在本地，不进入源码仓库。
 
-自动部署配置在 `.github/workflows/pages.yml`。推送到 `main` 或手动运行工作流时，安装 Node 24 和依赖，执行测试、类型检查和生产构建（包含内容校验），成功后上传 `dist/` 并部署 Pages。PR 只校验和构建，不部署。质量报告会出现在 Actions 运行摘要中；检查失败时保留上一次网站版本。
+自动部署配置在 `.github/workflows/pages.yml`。推送到 `main` 或手动运行工作流时，安装 Node 24 和依赖，执行测试、类型检查、生产构建（包含内容校验）和 Playwright 浏览器回归，成功后上传 `dist/` 并部署 Pages。PR 运行相同检查，不部署。质量报告会出现在 Actions 运行摘要中；浏览器失败报告作为 artifact 保存 7 天；检查失败时保留上一次网站版本。
+
+本地浏览器回归：首次运行 `npx playwright install chromium webkit`，然后运行 `npm run build && npm run test:e2e`。测试自动启动独立的 4186（生产预览）和 4187（开发模式）端口，使用隔离浏览器上下文，不读取日常学习记录。覆盖 Chromium、WebKit、手机 WebKit 视口及开发模式 StrictMode；报告位于 `.reports/browser-report/`，失败截图和 trace 位于 `.reports/browser-results/`。WebKit 自动测试不能代替真实 Safari 和手机虚拟键盘验收。
+
+长期打开的旧页面如果遇到正文、题库或搜索资源 404/410，或阅读模块加载失败，会显示“刷新并继续阅读”。刷新由用户主动触发，保留当前网址、题号和浏览器中已保存的学习记录；临时服务错误仍可原地重试。刷新不能挽救此前因存储失败而未保存的数据，应先按页面提示导出备份。
 
 Pages 的发布源使用 **GitHub Actions**。日常更新流程是：整理内容 → 本地运行 `npm test` 与 `npm run build` → 提交并推送 `main` → 在仓库 Actions 查看部署结果。无需向原博客发布仓库强制推送，也无需购买额外域名。
 

@@ -5,6 +5,7 @@ import { TableOfContents } from './TableOfContents';
 import type { Heading } from './ArticleContent';
 import { LibraryList } from './LibraryList';
 import { ReaderBoundary } from './ReaderBoundary';
+import { LoadRecovery } from './LoadRecovery';
 import { normalizeCategory } from './categories';
 import './style.css';
 import './discovery.css';
@@ -174,6 +175,7 @@ function App() {
     </aside>
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
+      <LoadRecovery />
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <><LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}

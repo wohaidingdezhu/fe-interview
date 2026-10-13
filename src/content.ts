@@ -26,6 +26,7 @@ export function useQuestions() {
 }
 async function readJSON(path: string): Promise<unknown> {
   const response = await fetch(new URL(`${import.meta.env.BASE_URL}${path}`, document.baseURI));
+  if (response.status === 404 || response.status === 410) window.dispatchEvent(new Event('library:asset-unavailable'));
   if (!response.ok) throw new Error(`加载失败（${response.status}），请重试。`);
   return response.json();
 }

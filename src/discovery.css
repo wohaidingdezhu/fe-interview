@@ -168,6 +168,9 @@
 .study-summary-actions { display:grid; gap:10px; margin-top:20px; }
 .study-summary-actions button { min-height:44px; padding:10px; border:1px solid #cddcc8; border-radius:6px; background:white; color:var(--green); font:inherit; }
 .study-summary-actions .primary-learning-action { color:white; background:var(--green); }
+.load-recovery { margin:0 0 24px; padding:18px; border:1px solid #cddcc8; border-radius:6px; background:#fafbf6; }
+.load-recovery p { line-height:1.7; }
+.load-recovery button { min-height:44px; margin:4px 12px 4px 0; padding:8px 12px; font:inherit; color:var(--green); background:white; border:1px solid #cddcc8; border-radius:4px; }
 .study-article-header { margin:-7px 0 22px; padding:18px 20px; border-left:3px solid #7d9e7b; background:#fafbf6; }
 .study-article-header .eyebrow { display:block; margin-bottom:10px; }
 .study-article-header .article-meta { line-height:1.8; }
