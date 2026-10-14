@@ -1390,7 +1390,7 @@ console.log(state.count); // 2
 
 ## Q115｜不同类型宏任务的优先级
 
-适用：ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环。
+适用：现代浏览器 HTML 事件循环；task sources 与微任务检查点，不套用 Node.js 调度。
 
 浏览器事件循环有多个 task source，规范没有一张“点击任务永远先于 timer”的统一优先级表。主线程阻塞时用户交互也不能运行；解除阻塞后具体 task queue 的选择由浏览器策略与就绪时间影响。原题缺少完整代码与点击时间，固定 click → timer 的结论应删除。
 

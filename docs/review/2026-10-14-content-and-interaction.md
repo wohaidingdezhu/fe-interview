@@ -4,6 +4,8 @@
 
 复核 React 路径中的 Q206、react-state、closure、Q204、Q226、Q227、use-persist-fn，以及 event-loop、http-cache、Q63、Q115。依据公开原始文档核对关键语义；复核日期已更新，未改动稳定 ID 或题号。
 
+Q204、Q206、Q226、Q227 和 Q115 的正文与逐题发布清单已同步收窄适用版本，去除这些题目不涉及的 CRA、Redux 或 V8 排序信息。
+
 | 内容 | 核对重点 | 依据 |
 | --- | --- | --- |
 | 状态快照 | 回调捕获该次渲染状态，函数式更新处理队列 | [React 状态快照](https://react.dev/learn/state-as-a-snapshot) |

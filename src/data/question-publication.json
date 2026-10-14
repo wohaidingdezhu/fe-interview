@@ -1113,7 +1113,7 @@
     "sources": [
       "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
     ],
-    "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
+    "technologyVersion": "现代浏览器 HTML 事件循环；task sources 与微任务检查点，不套用 Node.js 调度",
     "reviewedAt": "2026-10-14"
   },
   "Q116": {
@@ -1970,7 +1970,7 @@
       "https://react.dev/learn/reusing-logic-with-custom-hooks",
       "https://react.dev/reference/rules/rules-of-hooks"
     ],
-    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "technologyVersion": "React 18/19 函数组件；Hooks 公共 API 与调用规则",
     "reviewedAt": "2026-10-14"
   },
   "Q205": {
@@ -1989,7 +1989,7 @@
       "https://react.dev/learn/passing-props-to-a-component",
       "https://react.dev/learn/state-as-a-snapshot"
     ],
-    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "technologyVersion": "React 18/19；props/state 快照、Hook setter 与类 setState",
     "reviewedAt": "2026-10-14"
   },
   "Q207": {
@@ -2179,7 +2179,7 @@
     "sources": [
       "https://react.dev/reference/react/useEffect"
     ],
-    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "technologyVersion": "React 18/19 客户端函数组件；useEffect、依赖与清理",
     "reviewedAt": "2026-10-14"
   },
   "Q227": {
@@ -2188,7 +2188,7 @@
     "sources": [
       "https://react.dev/learn/reusing-logic-with-custom-hooks"
     ],
-    "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
+    "technologyVersion": "React 18/19 函数组件；自定义 Hook 的逻辑复用",
     "reviewedAt": "2026-10-14"
   },
   "Q228": {
