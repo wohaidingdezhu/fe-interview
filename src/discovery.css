@@ -14,6 +14,9 @@
 .path-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:24px 0; }
 .path-actions button { border:0; font:inherit; font-size:14px; cursor:pointer; }
 .path-actions button:disabled { opacity:.5; cursor:not-allowed; }
+.path-action-buttons { display:flex; flex-wrap:wrap; gap:10px; }
+.path-action-buttons button { min-height:44px; padding:10px 16px; border-radius:5px; }
+.path-actions .path-secondary { border:1px solid var(--line); background:white; color:var(--green); }
 .path-actions span,.path-note { color:var(--muted); font-size:13px; line-height:1.8; }
 .path-progress progress { width:100%; accent-color:var(--green); }
 .learning-path-steps { padding-left:28px; margin:32px 0; }
