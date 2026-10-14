@@ -5,7 +5,7 @@ import { parseArticle, validateLibrary, validateQuestionPublicationMap } from '.
 
 export const resourcesPath = fileURLToPath(new URL('../src/data/resources.json', import.meta.url));
 export const questionPublicationPath = fileURLToPath(new URL('../src/data/question-publication.json', import.meta.url));
-async function markdownFiles(directory, prefix = '') {
+export const markdownFiles = async (directory, prefix = '') => {
   const entries = await readdir(join(directory, prefix), { withFileTypes: true });
   const files = [];
   for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name, 'en'))) {
@@ -15,7 +15,7 @@ async function markdownFiles(directory, prefix = '') {
     else if (entry.isFile() && entry.name.endsWith('.md')) files.push(relativePath);
   }
   return files;
-}
+};
 export async function readLibrary(root = fileURLToPath(new URL('../', import.meta.url))) {
   const directory = join(root, 'src/articles');
   const files = await markdownFiles(directory);
