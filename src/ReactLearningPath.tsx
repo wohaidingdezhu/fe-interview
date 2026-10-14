@@ -5,6 +5,7 @@ import { reactPathHref, reactPathSteps } from './react-path';
 import { studyDirectory, studyProgress } from './study-session';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import { StudyResumeCard } from './StudyResumeCard';
+import { LearningControls } from './LearningControls';
 import type { StartStudy } from './StudyStartActions';
 import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
@@ -39,11 +40,16 @@ export const ReactLearningPath = ({ learning, study, navigate, startStudy }: { l
       <button className={counts.unread < counts.total ? 'path-secondary' : 'primary-link'} disabled={!ready} onClick={() => begin(queue)}>按顺序开始学习 →</button>
       <button className={counts.unread > 0 && counts.unread < counts.total ? 'primary-link' : 'path-secondary'} disabled={!ready || !unread.length} onClick={() => begin(unread)}>只学未读{ready ? `（${unread.length} 步）` : ''}</button>
       <button className="path-secondary" disabled={!ready || !review.length} onClick={() => begin(review)}>复习待复习{ready ? `（${review.length} 步）` : ''}</button>
-    </div><span>{study.session ? '开始后会替换当前清单，已有阅读标记保留。也可以使用上方入口继续原清单。' : '全部、未读和待复习均按路径顺序学习；单独打开内容不会替换学习清单。'}</span></div>
+    </div><span id="path-start-note">{study.session ? '开始后会替换当前清单，已有阅读标记保留。也可以使用上方入口继续原清单。' : '全部、未读和待复习均按路径顺序学习；单独打开内容不会替换学习清单。'}</span></div>
     {(error || learning.error) && <p role="alert">{error || learning.error}</p>}
-    <ol className="learning-path-steps" aria-label="React 学习步骤">{steps.map(step => <li key={step.key}>
+    <p className="path-note">每一步都可以直接收藏、标记已读或待复习。从某一步开始学习时，清单只包含这一步及后续内容。</p>
+    <ol className="learning-path-steps" aria-label="React 学习步骤">{steps.map((step, index) => <li key={step.key}>
       <div className="path-step-meta"><strong>{step.stage}</strong><span>{({ read: '已读', review: '待复习', unread: '未读' })[learning.data.entries[step.key]?.status ?? 'unread']}</span></div>
       <h2>{step.target ? <Link href={step.target.href} navigate={navigate}>{step.target.title} →</Link> : catalog.loading ? '正在加载…' : '内容暂不可用'}</h2><p>{step.goal}</p>
+      <div className="path-step-actions" role="group" aria-label={`第 ${index + 1} 步学习操作`}>
+        {step.target && <LearningControls itemKey={step.key} learning={learning} compact />}
+        <button className="path-step-start" type="button" disabled={!ready} aria-label={`从第 ${index + 1} 步开始学习`} aria-describedby="path-start-note" onClick={() => begin(queue.slice(index))}>从这一步开始 →</button>
+      </div>
     </li>)}</ol>
     <p className="path-note">最后一步建议实际运行示例后再标记。已读只是你的阅读记录，不代表已通过知识测验。</p>
   </>;
