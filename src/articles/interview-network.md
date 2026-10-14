@@ -137,7 +137,9 @@ HTTPS 是通过安全传输保护的 HTTP，现代主要使用 TLS，提供传�
 
 公钥签名用于认证，密钥协商用于建立共享秘密，应用数据使用带认证的对称加密。TLS 1.3 已移除旧 RSA 密钥传输；“客户端用证书公钥加密 premastersecret”只适合解释旧握手，不能套到所有 HTTPS。共享秘密不会以明文传给窃听者；0-RTT 恢复有重放边界。下方原配图展示历史握手思路；学习 TLS 1.3 请以上方修订图与本段说明为准。
 
-![](./images/interview/大前端面试宝典-diagram-7.png)
+![历史握手示意图：旧 RSA 密钥传输，不适用于 TLS 1.3](./images/interview/大前端面试宝典-diagram-7.png)
+
+旧图中的 `:433` 是端口笔误；HTTPS 默认端口是 `443`。图中的 premaster secret 公钥加密流程也不是 TLS 1.3 的握手过程，不能用它替代上方修订图。
 
 参考：[资料 1](https://www.rfc-editor.org/rfc/rfc8446#section-2)。
 

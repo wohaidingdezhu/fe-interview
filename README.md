@@ -195,6 +195,8 @@ npm run check:links
 
 `.reports/links.md` 提供待处理清单和全部结果，`.reports/links.json` 保留状态、处理建议与所有引用位置，按疑似失效优先、同级引用较多优先排序。403、限流和超时单独分类，需人工确认，不直接删除。`.github/workflows/links.yml` 每周一北京时间 10:00 运行，也可手动运行；Actions 摘要最多显示前 50 个待处理地址，完整报告从 `published-link-report` 下载，保留 30 天。Actions 源码链接固定到本次检查的提交。
 
+源文件行号对应该次检查的代码版本，本地修改后应重新生成报告。真机验收步骤见 `docs/review/mobile-device-acceptance.md`，待执行项不能由 Playwright 手机视口结果代替。
+
 可选地读取网页的静态标题和简介，然后检查生成的草稿再导入：
 
 ```bash

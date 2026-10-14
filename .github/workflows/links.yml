@@ -22,8 +22,13 @@ jobs:
       - run: npm ci
       - run: npm run check:links
       - name: Link report
-        run: cat .reports/links-summary.md >> "$GITHUB_STEP_SUMMARY"
+        if: always()
+        run: |
+          if [ -f .reports/links-summary.md ]; then
+            cat .reports/links-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Downloadable link report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: published-link-report

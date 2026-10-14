@@ -25,5 +25,6 @@ export async function readLibrary(root = fileURLToPath(new URL('../', import.met
   try { questionData = await readFile(join(root, 'src/data/question-publication.json'), 'utf8'); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
   const questionPublication = validateQuestionPublicationMap(JSON.parse(questionData));
-  return { articles, resources, questionPublication };
+  const articlePaths = Object.fromEntries(articles.map((article, index) => [article.id, join('src/articles', files[index])]));
+  return { articles, resources, questionPublication, articlePaths };
 }

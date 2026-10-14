@@ -21,7 +21,7 @@ technologyVersion: "React 18/19；客户端 Hook 语义"
 
 ## Q204｜React 中为什么要设计 Hook ，为了解决什么问题
 
-适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+适用：React 18/19 函数组件；Hooks 公共 API 与调用规则。
 
 Hooks 让函数组件使用状态、Context、引用和副作用，并把相关业务逻辑抽成自定义 Hook。它解决了类组件中相关逻辑分散于多个生命周期、HOC/render props 容易形成嵌套、this 与实例行为较难组合等问题。
 
@@ -45,7 +45,7 @@ render 阶段必须纯净，可能执行后被放弃。请求、订阅等放在�
 
 ## Q206｜状态（state）和属性（props）
 
-适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+适用：React 18/19；props/state 快照、Hook setter 与类 setState。
 
 props 是组件收到的只读输入，state 是组件拥有的渲染状态。它们在一次渲染中都是快照，不能原地修改；通过 setter 或类组件 setState 请求下一次更新。
 
@@ -329,7 +329,7 @@ function Counter() {
 
 ## Q226｜如何使用 useEffect Hook 执行副作用操作
 
-适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+适用：React 18/19 客户端函数组件；useEffect、依赖与清理。
 
 useEffect 用于与外部系统同步。依赖变化时先清理旧效果再设置新效果，卸载时清理；依赖按 Object.is 比较，包含 Effect 用到的响应式值。Effect 只在客户端运行，不应把它笼统等同于“必定在绘制后运行”。
 
@@ -362,7 +362,7 @@ useEffect(() => {
 
 ## Q227｜如何使用自定义Hook来共享逻辑
 
-适用：React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2。
+适用：React 18/19 函数组件；自定义 Hook 的逻辑复用。
 
 自定义 Hook 抽取有状态逻辑，名称以 use 开头，内部遵守 Hook 规则。多个组件调用同一个 Hook 得到独立状态；共享状态需要提升状态、Context 或外部 store。
 
