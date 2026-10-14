@@ -181,6 +181,10 @@ npm run new:article -- browser/chrome-devtools-workflow \
 
 ## 链接检查与网页信息抓取
 
+`npm run check:links` 生成 `.reports/links.md` 和 `.reports/links.json`，按疑似失效、需复核、访问限制和临时失败优先展示。每个地址保留所有公开引用位置：文章标题、题号、源文件及行号；逐题来源指向 `src/data/question-publication.json`。草稿链接和代码中的示例 URL 不进入检查。HTTP 403、限流和超时需要复核，不自动删除引用或阻断部署。
+
+每周定时检查的结果可在 Actions 摘要查看，并下载 `published-link-report` artifact（保留 30 天）。源文件行号对应该次检查的代码版本；本地修改后应重新生成报告。真机验收步骤见 `docs/review/mobile-device-acceptance.md`，待执行项不能由 Playwright 手机视口结果代替。
+
 ```bash
 npm run check:links
 ```

@@ -151,9 +151,11 @@ console.log(original.m); // 40
 
 原配图使用简化堆栈模型，仅辅助说明值与引用关系，实际物理存储不由 ECMAScript 规定：
 
-![](./images/interview/大前端面试宝典-diagram.png)
+![历史示意图：变量 o 通过引用指向对象，栈与堆仅为简化模型](./images/interview/大前端面试宝典-diagram.png)
 
-![](./images/interview/大前端面试宝典-diagram-1.png)
+![历史示意图：局部 obj 重新赋值后指向另一个对象](./images/interview/大前端面试宝典-diagram-1.png)
+
+第二张旧图仍标注原对象为 `{ m: 30 }`，省略了上方示例中的 `obj.m = 40`，因此不能用它推导该示例的输出。上方代码执行后，调用方对象是 `{ m: 40 }`；局部重新赋值产生的新对象是 `{ m: 50 }`，关系以上方修订图与代码为准。
 
 ---
 
@@ -223,11 +225,13 @@ for (var j = 0; j < 3; j++) setTimeout(() => console.log(j), 0); // 3、3、3
 
 这里所有回调在当前同步任务结束后执行，setTimeout 不保证精确延迟。经典浏览器脚本顶层 let 不成为 window 的自有属性；ES 模块顶层 var/let 都是模块作用域，不应混用这两个环境。
 
-![](./images/interview/大前端面试宝典-image-1.png)
+![历史控制台截图：let 初始化前访问 a 触发 ReferenceError](./images/interview/大前端面试宝典-image-1.png)
 
-![](./images/interview/大前端面试宝典-image-2.png)
+![历史控制台截图：同一段代码重复声明 let a 触发 SyntaxError](./images/interview/大前端面试宝典-image-2.png)
 
-![](./images/interview/大前端面试宝典-image-27.png)
+![历史 DevTools 截图：经典脚本顶层 let a 显示在 Script 作用域](./images/interview/大前端面试宝典-image-27.png)
+
+截图对应旧版 DevTools 的单段代码和经典脚本场景。控制台逐次输入可能存在重声明方面的专门行为，不要把控制台实验等同于模块或同一段脚本；现代界面的作用域标签也可能变化。
 
 参考：[资料 1](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let)。
 

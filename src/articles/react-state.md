@@ -8,7 +8,7 @@ tags: ["React", "状态", "面试"]
 aliases: ["React state 快照", "函数式更新", "旧状态"]
 related: ["closure", "use-persist-fn"]
 addedAt: "2026-10-08"
-reviewedAt: "2026-10-09"
+reviewedAt: "2026-10-14"
 order: 3
 status: published
 quality: complete

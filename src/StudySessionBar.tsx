@@ -40,7 +40,7 @@ export function StudySessionBar({ study, learning, route, navigate, openDirector
       <details className="study-more"><summary>更多操作</summary><div>
         {index > 0 && <Link href={studyHref(queue[index - 1])} navigate={navigate}>← 上一项</Link>}
         {next && <Link href={studyHref(next)} navigate={navigate}>跳过当前项 →</Link>}
-        <button aria-haspopup="dialog" disabled={!directoryReady} onClick={openDirectory}>正文目录</button>
+        <button aria-haspopup="dialog" disabled={!directoryReady} onClick={event => { event.currentTarget.focus(); openDirectory(); }}>正文目录</button>
         <button aria-haspopup="dialog" onClick={() => setSummary(true)}>查看结果 / 结束清单</button>
       </div></details>
     </div>

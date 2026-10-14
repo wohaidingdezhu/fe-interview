@@ -9,7 +9,7 @@ aliases: ["React 持久函数", "稳定回调", "最新闭包", "useMemoizedFn"]
 related: ["react-state", "closure", "interview-react"]
 addedAt: "2026-10-09"
 updatedAt: "2026-10-09"
-reviewedAt: "2026-10-09"
+reviewedAt: "2026-10-14"
 order: 1001
 status: published
 quality: complete

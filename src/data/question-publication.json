@@ -439,7 +439,7 @@
       "https://tc39.es/ecma262/"
     ],
     "technologyVersion": "ECMAScript 值传递语义；内存布局属引擎实现",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q47": {
     "status": "published",
@@ -479,7 +479,7 @@
       "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let"
     ],
     "technologyVersion": "现代浏览器 HTML/DOM；ECMAScript 2024",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q51": {
     "status": "published",
@@ -603,7 +603,7 @@
       "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures"
     ],
     "technologyVersion": "现代 JavaScript（ES2015+）",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q64": {
     "status": "published",
@@ -1114,7 +1114,7 @@
       "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
     ],
     "technologyVersion": "ECMAScript ES2019+；V8 12.4.254 排序源码；浏览器 HTML 事件循环",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q116": {
     "status": "published",
@@ -1971,7 +1971,7 @@
       "https://react.dev/reference/rules/rules-of-hooks"
     ],
     "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q205": {
     "status": "published",
@@ -1990,7 +1990,7 @@
       "https://react.dev/learn/state-as-a-snapshot"
     ],
     "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q207": {
     "status": "published",
@@ -2180,7 +2180,7 @@
       "https://react.dev/reference/react/useEffect"
     ],
     "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q227": {
     "status": "published",
@@ -2189,7 +2189,7 @@
       "https://react.dev/learn/reusing-logic-with-custom-hooks"
     ],
     "technologyVersion": "React 18/19 公共 API；CRA 弃用说明 2025-02-14；Redux Toolkit 2",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q228": {
     "status": "published",
@@ -2886,7 +2886,7 @@
       "https://www.rfc-editor.org/rfc/rfc8446#section-2"
     ],
     "technologyVersion": "HTTP RFC 9110/9111/9113；TCP RFC 9293；TLS 1.3 RFC 8446；浏览器 Fetch/XHR/SSE",
-    "reviewedAt": "2026-10-09"
+    "reviewedAt": "2026-10-14"
   },
   "Q303": {
     "status": "published",

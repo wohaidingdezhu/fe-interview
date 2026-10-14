@@ -22,4 +22,15 @@ jobs:
       - run: npm ci
       - run: npm run check:links
       - name: Link report
+        if: always()
         run: cat .reports/links.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Downloadable link report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-link-report
+          path: |
+            .reports/links.md
+            .reports/links.json
+          include-hidden-files: true
+          retention-days: 30
