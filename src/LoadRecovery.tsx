@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export function LoadRecovery() {
+export const LoadRecovery = () => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const show = () => setVisible(true);
@@ -18,4 +18,4 @@ export function LoadRecovery() {
     <button type="button" onClick={() => window.location.reload()}>刷新并继续阅读</button>
     <button type="button" onClick={() => setVisible(false)}>暂不刷新</button>
   </section>;
-}
+};

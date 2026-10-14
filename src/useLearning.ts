@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { clearLearning, emptyLearning, importLearning, learningTimestamp, mergeLearning, persistLearning, pruneLearning, updateLearningBatch, undoLearningBatch, type LearningBatchUndo, type LearningStatus, type LearningData, type LearningEntry, type ReadingPosition } from './learning-utils';
 const storageKey = 'fe-library-learning-v1';
-function load() { const text = localStorage.getItem(storageKey); return text ? importLearning(text) : emptyLearning(); }
-export function useLearning() {
+const load = () => { const text = localStorage.getItem(storageKey); return text ? importLearning(text) : emptyLearning(); };
+export const useLearning = () => {
   const [error, setError] = useState('');
   const [data, setData] = useState<LearningData>(() => { try { return load(); } catch { return emptyLearning(); } });
   const current = useRef(data);
@@ -38,5 +38,5 @@ export function useLearning() {
     return { ...saved, count };
   }, [commit]);
   return { data, update, updateMany, undoMany, remember, restore, prune, clear, error };
-}
+};
 export type Learning = ReturnType<typeof useLearning>;

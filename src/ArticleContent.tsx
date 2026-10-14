@@ -7,7 +7,7 @@ import remarkStudyQuestion from './remark-study-question';
 import { studyHref } from './study-session';
 import { NavigationLink as Link } from './NavigationLink';
 export type Heading = { id: string; title: string; level: number };
-function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
+const CodeBlock = ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => {
   const ref = useRef<HTMLPreElement>(null), [status, setStatus] = useState('复制代码');
   return <div className="code-block"><button className="copy-button" onClick={async () => {
     try { await navigator.clipboard.writeText(ref.current?.textContent || ''); setStatus('已复制'); }
@@ -19,23 +19,23 @@ function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
       } else setStatus('复制失败，请手动选择');
     }
   }} aria-live="polite">{status}</button><pre {...props} ref={ref} tabIndex={0} aria-label="代码示例">{children}</pre></div>;
-}
-function QuestionPermalink({ href, number }: { href: string; number: string }) {
+};
+const QuestionPermalink = ({ href, number }: { href: string; number: string }) => {
   const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle'), timer = useRef<number | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
-  function announce(next: 'copied' | 'failed') {
+  const announce = (next: 'copied' | 'failed') => {
     clearTimeout(timer.current); setStatus(next); timer.current = window.setTimeout(() => setStatus('idle'), 1800);
-  }
-  async function copy(event: MouseEvent<HTMLAnchorElement>) {
+  };
+  const copy = async (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     try { await navigator.clipboard.writeText(new URL(href, document.baseURI).href); announce('copied'); }
     catch { announce('failed'); }
-  }
+  };
   const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
   return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
-}
-function ArticleContent({ content, navigate, onHeadings, onReady, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; onReady?: (ready: boolean) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) {
+};
+const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; onReady?: (ready: boolean) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     onHeadings(Array.from(ref.current?.querySelectorAll('h1, h2, h3') || []).map((heading) => {
@@ -76,6 +76,6 @@ function ArticleContent({ content, navigate, onHeadings, onReady, hash = '', art
     },
   }}>{content}</Markdown>, [content, articleId, navigate, studyMode, question]);
   return <div className="article-body" ref={ref}>{markup}</div>;
-}
+};
 
 export default memo(ArticleContent);

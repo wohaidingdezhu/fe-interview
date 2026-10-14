@@ -1,6 +1,6 @@
 import type { Root } from 'mdast';
 
-export default function remarkStudyQuestion({ question }: { question?: string }) {
+const remarkStudyQuestion = ({ question }: { question?: string }) => {
   return (tree: Root) => {
     if (!question) return;
     let selected = false;
@@ -14,4 +14,6 @@ export default function remarkStudyQuestion({ question }: { question?: string })
     });
     if (!tree.children.some(node => node.type === 'heading')) tree.children = [{ type: 'paragraph', children: [{ type: 'text', value: '未找到这道题，请从清单目录重新选择。' }] }];
   };
-}
+};
+
+export default remarkStudyQuestion;

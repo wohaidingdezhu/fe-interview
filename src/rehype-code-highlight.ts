@@ -25,12 +25,12 @@ const aliases: Readonly<Record<string, string>> = {
   html: 'xml', vue: 'xml', xml: 'xml', shell: 'bash', sh: 'bash',
 };
 
-function text(node: HastNode): string {
+const text = (node: HastNode): string => {
   if (node.type === 'text') return node.value ?? '';
   return node.children?.map(text).join('') ?? '';
-}
+};
 
-function transform(node: HastNode, parent?: HastNode): void {
+const transform = (node: HastNode, parent?: HastNode): void => {
   if (node.type === 'element' && node.tagName === 'code' && parent?.tagName === 'pre') {
     const classes = Array.isArray(node.properties?.className) ? node.properties.className.map(String) : [];
     const languageClass = classes.find(name => name.startsWith('language-'));
@@ -43,9 +43,11 @@ function transform(node: HastNode, parent?: HastNode): void {
     }
   }
   for (const child of node.children ?? []) transform(child, node);
-}
+};
 
 /** 只注册资料库实际使用的语言，避免把完整 Highlight.js 常用语言集合发送给每位读者。 */
-export default function rehypeCodeHighlight() {
+const rehypeCodeHighlight = () => {
   return (tree: unknown) => transform(tree as HastNode);
-}
+};
+
+export default rehypeCodeHighlight;

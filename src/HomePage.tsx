@@ -6,7 +6,7 @@ import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 import { StudyResumeCard } from './StudyResumeCard';
 import { reactPathHref } from './react-path';
-export function HomePage({ navigate, learning, study }: { navigate: Navigate; learning: Learning; study?: Study }) {
+export const HomePage = ({ navigate, learning, study }: { navigate: Navigate; learning: Learning; study?: Study }) => {
   const counts = libraryCounts(articles, []), topics = articles.filter(a => a.questionCount > 0), notes = articles.filter(a => !a.questionCount);
   const last = learning.data.lastRead, lastArticle = articles.find(a => a.id === last?.articleId);
   return <div className="home-page">
@@ -23,4 +23,4 @@ export function HomePage({ navigate, learning, study }: { navigate: Navigate; le
     <section className="home-section"><div className="section-heading"><div><span className="eyebrow">NOTES FOR THE EVERYDAY</span><h2>把知识用在开发里</h2></div><Link navigate={navigate} href="?view=notes&collection=notes">全部笔记 →</Link></div><div className="home-notes">{[...notes].sort((a,b) => b.addedAt.localeCompare(a.addedAt)).slice(0,4).map(note => <Link navigate={navigate} href={articleHref(note.id)} key={note.id}><small>{note.category}</small><h3>{note.title}</h3><p>{note.description}</p><span>阅读笔记 →</span></Link>)}</div></section>
     <section className="home-learning"><h2>让读过的内容，留下痕迹。</h2><p>收藏想深读的题目，标记已经理解的知识，再给需要巩固的内容留一个复习入口。</p><Link navigate={navigate} href="?view=learning">打开我的学习记录 →</Link><small>记录保存在当前浏览器，可导出备份。</small></section>
   </div>;
-}
+};

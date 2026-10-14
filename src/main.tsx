@@ -26,12 +26,12 @@ import { NavigationLink as Link } from './NavigationLink';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
 
-function articleHref(id: string) { return `?article=${encodeURIComponent(id)}`; }
+const articleHref = (id: string) => { return `?article=${encodeURIComponent(id)}`; };
 // 固定站点根目录，避免静态子路径或 history 导航改变资源相对地址。
 const baseElement = document.querySelector<HTMLBaseElement>('base') ?? document.createElement('base');
 baseElement.href = new URL(window.location.pathname.replace(/articles\/[a-z0-9-]+\/(?:index\.html)?$/, ''), window.location.origin).href;
 if (!baseElement.parentNode) document.head.prepend(baseElement);
-function App() {
+const App = () => {
   const [location, setLocation] = useState(window.location.href);
   const learning = useLearning();
   const study = useStudySession();
@@ -135,14 +135,14 @@ function App() {
     return () => clearTimeout(timer);
   }, [article?.id, body.id, body.content, activeHeading?.id, question, learning.remember]);
   const link = (href: string, title: string, className?: string) => <Link href={href} className={className} navigate={navigate}>{title}</Link>;
-  function startStudy(targets: LearningTarget[], filters: URLSearchParams, random = false) {
+  const startStudy = (targets: LearningTarget[], filters: URLSearchParams, random = false) => {
     if (!targets.length) throw new Error('当前筛选没有可学习的内容');
     const queue = random ? shuffleStudyTargets(targets) : targets;
     const target = queue[0];
     const session = createStudySession(queue, filters);
     study.start(session);
     navigate(studyHref(target));
-  }
+  };
 
   return <>
     <Link className="skip-link" href={skipToContentHref(route)} navigate={navigate}>跳到正文</Link>
@@ -193,5 +193,5 @@ function App() {
       <footer className="page-footer">前端资料库 <span>整理知识 · 沉淀理解</span></footer>
     </main>{id && article && <TableOfContents key={id} articleId={id} hash={route.hash} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} studyMode={inStudy} question={question} dialogRef={studyDirectoryRef} />}</div>
   </>;
-}
+};
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

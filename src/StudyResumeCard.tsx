@@ -8,7 +8,7 @@ import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 
-export function StudyResumeCard({ study, learning, navigate }: { study: Study; learning: Learning; navigate: Navigate }) {
+export const StudyResumeCard = ({ study, learning, navigate }: { study: Study; learning: Learning; navigate: Navigate }) => {
   const [summary, setSummary] = useState(false);
   const catalog = useQuestions(), dialog = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
   if (!study.session) return null;
@@ -22,4 +22,4 @@ export function StudyResumeCard({ study, learning, navigate }: { study: Study; l
     {summary && <StudySummary queue={queue} learning={learning} study={study} navigate={navigate} onClose={() => setSummary(false)} />}
     <StudyQueueDialog queue={queue} data={learning.data} currentKey={target?.key ?? ''} dialogRef={dialog} onClose={() => trigger.current?.focus()} navigate={navigate} />
   </>;
-}
+};

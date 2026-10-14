@@ -9,7 +9,7 @@ import type { StartStudy } from './StudyStartActions';
 import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 
-export function ReactLearningPath({ learning, study, navigate, startStudy }: { learning: Learning; study: Study; navigate: Navigate; startStudy: StartStudy }) {
+export const ReactLearningPath = ({ learning, study, navigate, startStudy }: { learning: Learning; study: Study; navigate: Navigate; startStudy: StartStudy }) => {
   const catalog = useQuestions();
   const [error, setError] = useState('');
   const targets = new Map(learningTargets(catalog.questions, articles).map(target => [target.key, target]));
@@ -37,4 +37,4 @@ export function ReactLearningPath({ learning, study, navigate, startStudy }: { l
     </li>)}</ol>
     <p className="path-note">最后一步建议实际运行示例后再标记。已读只是你的阅读记录，不代表已通过知识测验。</p>
   </>;
-}
+};

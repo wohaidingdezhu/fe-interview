@@ -5,17 +5,17 @@ import type { LearningTarget } from './learning-view';
 import type { Navigate } from './NavigationLink';
 import { createStudySession, studyDirectory, studyHref, studyProgress } from './study-session';
 
-export function StudySummary({ queue, learning, study, navigate, onClose }: { queue: LearningTarget[]; learning: Learning; study: Study; navigate: Navigate; onClose: () => void }) {
+export const StudySummary = ({ queue, learning, study, navigate, onClose }: { queue: LearningTarget[]; learning: Learning; study: Study; navigate: Navigate; onClose: () => void }) => {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { const previous = document.activeElement; const modal = dialog.current; modal?.showModal(); return () => { modal?.close(); if (previous instanceof HTMLElement && previous.isConnected) previous.focus(); }; }, []);
   const counts = studyProgress(queue, learning.data);
   const back = study.session?.returnSearch ?? '?view=learning';
-  function resume(status: 'unread' | 'review') {
+  const resume = (status: 'unread' | 'review') => {
     const remaining = studyDirectory(queue, learning.data, '', status);
     if (!remaining.length) return;
     study.start(createStudySession(remaining, new URLSearchParams(back)));
     onClose(); navigate(studyHref(remaining[0]));
-  }
+  };
   return <dialog ref={dialog} className="study-summary" aria-labelledby="study-summary-title" onClose={event => {
     // StrictMode 重开弹窗后，忽略前一次清理排队的 close 事件。
     if (!event.currentTarget.open) onClose();
@@ -30,4 +30,4 @@ export function StudySummary({ queue, learning, study, navigate, onClose }: { qu
       <button onClick={onClose}>关闭结果</button>
     </div>
   </dialog>;
-}
+};

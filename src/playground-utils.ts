@@ -1,8 +1,8 @@
-function serialized(value: string) {
+const serialized = (value: string) => {
   return JSON.stringify(value).replace(/</g, '\\u003c');
-}
+};
 
-export function createRunnerDocument(code: string, channel: string) {
+export const createRunnerDocument = (code: string, channel: string) => {
   const safeCode = serialized(code);
   const safeChannel = serialized(channel);
   return `<!doctype html>
@@ -54,9 +54,9 @@ export function createRunnerDocument(code: string, channel: string) {
   <\/script>
 </body>
 </html>`;
-}
+};
 
-export function nextRunner(currentKey: number, code: string, channel: string) {
+export const nextRunner = (currentKey: number, code: string, channel: string) => {
   if (!Number.isSafeInteger(currentKey) || currentKey < 0) throw new RangeError('运行序号必须是非负安全整数');
   return { key: currentKey + 1, document: createRunnerDocument(code, channel) };
-}
+};
