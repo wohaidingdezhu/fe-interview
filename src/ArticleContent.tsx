@@ -6,6 +6,7 @@ import rehypeCodeHighlight from './rehype-code-highlight';
 import remarkStudyQuestion from './remark-study-question';
 import { studyHref } from './study-session';
 import { NavigationLink as Link } from './NavigationLink';
+import { ArticleImage, LinkedImage } from './ArticleImage';
 export type Heading = { id: string; title: string; level: number };
 function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<'pre'>) {
   const ref = useRef<HTMLPreElement>(null), [status, setStatus] = useState('复制代码');
@@ -60,7 +61,7 @@ function ArticleContent({ content, navigate, onHeadings, onReady, hash = '', art
   }, [content, hash, question]);
   const markup = useMemo(() => <Markdown remarkPlugins={[remarkGfm, [remarkStudyQuestion, { question }]]} rehypePlugins={[rehypeSlug, rehypeCodeHighlight]} components={{
     pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
-    img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
+    img: ({ node: _node, ...props }) => <ArticleImage {...props} />,
     h2: ({ node, children, ...props }) => {
       const first = node?.children[0];
       const matchedQuestion = first?.type === 'text' ? /^Q([1-9]\d*)｜/.exec(first.value) : null;
@@ -72,7 +73,7 @@ function ArticleContent({ content, navigate, onHeadings, onReady, hash = '', art
     a: ({ node: _node, href, children, ...props }) => {
       const localHref = articleId && href?.startsWith('#') ? `?article=${encodeURIComponent(articleId)}${href}` : href;
       const target = studyMode && href?.startsWith('#') && localHref ? studyHref({ href: localHref }, question) : localHref;
-      return <Link {...props} href={target ?? ''} navigate={navigate}>{children}</Link>;
+      return <LinkedImage.Provider value={true}><Link {...props} href={target ?? ''} navigate={navigate}>{children}</Link></LinkedImage.Provider>;
     },
   }}>{content}</Markdown>, [content, articleId, navigate, studyMode, question]);
   return <div className="article-body" ref={ref}>{markup}</div>;
