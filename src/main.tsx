@@ -160,7 +160,11 @@ const App = () => {
         if (event.key === 'ArrowUp') { event.preventDefault(); (index <= 0 ? searchRef.current : links[index - 1])?.focus(); }
         if (event.key === 'Enter' && event.target === searchRef.current) { event.preventDefault(); links[0]?.click(); }
       }}><span className="search-icon" aria-hidden="true">⌕</span><input ref={searchRef} type="search" onClick={() => setSearchOpen(true)} aria-label="搜索题目和笔记" aria-describedby="search-help" placeholder="搜索题号（如 Q134）、知识点、笔记…" value={query} onChange={(event) => { setQuery(event.target.value); setSearchOpen(true); }} /><span id="search-help" className="sr-only">输入关键词后，用上下方向键选择结果，回车打开，Escape 关闭。</span><kbd>⌘ K</kbd>
-        {searchOpen && query.trim() && <div className="search-results" aria-label="搜索结果"><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
+        {searchOpen && query.trim() && <div className="search-results" aria-label="搜索结果" onMouseDown={event => {
+          const target = event.target instanceof Element ? event.target.closest('a') : null;
+          // Safari 鼠标点击链接不一定转移焦点，避免输入框先失焦并卸载结果。
+          if (event.button === 0 && target) { event.preventDefault(); target.focus({ preventScroll: true }); }
+        }}><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
           {noteResults.slice(0, 6).map((item) => <Link key={item.href} href={item.href} navigate={navigate}><small>{item.questionNumber ? '题目' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></Link>)}
           {search.error && <p role="alert">{search.error}<button onClick={search.retry}>重试搜索</button></p>}
           {!search.loading && !search.error && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
@@ -177,7 +181,7 @@ const App = () => {
     </aside>
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
-      <LoadRecovery />
+      <LoadRecovery learning={learning} study={study} />
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
