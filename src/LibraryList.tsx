@@ -6,7 +6,7 @@ import { NavigationLink as Link } from './NavigationLink';
 
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
 export function LibraryList({ params, navigate }: Props) {
-  const collection = params.get('collection') || '';
+  const collection = ['notes', 'topics'].includes(params.get('collection') || '') ? params.get('collection')! : '';
   const resetHref = `?view=notes${collection === 'notes' || collection === 'topics' ? `&collection=${collection}` : ''}`;
   const noteArticles = articles.filter(article => collection === 'topics' ? article.questionCount > 0 : collection === 'notes' ? article.questionCount === 0 : true);
   const items: ListItem[] = noteArticles.map((item) => ({ ...item, type: item.kind, source: '专题与笔记' }));

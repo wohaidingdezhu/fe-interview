@@ -75,13 +75,22 @@ function App() {
   const navigate = useCallback((href: string, replace = false) => {
     const target = new URL(href, document.baseURI);
     const previous = new URL(window.location.href);
+    const changesListPage = (previous.searchParams.get('page') || '1') !== (target.searchParams.get('page') || '1');
     const changesPage = articleIdFromLocation(previous.pathname, previous.search) !== articleIdFromLocation(target.pathname, target.search)
-      || (previous.searchParams.get('view') || 'home') !== (target.searchParams.get('view') || 'home');
+      || (previous.searchParams.get('view') || 'home') !== (target.searchParams.get('view') || 'home')
+      || changesListPage
+      || previous.searchParams.get('path') !== target.searchParams.get('path');
     window.history[replace ? 'replaceState' : 'pushState']({}, '', target);
     setLocation(window.location.href); setQuery(''); setMenuOpen(false);
     if (!replace && !window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' });
-      if (changesPage) setTimeout(() => document.getElementById('main')?.focus({ preventScroll: true }), 0);
+      if (changesPage) setTimeout(() => {
+        if (window.location.href !== target.href) return;
+        const main = document.getElementById('main');
+        const first = changesListPage ? main?.querySelector<HTMLElement>('.question-list h2 a, .resource-list h2 a') : undefined;
+        (first ?? main)?.focus({ preventScroll: true });
+        first?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }, 0);
     }
     if (window.location.hash) {
       try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView(); } catch { /* invalid anchor */ }
