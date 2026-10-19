@@ -10,7 +10,7 @@ const aliases: Readonly<Record<string, string>> = {
   '代码编程': '算法与手写',
 };
 
-export function normalizeCategory(category: string): string {
+export const normalizeCategory = (category: string): string => {
   const value = category.trim();
   return Object.hasOwn(aliases, value) ? aliases[value] : value;
-}
+};

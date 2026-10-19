@@ -7,27 +7,37 @@ import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 import { StudyQueueDialog } from './StudyQueueDialog';
 import { StudySummary } from './StudySummary';
+import { LearningBackupButton } from './LearningBackupButton';
 
-export function StudySessionBar({ study, learning, route, navigate, openDirectory, directoryReady, readingReady = true }: { study: Study; learning: Learning; route: URL; navigate: Navigate; openDirectory: () => void; directoryReady: boolean; readingReady?: boolean }) {
+export const StudySessionBar = ({ study, learning, route, navigate, openDirectory, directoryReady, readingReady = true }: { study: Study; learning: Learning; route: URL; navigate: Navigate; openDirectory: () => void; directoryReady: boolean; readingReady?: boolean }) => {
   const catalog = useQuestions();
   const [message, setMessage] = useState(''), [summary, setSummary] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
+  const bar = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = bar.current;
+    if (!element) return;
+    const measure = () => document.documentElement.style.setProperty('--study-session-height', `${element.getBoundingClientRect().height}px`);
+    measure();
+    const observer = new ResizeObserver(measure); observer.observe(element);
+    return () => { observer.disconnect(); document.documentElement.style.removeProperty('--study-session-height'); };
+  }, []);
   const session = study.session;
   const queue = session ? studyQueue(session, learningTargets(catalog.questions, articles)) : [];
   const index = studyIndex(queue, route), current = queue[index];
   useEffect(() => { if (!catalog.loading && !catalog.error && current) study.move(current.key); }, [catalog.loading, catalog.error, current?.key, study.move]);
-  if (!session) return <section className="study-session" aria-label="连续学习"><p>当前没有可用清单，请重新选择学习内容。{study.error}</p><Link navigate={navigate} href="?view=learning">返回我的学习 →</Link></section>;
-  if (catalog.loading) return <section className="study-session" aria-label="连续学习"><p role="status">正在恢复学习清单…</p></section>;
-  if (catalog.error) return <section className="study-session" aria-label="连续学习"><p role="alert">{catalog.error}</p><button onClick={catalog.retry}>重试学习清单</button><Link navigate={navigate} href={session.returnSearch}>暂停并返回列表</Link></section>;
+  if (!session) return <section ref={bar} className="study-session" aria-label="连续学习"><p>当前没有可用清单，请重新选择学习内容。{study.error}</p>{study.error && <LearningBackupButton learning={learning} study={study} />}<Link navigate={navigate} href="?view=learning">返回我的学习 →</Link></section>;
+  if (catalog.loading) return <section ref={bar} className="study-session" aria-label="连续学习"><p role="status">正在恢复学习清单…</p></section>;
+  if (catalog.error) return <section ref={bar} className="study-session" aria-label="连续学习"><p role="alert">{catalog.error}</p><button onClick={catalog.retry}>重试学习清单</button><LearningBackupButton learning={learning} study={study} /><Link navigate={navigate} href={session.returnSearch}>暂停并返回列表</Link></section>;
   const next = queue[index + 1];
-  function markAndContinue(status: 'read' | 'review') {
+  const markAndContinue = (status: 'read' | 'review') => {
     if (!current || !readingReady) return;
     const saved = learning.update(current.key, { status });
     if (saved.error) { setMessage('当前项已在本次访问标记，但尚未保存。请导出备份，或重试保存后继续。'); return; }
     setMessage('');
     if (next) navigate(studyHref(next)); else setSummary(true);
-  }
-  return <section className="study-session" aria-label="连续学习">
+  };
+  return <section ref={bar} className="study-session" aria-label="连续学习">
     {current ? <>
       <div className="study-session-heading"><strong>学习清单 {index + 1} / {queue.length}</strong><span>{learning.data.entries[current.key]?.status === 'read' ? '当前项已读' : learning.data.entries[current.key]?.status === 'review' ? '当前项待复习' : '阅读后可标记状态'}</span></div>
       <p className="study-session-title">{current.title}</p>
@@ -44,8 +54,8 @@ export function StudySessionBar({ study, learning, route, navigate, openDirector
         <button aria-haspopup="dialog" onClick={() => setSummary(true)}>查看结果 / 结束清单</button>
       </div></details>
     </div>
-    {(message || study.error) && <p role="alert">{message || study.error}</p>}
+    {(message || study.error || learning.error) && <div className="study-save-warning"><p role="alert">{message || study.error || learning.error}</p><LearningBackupButton learning={learning} study={study} /></div>}
     <StudyQueueDialog queue={queue} data={learning.data} currentKey={current?.key ?? session.currentKey} dialogRef={dialog} onClose={() => trigger.current?.focus()} navigate={navigate} />
     {summary && <StudySummary queue={queue} learning={learning} study={study} navigate={navigate} onClose={() => setSummary(false)} />}
   </section>;
-}
+};

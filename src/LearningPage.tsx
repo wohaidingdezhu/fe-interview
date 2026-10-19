@@ -1,4 +1,5 @@
-import { createLearningBackup, parseLearningBackup } from './learning-backup';
+import { parseLearningBackup } from './learning-backup';
+import { LearningBackupButton } from './LearningBackupButton';
 import { readingInStudy } from './study-session';
 import { useRef, useState } from 'react';
 import { articles, useQuestions } from './content';
@@ -13,7 +14,7 @@ import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
 import { StudyStartActions } from './StudyStartActions';
 import { reactPathHref } from './react-path';
-export function LearningPage({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) {
+export const LearningPage = ({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) => {
   const catalog = useQuestions(), [message, setMessage] = useState(''), input = useRef<HTMLInputElement>(null);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const targets = learningTargets(catalog.questions, articles);
@@ -21,32 +22,28 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
   const counts = learningOverview(targets, learning.data);
   const categories = counts.categories.map(item => item.category);
   const query = params.get('q') || '';
-  function update(key: string, value: string, replace = false) {
+  const update = (key: string, value: string, replace = false) => {
     const next = new URLSearchParams(params);
     next.set('view', 'learning');
     next.delete('page');
     if (value) next.set(key, value); else next.delete(key);
     navigate(`?${next}`, replace);
-  }
+  };
   const validKeys = new Set(targets.map(item => item.key)), validArticles = new Set(articles.map(article => article.id));
   const catalogReady = !catalog.loading && !catalog.error;
   const staleCount = catalogReady ? Object.keys(learning.data.entries).filter(key => !validKeys.has(key)).length + (learning.data.lastRead && !validArticles.has(learning.data.lastRead.articleId) ? 1 : 0) : 0;
   const last = learning.data.lastRead;
-  function markPage(status: LearningStatus) {
+  const markPage = (status: LearningStatus) => {
     const saved = learning.updateMany(result.items.map(item => item.key), status);
     if (saved.count) setUndo(saved.undo);
     setMessage(saved.count ? `本页已将 ${saved.count} 条内容标记为${status === 'read' ? '已读' : '待复习'}。${saved.error ? '尚未保存到浏览器，请导出备份。' : ''}` : '本页内容已是这个状态，无需重复标记。');
-  }
-  function undoBatch() {
+  };
+  const undoBatch = () => {
     if (!undo) return;
     const saved = learning.undoMany(undo), expected = Object.keys(undo.previous).length;
     setUndo(null);
     setMessage(`已撤销 ${saved.count} 条标记。${saved.count < expected ? '其余记录已有后续修改，已保留。' : ''}${saved.error ? '尚未保存到浏览器，请导出备份。' : ''}`);
-  }
-  function download() {
-    const blob = new Blob([JSON.stringify(createLearningBackup(learning.data, study?.session), null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `前端资料库-学习记录-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setMessage('备份已导出。');
-  }
+  };
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
     <p><Link href={reactPathHref} navigate={navigate}>查看 React 学习路径 →</Link></p>
     {learning.error && <p role="alert">{learning.error}</p>}
@@ -77,7 +74,7 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
       {!result.total && <div className="empty-state"><h2>{query || result.category || result.kind ? '没有匹配的学习内容' : result.filter === 'unread' ? '当前内容都已标记' : '书架上还没有这类记录'}</h2><p>{query || result.category || result.kind ? '试试其他关键词或清除分类、类型筛选。' : '从一道感兴趣的题目开始，点击收藏或标记阅读状态。'}</p><Link navigate={navigate} href="?view=questions">去看看全部题目 →</Link></div>}
       {result.pages > 1 && <nav className="list-pagination" aria-label="学习记录分页"><button disabled={result.page === 1} onClick={() => update('page', String(result.page - 1))}>← 上一页</button><span>{result.page} / {result.pages}</span><button disabled={result.page === result.pages} onClick={() => update('page', String(result.page + 1))}>下一页 →</button></nav>}
     </>}
-    <details className="learning-management"><summary>记录管理 · 备份与清理</summary><div className="learning-backup"><div><strong>记录只保存在当前浏览器</strong><p>备份包含阅读记录和未完成清单。导入时合并阅读记录，并用备份中的清单替换当前清单；旧版备份仅合并记录。</p></div><div><button onClick={download}>导出备份</button><button onClick={() => input.current?.click()}>导入备份</button></div><input hidden ref={input} type="file" accept="application/json,.json" onChange={async event => {
+    <details className="learning-management"><summary>记录管理 · 备份与清理</summary><div className="learning-backup"><div><strong>记录只保存在当前浏览器</strong><p>备份包含阅读记录和未完成清单。导入时合并阅读记录，并用备份中的清单替换当前清单；旧版备份仅合并记录。</p></div><div><LearningBackupButton learning={learning} study={study} /><button onClick={() => input.current?.click()}>导入备份</button></div><input hidden ref={input} type="file" accept="application/json,.json" onChange={async event => {
       const file = event.target.files?.[0]; event.target.value = ''; if (!file) return;
       try { if (file.size > 4_000_000) throw new Error('备份不能超过 4 MB'); const backup = parseLearningBackup(await file.text());
         const restored = learning.restore(JSON.stringify(backup.learning)); setUndo(null);
@@ -88,4 +85,4 @@ export function LearningPage({ learning, navigate, params, startStudy, study }: 
     }} /></div>
     <div className="learning-maintenance"><button disabled={!staleCount} onClick={() => { const saved = learning.prune(validKeys, validArticles); setMessage(saved.error ? `本次访问已清理 ${staleCount} 条失效记录，但尚未保存到浏览器。` : `已清理 ${staleCount} 条失效记录。`); }}>清理失效记录{staleCount ? `（${staleCount}）` : ''}</button><button className="danger-text" onClick={() => { if (window.confirm('确定清空全部收藏、阅读状态、继续阅读位置及未完成清单吗？建议先导出备份。')) { const saved = learning.clear(), cleared = study?.end(); setUndo(null); setMessage(saved.error || cleared?.error ? '本次访问的记录及清单已清空，但未能全部保存到浏览器。' : '学习记录已清空。'); update('page', ''); } }}>清空全部记录</button></div>{message && <p className="backup-message" aria-hidden="true">{message}</p>}</details>
   </>;
-}
+};

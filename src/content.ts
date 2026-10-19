@@ -7,7 +7,7 @@ export const articles = library.articles.sort((a, b) => a.order - b.order || a.t
 const bodies = new Map<string, Promise<string>>();
 let searchRequest: Promise<SearchDocument[]> | undefined;
 let questionRequest: Promise<QuestionEntry[]> | undefined;
-export function useQuestions() {
+export const useQuestions = () => {
   const [questions, setQuestions] = useState<QuestionEntry[]>([]), [error, setError] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -23,14 +23,14 @@ export function useQuestions() {
     return () => { active = false; };
   }, [attempt]);
   return { questions, error, loading: !loaded && !error, retry: () => setAttempt(n => n + 1) };
-}
-async function readJSON(path: string): Promise<unknown> {
+};
+const readJSON = async (path: string): Promise<unknown> => {
   const response = await fetch(new URL(`${import.meta.env.BASE_URL}${path}`, document.baseURI));
   if (response.status === 404 || response.status === 410) window.dispatchEvent(new Event('library:asset-unavailable'));
   if (!response.ok) throw new Error(`加载失败（${response.status}），请重试。`);
   return response.json();
-}
-export function loadArticle(article: ArticleMetadata) {
+};
+export const loadArticle = (article: ArticleMetadata) => {
   let request = bodies.get(article.bodyPath);
   if (!request) {
     request = readJSON(article.bodyPath).then((data) => {
@@ -40,8 +40,8 @@ export function loadArticle(article: ArticleMetadata) {
     bodies.set(article.bodyPath, request);
   }
   return request;
-}
-export function loadSearchIndex() {
+};
+export const loadSearchIndex = () => {
   return searchRequest ??= readJSON(library.searchPath).then((data) => {
     if (!Array.isArray(data) || data.some((item) => !item || typeof item.id !== 'string' || typeof item.text !== 'string'
       || item.title !== undefined && typeof item.title !== 'string'
@@ -50,8 +50,8 @@ export function loadSearchIndex() {
         || typeof item.questionTitle !== 'string' || item.anchor !== `q${item.questionNumber}`))) throw new Error('搜索索引格式错误。');
     return data as SearchDocument[];
   }).catch((error) => { searchRequest = undefined; throw error; });
-}
-export function useSearchIndex(query: string) {
+};
+export const useSearchIndex = (query: string) => {
   const [documents, setDocuments] = useState<SearchDocument[]>();
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -63,12 +63,12 @@ export function useSearchIndex(query: string) {
     return () => { current = false; };
   }, [active, documents, attempt]);
   return { documents, error: active ? error : '', loading: active && !documents && !error, retry: () => setAttempt((value) => value + 1) };
-}
-export function searchArticles(query: string, documents: SearchDocument[] = []) {
+};
+export const searchArticles = (query: string, documents: SearchDocument[] = []) => {
   const byId = new Map(articles.map(article => [article.id, article]));
   return searchHits(documents, query).flatMap(hit => {
     const article = byId.get(hit.id);
     return article ? [{ ...article, title: hit.questionTitle ?? article.title, questionNumber: hit.questionNumber,
       href: `?article=${encodeURIComponent(article.id)}${hit.anchor ? `#${hit.anchor}` : ''}`, snippet: hit.snippet }] : [];
   });
-}
+};

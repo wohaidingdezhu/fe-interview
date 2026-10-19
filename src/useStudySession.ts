@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { moveStudySession, parseStudySession, type StudySession } from './study-session';
 import { readStudyStorage, saveStudyStorage, studyStorageKey, loadStudyStorage, storageWarning } from './study-storage';
 
-export function useStudySession() {
+export const useStudySession = () => {
   const [state, setState] = useState(() => loadStudyStorage(
     { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) },
     { getItem: key => sessionStorage.getItem(key), setItem: (key, value) => sessionStorage.setItem(key, value) },
@@ -39,5 +39,5 @@ export function useStudySession() {
   const start = useCallback((session: StudySession) => save(session), [save]);
   const end = useCallback(() => save(undefined), [save]);
   return { session: state.session, start, move, end, error: state.error };
-}
+};
 export type Study = ReturnType<typeof useStudySession>;

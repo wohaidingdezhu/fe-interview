@@ -4,7 +4,8 @@ test('正文图片预览支持放大滚动、键盘关闭并保留阅读位置',
   await page.goto('/?article=interview-javascript#q46');
   const trigger = page.getByRole('button', { name: '放大图片：本轮修订图：JavaScript 对象引用值与局部重新赋值', exact: true });
   await trigger.scrollIntoViewIfNeeded();
-  await trigger.focus();
+  await expect.poll(() => trigger.locator('img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await trigger.evaluate(button => { button.scrollIntoView({ block: 'center', behavior: 'instant' }); button.focus({ preventScroll: true }); });
   const originalURL = page.url(), scrollY = await page.evaluate(() => window.scrollY);
   await page.keyboard.press('Enter');
   const modal = page.getByRole('dialog', { name: '图片预览' });

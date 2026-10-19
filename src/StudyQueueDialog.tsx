@@ -4,7 +4,7 @@ import type { LearningData, LearningStatus } from './learning-utils';
 import { studyDirectory, studyHref, studyProgress } from './study-session';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 
-export function StudyQueueDialog({ queue, data, currentKey, dialogRef, onClose, navigate }: { queue: LearningTarget[]; data: LearningData; currentKey: string; dialogRef: RefObject<HTMLDialogElement | null>; onClose: () => void; navigate: Navigate }) {
+export const StudyQueueDialog = ({ queue, data, currentKey, dialogRef, onClose, navigate }: { queue: LearningTarget[]; data: LearningData; currentKey: string; dialogRef: RefObject<HTMLDialogElement | null>; onClose: () => void; navigate: Navigate }) => {
   const titleId = useId(), [query, setQuery] = useState(''), [status, setStatus] = useState<LearningStatus | ''>('');
   const counts = studyProgress(queue, data), items = studyDirectory(queue, data, query, status);
   return <dialog ref={dialogRef} className="study-queue-dialog" aria-labelledby={titleId} onClose={onClose} onClick={event => { if (event.target === event.currentTarget) dialogRef.current?.close(); }}>
@@ -14,4 +14,4 @@ export function StudyQueueDialog({ queue, data, currentKey, dialogRef, onClose, 
     <nav className="study-queue-list" aria-label="选择清单内容">{items.map(item => <Link key={item.key} navigate={navigate} href={studyHref(item)} aria-current={item.key === currentKey ? 'location' : undefined} onClick={event => { if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && event.button === 0) dialogRef.current?.close(); }}><span>{item.index + 1}</span><div><strong>{item.title}</strong><small>{item.category} · {item.status === 'read' ? '已读' : item.status === 'review' ? '待复习' : '未读'}{item.key === currentKey ? ' · 当前项' : ''}</small></div></Link>)}</nav>
     {!items.length && <p className="study-queue-empty">没有匹配的内容，试试其他关键词或阅读状态。</p>}
   </dialog>;
-}
+};

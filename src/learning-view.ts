@@ -11,21 +11,21 @@ export const learningFilters: { value: LearningFilter; label: string }[] = [
   { value: 'review', label: '待复习' }, { value: 'unread', label: '未读' },
 ];
 
-export function learningTargets(questions: QuestionEntry[], articles: ArticleMetadata[]): LearningTarget[] {
+export const learningTargets = (questions: QuestionEntry[], articles: ArticleMetadata[]): LearningTarget[] => {
   return [
     ...questions.map(q => ({ key: `q:${q.number}`, title: `Q${q.number}｜${q.title}`, category: q.category, href: articleHref(q.articleId, `q${q.number}`) })),
     ...articles.filter(a => !a.questionCount).map(a => ({ key: `a:${a.id}`, title: a.title, category: a.category, href: articleHref(a.id) })),
   ];
-}
+};
 
-export function matchesLearning(data: LearningData, key: string, filter: LearningFilter) {
+export const matchesLearning = (data: LearningData, key: string, filter: LearningFilter) => {
   const entry = data.entries[key];
   return filter === 'bookmarked' ? Boolean(entry?.bookmarked) : (entry?.status ?? 'unread') === filter;
-}
+};
 
 type Progress = { total: number; read: number; review: number; unread: number; bookmarked: number };
 const emptyProgress = (): Progress => ({ total: 0, read: 0, review: 0, unread: 0, bookmarked: 0 });
-export function learningOverview(targets: LearningTarget[], data: LearningData) {
+export const learningOverview = (targets: LearningTarget[], data: LearningData) => {
   const total = emptyProgress(), categories = new Map<string, Progress>();
   for (const target of targets) {
     const category = normalizeCategory(target.category);
@@ -38,9 +38,9 @@ export function learningOverview(targets: LearningTarget[], data: LearningData) 
     }
   }
   return { total, categories: [...categories].map(([category, counts]) => ({ category, ...counts })) };
-}
+};
 
-export function learningShelf(targets: LearningTarget[], data: LearningData, params: URLSearchParams) {
+export const learningShelf = (targets: LearningTarget[], data: LearningData, params: URLSearchParams) => {
   const filter = learningFilters.find(item => item.value === params.get('filter'))?.value ?? 'bookmarked';
   const category = normalizeCategory(params.get('category') || '');
   const query = (params.get('q') || '').trim().toLocaleLowerCase();
@@ -59,4 +59,4 @@ export function learningShelf(targets: LearningTarget[], data: LearningData, par
   const requested = Number(params.get('page'));
   const page = Math.min(pages, Math.max(1, Number.isFinite(requested) ? Math.floor(requested) : 1));
   return { filter, category, kind, sort, size, total: matching.length, pages, page, queue: matching, items: matching.slice((page - 1) * size, page * size) };
-}
+};

@@ -1,5 +1,27 @@
 import { test, expect } from '@playwright/test';
 
+test('搜索结果点击或触摸可跳转，键盘选择与移出焦点仍正常', async ({ page }, testInfo) => {
+  await page.goto('/');
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await input.fill('Q206');
+  const result = page.locator('.search-results').getByRole('link', { name: /Q206/ });
+  await expect(result).toBeVisible();
+  if (testInfo.project.use.isMobile) await result.tap(); else await result.click();
+  await expect(page).toHaveURL(/article=interview-react#q206$/);
+  await expect(page.getByRole('heading', { level: 2, name: /Q206/ })).toBeVisible();
+  await input.fill('词法作用域');
+  const closure = page.locator('.search-results > a').first();
+  await expect(closure).toHaveAttribute('href', '?article=closure');
+  await input.press('ArrowDown');
+  await expect(closure).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/article=closure$/);
+  await input.fill('Q5');
+  await expect(page.locator('.search-results')).toBeVisible();
+  await page.getByRole('link', { name: '跳到正文' }).focus();
+  await expect(page.locator('.search-results')).toHaveCount(0);
+});
+
 test('全局搜索优先笔记标题与别名，并保留精确题号', async ({ page }) => {
   await page.goto('/');
   const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });

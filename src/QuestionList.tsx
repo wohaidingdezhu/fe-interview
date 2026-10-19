@@ -8,7 +8,7 @@ import type { Study } from './useStudySession';
 import { StudyResumeCard } from './StudyResumeCard';
 import { StudyStartActions, type StartStudy } from './StudyStartActions';
 import { learningTargets } from './learning-view';
-export function QuestionList({ params, navigate, learning, study, startStudy }: { params: URLSearchParams; navigate: Navigate; learning: Learning; study: Study; startStudy: StartStudy }) {
+export const QuestionList = ({ params, navigate, learning, study, startStudy }: { params: URLSearchParams; navigate: Navigate; learning: Learning; study: Study; startStudy: StartStudy }) => {
   const catalog = useQuestions(), query = params.get('q') || '', category = normalizeCategory(params.get('category') || ''), tag = params.get('tag') || '';
   const progress = ['bookmarked', 'unread', 'read', 'review'].includes(params.get('progress') || '') ? params.get('progress')! : '';
   const categories = [...new Set(catalog.questions.map(q => q.category))], tags = [...new Set(catalog.questions.flatMap(q => q.tags))];
@@ -35,4 +35,4 @@ export function QuestionList({ params, navigate, learning, study, startStudy }: 
     {!result.total && !catalog.loading && !search.loading && !catalog.error && !search.error && <div className="empty-state"><h2>暂时没有匹配的题目</h2><p>试试更短的关键词，或清除分类和学习状态筛选。</p></div>}
     {ready && <nav className="list-pagination" aria-label="题目分页"><button disabled={result.page <= 1} onClick={() => changePage(result.page - 1)}>← 上一页</button><span>第 {result.page} / {result.pages} 页</span><button disabled={result.page >= result.pages} onClick={() => changePage(result.page + 1)}>下一页 →</button></nav>}
   </>;
-}
+};

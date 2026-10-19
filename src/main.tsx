@@ -26,12 +26,12 @@ import { NavigationLink as Link } from './NavigationLink';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
 
-function articleHref(id: string) { return `?article=${encodeURIComponent(id)}`; }
+const articleHref = (id: string) => { return `?article=${encodeURIComponent(id)}`; };
 // 固定站点根目录，避免静态子路径或 history 导航改变资源相对地址。
 const baseElement = document.querySelector<HTMLBaseElement>('base') ?? document.createElement('base');
 baseElement.href = new URL(window.location.pathname.replace(/articles\/[a-z0-9-]+\/(?:index\.html)?$/, ''), window.location.origin).href;
 if (!baseElement.parentNode) document.head.prepend(baseElement);
-function App() {
+const App = () => {
   const [location, setLocation] = useState(window.location.href);
   const learning = useLearning();
   const study = useStudySession();
@@ -144,14 +144,14 @@ function App() {
     return () => clearTimeout(timer);
   }, [article?.id, body.id, body.content, activeHeading?.id, question, learning.remember]);
   const link = (href: string, title: string, className?: string) => <Link href={href} className={className} navigate={navigate}>{title}</Link>;
-  function startStudy(targets: LearningTarget[], filters: URLSearchParams, random = false) {
+  const startStudy = (targets: LearningTarget[], filters: URLSearchParams, random = false) => {
     if (!targets.length) throw new Error('当前筛选没有可学习的内容');
     const queue = random ? shuffleStudyTargets(targets) : targets;
     const target = queue[0];
     const session = createStudySession(queue, filters);
     study.start(session);
     navigate(studyHref(target));
-  }
+  };
 
   return <>
     <Link className="skip-link" href={skipToContentHref(route)} navigate={navigate}>跳到正文</Link>
@@ -169,7 +169,11 @@ function App() {
         if (event.key === 'ArrowUp') { event.preventDefault(); (index <= 0 ? searchRef.current : links[index - 1])?.focus(); }
         if (event.key === 'Enter' && event.target === searchRef.current) { event.preventDefault(); links[0]?.click(); }
       }}><span className="search-icon" aria-hidden="true">⌕</span><input ref={searchRef} type="search" onClick={() => setSearchOpen(true)} aria-label="搜索题目和笔记" aria-describedby="search-help" placeholder="搜索题号（如 Q134）、知识点、笔记…" value={query} onChange={(event) => { setQuery(event.target.value); setSearchOpen(true); }} /><span id="search-help" className="sr-only">输入关键词后，用上下方向键选择结果，回车打开，Escape 关闭。</span><kbd>⌘ K</kbd>
-        {searchOpen && query.trim() && <div className="search-results" aria-label="搜索结果"><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
+        {searchOpen && query.trim() && <div className="search-results" aria-label="搜索结果" onMouseDown={event => {
+          const target = event.target instanceof Element ? event.target.closest('a') : null;
+          // Safari 鼠标点击链接不一定转移焦点，避免输入框先失焦并卸载结果。
+          if (event.button === 0 && target) { event.preventDefault(); target.focus({ preventScroll: true }); }
+        }}><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
           {noteResults.slice(0, 6).map((item) => <Link key={item.href} href={item.href} navigate={navigate}><small>{item.questionNumber ? '题目' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></Link>)}
           {search.error && <p role="alert">{search.error}<button onClick={search.retry}>重试搜索</button></p>}
           {!search.loading && !search.error && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
@@ -186,7 +190,7 @@ function App() {
     </aside>
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
-      <LoadRecovery />
+      <LoadRecovery learning={learning} study={study} />
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
@@ -202,5 +206,5 @@ function App() {
       <footer className="page-footer">前端资料库 <span>整理知识 · 沉淀理解</span></footer>
     </main>{id && article && <TableOfContents key={id} articleId={id} hash={route.hash} headings={toc} navigate={navigate} onActive={setActiveHeading} learning={learning} studyMode={inStudy} question={question} dialogRef={studyDirectoryRef} />}</div>
   </>;
-}
+};
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

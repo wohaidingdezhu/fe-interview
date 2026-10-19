@@ -20,42 +20,42 @@ export type Article = {
 export type ArticleMetadata = Omit<Article, 'content'> & {
   contentLength: number; bodyPath: string; questionCount: number; publishedQuestionCount: number;
 };
-function record(value: unknown, label: string): Record<string, unknown> {
+const record = (value: unknown, label: string): Record<string, unknown> => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${label} 必须是对象`);
   return value as Record<string, unknown>;
-}
-function publicationStatus(data: Record<string, unknown>, label: string): PublicationStatus {
+};
+const publicationStatus = (data: Record<string, unknown>, label: string): PublicationStatus => {
   if ('privateNotes' in data) throw new Error(`${label} 的私人备注必须存放在 .private/ 中`);
   const status = data.status ?? 'draft';
   if (status !== 'draft' && status !== 'published') throw new Error(`${label} 的 status 必须是 draft 或 published`);
   return status;
-}
-function text(value: unknown, label: string): string {
+};
+const text = (value: unknown, label: string): string => {
   if (typeof value !== 'string' || !value.trim()) throw new Error(`${label} 不能为空`);
   return value.trim();
-}
-function identifier(value: unknown, label: string): string {
+};
+const identifier = (value: unknown, label: string): string => {
   const id = text(value, label);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) throw new Error(`${label} 只能使用小写字母、数字和连字符`);
   return id;
-}
-function tags(value: unknown, label: string): string[] {
+};
+const tags = (value: unknown, label: string): string[] => {
   if (!Array.isArray(value)) throw new Error(`${label} 必须是字符串数组`);
   return [...new Set(value.map((tag) => text(tag, label)))];
-}
-function identifiers(value: unknown, label: string): string[] {
+};
+const identifiers = (value: unknown, label: string): string[] => {
   if (!Array.isArray(value)) throw new Error(`${label} 必须是 ID 数组`);
   return [...new Set(value.map((item) => identifier(item, label)))];
-}
-function date(value: unknown, label: string): string {
+};
+const date = (value: unknown, label: string): string => {
   const result = text(value, label);
   const timestamp = new Date(`${result}T00:00:00Z`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(result) || Number.isNaN(timestamp.getTime()) || timestamp.toISOString().slice(0, 10) !== result) {
     throw new Error(`${label} 必须是有效的 YYYY-MM-DD 日期`);
   }
   return result;
-}
-export function validateURL(value: unknown): string {
+};
+export const validateURL = (value: unknown): string => {
   const input = text(value, 'URL');
   let url: URL;
   try { url = new URL(input); } catch { throw new Error(`无效 URL：${input}`); }
@@ -63,8 +63,8 @@ export function validateURL(value: unknown): string {
     throw new Error(`URL 必须是无账号密码的 HTTP(S) 链接：${input}`);
   }
   return input;
-}
-export function validateQuestionPublicationMap(value: unknown): Record<string, QuestionPublication> {
+};
+export const validateQuestionPublicationMap = (value: unknown): Record<string, QuestionPublication> => {
   const data = record(value, '逐题发布清单');
   const result: Record<string, QuestionPublication> = {};
   for (const [key, raw] of Object.entries(data)) {
@@ -82,9 +82,9 @@ export function validateQuestionPublicationMap(value: unknown): Record<string, Q
     };
   }
   return result;
-}
+};
 // 忽略定位片段与常见跟踪参数，保留影响正文的查询参数。
-export function canonicalURL(value: string): string {
+export const canonicalURL = (value: string): string => {
   const url = new URL(validateURL(value));
   if (!/^#!?\//.test(url.hash)) url.hash = '';
   for (const key of [...url.searchParams.keys()]) {
@@ -93,8 +93,8 @@ export function canonicalURL(value: string): string {
   url.searchParams.sort();
   url.pathname = url.pathname.replace(/\/+$/, '') || '/';
   return url.href;
-}
-export function validateResource(value: unknown, label = '资料'): Resource {
+};
+export const validateResource = (value: unknown, label = '资料'): Resource => {
   const data = record(value, label);
   const type = text(data.type, `${label}类型`);
   if (!resourceTypes.includes(type as Resource['type'])) throw new Error(`${label}类型必须是：${resourceTypes.join('、')}`);
@@ -106,8 +106,8 @@ export function validateResource(value: unknown, label = '资料'): Resource {
     addedAt: date(data.addedAt, `${label}收录日期`),
     status: publicationStatus(data, label),
   };
-}
-export function parseArticle(raw: string, path: string): Article {
+};
+export const parseArticle = (raw: string, path: string): Article => {
   const match = raw.replace(/^\uFEFF/, '').match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!match) throw new Error(`${path} 缺少 YAML 元数据`);
   const data = record(parse(match[1]), path);
@@ -133,8 +133,8 @@ export function parseArticle(raw: string, path: string): Article {
     aliases: tags(data.aliases ?? [], `${path}搜索别名`), related: identifiers(data.related ?? [], `${path}相关文章 ID`),
     updatedAt, reviewedAt: data.reviewedAt === undefined ? undefined : date(data.reviewedAt, `${path}审核日期`),
   };
-}
-export function validateLibrary(data: unknown, articles: Article[] = []): Resource[] {
+};
+export const validateLibrary = (data: unknown, articles: Article[] = []): Resource[] => {
   if (!Array.isArray(data)) throw new Error('资料文件必须是 JSON 数组');
   const resources = data.map((value, index) => validateResource(value, `第 ${index + 1} 条资料`));
   const ids = new Set<string>();
@@ -149,7 +149,7 @@ export function validateLibrary(data: unknown, articles: Article[] = []): Resour
     urls.add(url);
   }
   return resources;
-}
+};
 export type ListItem = {
   id: string; title: string; description: string; category: string;
   tags: string[]; type: string; source: string; addedAt: string; url?: string; content?: string;
@@ -157,7 +157,7 @@ export type ListItem = {
   questionCount?: number; publishedQuestionCount?: number;
 };
 export type Filters = { query: string; category: string; tags: string[]; type: string; sort: string; page: number; pageSize: number; maintenance?: string };
-export function filterItems(items: ListItem[], filters: Filters) {
+export const filterItems = (items: ListItem[], filters: Filters) => {
   const terms = filters.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   const matching = items.filter((item) => {
     const searchable = `${item.title} ${item.description} ${item.source} ${item.category} ${item.tags.join(' ')} ${item.content || ''}`.toLocaleLowerCase();
@@ -179,4 +179,4 @@ export function filterItems(items: ListItem[], filters: Filters) {
   const pages = Math.max(1, Math.ceil(matching.length / pageSize));
   const page = Math.min(pages, Math.max(1, Math.floor(filters.page) || 1));
   return { items: matching.slice((page - 1) * pageSize, page * pageSize), total: matching.length, page, pages };
-}
+};

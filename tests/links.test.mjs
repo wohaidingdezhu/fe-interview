@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkLink, checkLinks, publicURL } from '../scripts/link-utils.mjs';
-import { linkReferences, linkReport } from '../scripts/link-report.mjs';
+import { collectLinkReferences, createLinkReports } from '../scripts/link-report.mjs';
+import { selectPublished } from '../scripts/publication.mjs';
+
+const linkReferences = (library, files) => collectLinkReferences(selectPublished(library), {
+  articleFiles: library.articles.map(article => ({ article, path: library.articlePaths[article.id], raw: files[library.articlePaths[article.id]] })),
+  resourcesText: files['src/data/resources.json'] ?? '[]',
+  questionText: files['src/data/question-publication.json'] ?? '{}',
+});
 
 test('HEAD 不支持时使用小流量 GET，记录重定向并取消响应正文', async () => {
   const calls = [];
@@ -22,14 +29,17 @@ test('维护报告定位正文、引用定义及逐题来源，草稿不泄露�
   const publication = { status: 'published', quality: 'complete', technologyVersion: '现代浏览器', reviewedAt: '2026-10-14', sources: ['https://example.com/shared#source'] };
   const library = { articles: [article], resources: [], articlePaths: { topic: 'src/articles/topic.md' }, questionPublication: { Q1: publication, Q2: { status: 'draft' } } };
   const references = linkReferences(library, { 'src/articles/topic.md': header + content, 'src/data/question-publication.json': JSON.stringify(library.questionPublication, null, 2) });
-  assert.equal(references.has('https://example.com/private'), false);
-  const shared = references.get('https://example.com/shared');
-  assert.equal(shared.length, 2); // 同一行的两个正文引用合并，来源清单仍单独定位。
-  assert.equal(shared.find(ref => ref.kind === '正文引用').line, 6);
+  assert.equal(references.some(ref => ref.url === 'https://example.com/private'), false);
+  const shared = references.filter(ref => ref.url === 'https://example.com/shared');
+  assert.equal(shared.length, 3); // 同一行使用两个不同地址，分别定位正文和引用定义，再加来源清单。
+  assert.equal(shared.find(ref => ref.originalURL.endsWith('#one')).line, 6);
+  const definition = shared.find(ref => ref.originalURL.endsWith('#two'));
+  assert.equal(definition.usageLine, 6);
+  assert.ok(definition.line > definition.usageLine);
   assert.ok(shared.every(ref => ref.questionNumber === 1));
-  const report = linkReport([{ url: 'https://example.com/ok', state: 'ok', status: 200 }, { url: 'https://example.com/shared', state: 'dead', status: 404 }], references, '2026-10-14');
-  assert.equal(report.results[0].state, 'dead');
-  assert.match(report.markdown, /专题 Q1.*src\/articles\/topic.md:6/);
+  const report = createLinkReports([{ url: 'https://example.com/ok', state: 'ok', status: 200 }, { url: 'https://example.com/shared', state: 'dead', status: 404 }], references, { checkedAt: '2026-10-14' });
+  assert.equal(report.items[0].state, 'dead');
+  assert.match(report.markdown, /专题.*Q1.*src\/articles\/topic.md:6/);
   assert.doesNotMatch(report.markdown, /私人草稿|example.com\/private/);
 });
 
@@ -41,13 +51,13 @@ test('普通文章与外部资料的来源可定位，代码块中的 URL 不当
   const references = linkReferences({ articles: [article], resources: [resource], articlePaths: { note: 'src/articles/nested/note.md' } }, {
     'src/articles/nested/note.md': source + content, 'src/data/resources.json': JSON.stringify([resource], null, 2),
   });
-  assert.equal(references.has('https://example.com/code'), false);
-  assert.equal(references.get('https://example.com/source')[0].line, 3);
-  assert.equal(references.get('https://example.com/shared').length, 2);
-  const report = linkReport([{ url: 'https://example.com/shared', state: 'restricted', status: 403 }], references);
-  assert.match(report.markdown, /笔记 测试/);
+  assert.equal(references.some(ref => ref.url === 'https://example.com/code'), false);
+  assert.equal(references.find(ref => ref.url === 'https://example.com/source').line, 3);
+  assert.equal(references.filter(ref => ref.url === 'https://example.com/shared').length, 2);
+  const report = createLinkReports([{ url: 'https://example.com/shared', state: 'restricted', status: 403 }], references);
+  assert.match(report.markdown, /笔记.*测试/);
   assert.match(report.markdown, /src\/articles\/nested\/note.md:6/);
-  assert.equal(report.results[0].references.find(ref => ref.kind === '资料').file, 'src/data/resources.json');
+  assert.equal(report.items[0].references.find(ref => ref.kind === 'resource').path, 'src/data/resources.json');
 });
 test('区别永久失效、访问限制、限流和临时错误，不追踪危险重定向', async () => {
   for (const [status, state] of [[404, 'dead'], [410, 'dead'], [403, 'restricted'], [429, 'temporary'], [503, 'temporary']]) {

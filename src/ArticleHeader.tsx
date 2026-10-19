@@ -4,7 +4,7 @@ import { ShareButton } from './ShareButton';
 
 type StudyContext = { question: string; returnHref: string };
 
-export function ArticleHeader({ article, navigate, study }: { article: ArticleMetadata; navigate: Navigate; study?: StudyContext }) {
+export const ArticleHeader = ({ article, navigate, study }: { article: ArticleMetadata; navigate: Navigate; study?: StudyContext }) => {
   const updated = article.updatedAt ?? article.addedAt;
   if (study) {
     const question = /^q[1-9]\d*$/.test(study.question) ? study.question : '';
@@ -26,4 +26,4 @@ export function ArticleHeader({ article, navigate, study }: { article: ArticleMe
     <h1>{article.title}</h1><p className="description">{article.description}</p><div className="article-tags">{article.tags.map(tag => <span className="tag" key={tag}>{tag}</span>)}</div>
     <ShareButton articleId={article.id} />
   </>;
-}
+};

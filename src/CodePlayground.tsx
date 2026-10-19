@@ -15,7 +15,7 @@ document.querySelector('#app').innerHTML = \`
   <p>通过分数：\${passed.join('、')}</p>
 \`;`;
 
-export function CodePlayground() {
+export const CodePlayground = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const channelRef = useRef(`playground-${Math.random().toString(36).slice(2)}`);
   const sequenceRef = useRef(0);
@@ -36,22 +36,22 @@ export function CodePlayground() {
     return () => window.removeEventListener('message', onMessage);
   }, []);
 
-  function run(nextCode = code) {
+  const run = (nextCode = code) => {
     setLogs([]);
     setRunner((current) => nextRunner(current.key, nextCode, channelRef.current));
-  }
+  };
 
-  function reset() {
+  const reset = () => {
     setCode(starterCode);
     run(starterCode);
-  }
+  };
 
-  function onEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+  const onEditorKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
       run();
     }
-  }
+  };
 
   return <section className="js-workbench" aria-labelledby="js-workbench-title">
     <header className="workbench-header">
@@ -71,4 +71,4 @@ export function CodePlayground() {
     </div>
     <footer className="workbench-footer"><span>快捷键：⌘/Ctrl + Enter</span><span>支持 DOM 操作、异步函数和 console 输出</span></footer>
   </section>;
-}
+};

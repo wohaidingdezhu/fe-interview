@@ -8,7 +8,7 @@ import { studyHref } from './study-session';
 
 const isQuestion = (heading: Heading) => /^q[1-9]\d*$/.test(heading.id);
 
-export function visibleDesktopHeadings(headings: Heading[], active: string): Heading[] {
+export const visibleDesktopHeadings = (headings: Heading[], active: string): Heading[] => {
   const questions = headings.filter(isQuestion);
   if (questions.length) return questions;
   const sections = headings.filter(heading => heading.level === 2);
@@ -22,16 +22,16 @@ export function visibleDesktopHeadings(headings: Heading[], active: string): Hea
     if (heading.level === 2) { section = heading.id; return true; }
     return heading.level !== 3 || section === activeSection;
   });
-}
+};
 
-function headingLabel(heading: Heading) {
+const headingLabel = (heading: Heading) => {
   if (!isQuestion(heading)) return heading.title;
   const number = heading.id.toUpperCase();
   const title = heading.title.replace(/^Q[1-9]\d*\s*[｜|]\s*/i, '').trim();
   return <><span className="toc-question-number">{number}</span><span className="toc-question-title">{title || heading.title}</span></>;
-}
+};
 
-export function TableOfContents({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, question, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; question?: string; dialogRef?: RefObject<HTMLDialogElement | null> }) {
+export const TableOfContents = ({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, question, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; question?: string; dialogRef?: RefObject<HTMLDialogElement | null> }) => {
   const [active, setActive] = useState(''), [collapsed, setCollapsed] = useState(false);
   const nav = useRef<HTMLElement>(null), ownDialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
   const dialog = dialogRef ?? ownDialog;
@@ -63,7 +63,7 @@ export function TableOfContents({ headings, articleId, hash, navigate, onActive,
   const reading = headings.slice(0, headingIndex + 1).reverse().find(heading => steps.some(step => step.id === heading.id));
   const index = steps.findIndex(heading => heading.id === reading?.id);
   const unit = questions.length ? '题' : '节';
-  function close() { dialog.current?.close(); button.current?.focus(); }
+  const close = () => { dialog.current?.close(); button.current?.focus(); };
   const readingHref = (anchor: string) => studyMode ? studyHref({ href: articleHref(articleId, anchor) }, question) : articleHref(articleId, anchor);
   const links = (items: Heading[], mobile = false) => items.map(heading => <Link key={heading.id} navigate={navigate} onClick={mobile ? close : undefined} className={[heading.level === 3 ? 'toc-sub' : '', isQuestion(heading) ? 'toc-question' : ''].filter(Boolean).join(' ')} href={readingHref(heading.id)} aria-current={active === heading.id || !mobile && current?.id === heading.id ? 'location' : undefined}>{headingLabel(heading)}</Link>);
   const desktopHeadings = visibleDesktopHeadings(headings, active);
@@ -81,4 +81,4 @@ export function TableOfContents({ headings, articleId, hash, navigate, onActive,
     {current && <div className="mobile-current-question"><strong>{current.title}</strong><LearningControls itemKey={`q:${current.id.slice(1)}`} learning={learning} /></div>}
     <nav className="toc-links">{links(headings, true)}</nav>
   </dialog></>;
-}
+};

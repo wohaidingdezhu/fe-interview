@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 
 export const LinkedImage = createContext(false);
 
-function ImagePreview({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+const ImagePreview = ({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) => {
   const dialog = useRef<HTMLDialogElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const position = useRef({ left: window.scrollX, top: window.scrollY });
@@ -26,13 +26,13 @@ function ImagePreview({ src, alt, onClose }: { src: string; alt: string; onClose
     }}>{failed ? <p role="alert">图片加载失败，请关闭后重试。</p> : <img src={src} alt={alt} className={zoomed ? 'is-zoomed' : ''} onError={() => setFailed(true)} />}</div>
     <p>放大后可滚动查看细节；按 Esc 或点击关闭返回正文。</p>
   </dialog>, document.body);
-}
+};
 
-export function ArticleImage(props: ComponentPropsWithoutRef<'img'>) {
+export const ArticleImage = (props: ComponentPropsWithoutRef<'img'>) => {
   const linked = useContext(LinkedImage), [open, setOpen] = useState(false);
   const image = <img {...props} loading="lazy" decoding="async" />;
   if (linked || !props.src) return image;
   return <><button type="button" className="article-image-button" aria-label={`放大图片：${props.alt || '正文配图'}`} aria-haspopup="dialog" onClick={event => {
     event.currentTarget.focus({ preventScroll: true }); setOpen(true);
   }}>{image}<span>放大查看</span></button>{open && <ImagePreview src={props.src} alt={props.alt || ''} onClose={() => setOpen(false)} />}</>;
-}
+};

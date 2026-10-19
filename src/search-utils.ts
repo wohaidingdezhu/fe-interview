@@ -1,7 +1,7 @@
 export type SearchDocument = { id: string; text: string; title?: string; aliases?: string[]; questionNumber?: number; questionTitle?: string; anchor?: string };
 export type SearchHit = SearchDocument & { snippet: string };
 const normalizedText = new WeakMap<SearchDocument, string>();
-export function searchHits(documents: SearchDocument[], query: string): SearchHit[] {
+export const searchHits = (documents: SearchDocument[], query: string): SearchHit[] => {
   const terms = [...new Set(query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean))];
   const result: { hit: SearchHit; score: number }[] = [];
   if (!terms.length) return [];
@@ -25,9 +25,9 @@ export function searchHits(documents: SearchDocument[], query: string): SearchHi
     result.push({ hit: { ...document, snippet }, score });
   }
   return result.sort((a, b) => b.score - a.score).map(item => item.hit);
-}
-export function searchDocuments(documents: SearchDocument[], query: string) {
+};
+export const searchDocuments = (documents: SearchDocument[], query: string) => {
   const result = new Map<string, string>();
   for (const hit of searchHits(documents, query)) if (!result.has(hit.id)) result.set(hit.id, hit.snippet);
   return result;
-}
+};

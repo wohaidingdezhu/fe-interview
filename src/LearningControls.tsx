@@ -1,5 +1,5 @@
 import type { Learning } from './useLearning';
-export function LearningControls({ itemKey, learning, compact = false }: { itemKey: string; learning: Learning; compact?: boolean }) {
+export const LearningControls = ({ itemKey, learning, compact = false }: { itemKey: string; learning: Learning; compact?: boolean }) => {
   const entry = learning.data.entries[itemKey];
   const labels = compact ? {
     bookmark: entry?.bookmarked ? '★ 收藏' : '☆ 收藏', read: entry?.status === 'read' ? '✓ 已读' : '○ 已读', review: entry?.status === 'review' ? '↺ 复习' : '↻ 复习',
@@ -11,4 +11,4 @@ export function LearningControls({ itemKey, learning, compact = false }: { itemK
     <button type="button" aria-pressed={entry?.status === 'read'} onClick={() => learning.update(itemKey, { status: entry?.status === 'read' ? 'unread' : 'read' })}>{labels.read}</button>
     <button type="button" aria-pressed={entry?.status === 'review'} onClick={() => learning.update(itemKey, { status: entry?.status === 'review' ? 'unread' : 'review' })}>{labels.review}</button>
   </div>;
-}
+};

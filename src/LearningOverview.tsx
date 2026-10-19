@@ -2,7 +2,7 @@ import { learningOverview, type LearningTarget } from './learning-view';
 import type { LearningData } from './learning-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 
-export function LearningOverview({ targets, data, navigate }: { targets: LearningTarget[]; data: LearningData; navigate: Navigate }) {
+export const LearningOverview = ({ targets, data, navigate }: { targets: LearningTarget[]; data: LearningData; navigate: Navigate }) => {
   const { total, categories } = learningOverview(targets, data);
   return <section className="learning-overview" aria-labelledby="learning-progress-title">
     <div className="section-heading"><div><h2 id="learning-progress-title">学习进度</h2><p>按当前题目与独立笔记统计；已读和待复习分别计数。</p></div><span>{total.read} / {total.total} 已读</span></div>
@@ -23,4 +23,4 @@ export function LearningOverview({ targets, data, navigate }: { targets: Learnin
       </article>)}</div>
     </details>
   </section>;
-}
+};

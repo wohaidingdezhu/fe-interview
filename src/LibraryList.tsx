@@ -5,7 +5,7 @@ import { normalizeCategory } from './categories';
 import { NavigationLink as Link } from './NavigationLink';
 
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
-export function LibraryList({ params, navigate }: Props) {
+export const LibraryList = ({ params, navigate }: Props) => {
   const collection = ['notes', 'topics'].includes(params.get('collection') || '') ? params.get('collection')! : '';
   const resetHref = `?view=notes${collection === 'notes' || collection === 'topics' ? `&collection=${collection}` : ''}`;
   const noteArticles = articles.filter(article => collection === 'topics' ? article.questionCount > 0 : collection === 'notes' ? article.questionCount === 0 : true);
@@ -32,22 +32,22 @@ export function LibraryList({ params, navigate }: Props) {
   const types = [...new Set(items.map((item) => item.type))];
   const tags = [...new Set(items.flatMap((item) => item.tags))].sort((a, b) => a.localeCompare(b, 'zh-CN'));
 
-  function update(key: string, value: string, replace = false) {
+  const update = (key: string, value: string, replace = false) => {
     const next = new URLSearchParams(params);
     next.set('view', 'notes');
     if (!showMaintenance) next.delete('maintenance');
     next.delete('page');
     if (value) next.set(key, value); else next.delete(key);
     navigate(`?${next}`, replace);
-  }
-  function toggleTag(tag: string) {
+  };
+  const toggleTag = (tag: string) => {
     const next = new URLSearchParams(params);
     if (!showMaintenance) next.delete('maintenance');
     next.delete('tag'); next.delete('page');
     const selected = selectedTags.includes(tag) ? selectedTags.filter((item) => item !== tag) : [...selectedTags, tag];
     selected.forEach((item) => next.append('tag', item));
     navigate(`?${next}`);
-  }
+  };
   const hasFilters = Boolean(query || category || type || maintenance || selectedTags.length);
 
   return <>
@@ -82,4 +82,4 @@ export function LibraryList({ params, navigate }: Props) {
     {!search.loading && !search.error && !result.total && <div className="empty-state"><span aria-hidden="true">⌕</span><h2>没有找到匹配内容</h2><p>减少筛选条件，或换一个关键词再试。</p><Link className="text-button" href="?view=notes" navigate={navigate}>查看全部专题与笔记 →</Link></div>}
     <nav className="list-pagination" aria-label="列表分页"><button disabled={result.page === 1} onClick={() => update('page', String(result.page - 1))}>← 上一页</button><span>第 {result.page} / {result.pages} 页</span><button disabled={result.page === result.pages} onClick={() => update('page', String(result.page + 1))}>下一页 →</button></nav>
   </>;
-}
+};
