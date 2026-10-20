@@ -24,13 +24,29 @@ export const useStudySession = () => {
     }
   }, [apply]);
   useEffect(() => {
+    const refresh = () => {
+      try {
+        const latest = readStudyStorage(localStorage);
+        // 存储未改变时保留内存中的临时清单及保存失败提示。
+        if (latest.raw !== current.current.raw) apply({ ...latest, error: '' });
+      } catch { apply({ ...current.current, error: current.current.error || '清单无法同步，已保留本页清单，请导出备份后重试。' }); }
+    };
+    const visible = () => { if (document.visibilityState === 'visible') refresh(); };
     const sync = (event: StorageEvent) => {
       if (event.storageArea !== localStorage || (event.key !== studyStorageKey && event.key !== null)) return;
-      try { apply({ ...readStudyStorage(localStorage), error: '' }); }
-      catch { apply({ ...current.current, error: '另一个标签页的清单无效，已保留本页清单。' }); }
+      refresh();
     };
     window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
+    window.addEventListener('pageshow', refresh);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', visible);
+    refresh();
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('pageshow', refresh);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', visible);
+    };
   }, [apply]);
   const move = useCallback((key: string) => {
     const next = moveStudySession(current.current.session, key);
