@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test';
 
+test('搜索加载失败可直接重试，保留关键词并恢复键盘选择', async ({ page }, testInfo) => {
+  let requests = 0;
+  await page.route('**/search/index-*.json', route => {
+    requests++;
+    return requests <= 2 ? route.fulfill({ status: requests === 1 ? 503 : 502, body: 'Unavailable' }) : route.continue();
+  });
+  await page.goto('/');
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await input.fill('Q206');
+  const results = page.locator('.search-results');
+  await expect(results.getByRole('alert')).toContainText('503');
+  const retry = results.getByRole('button', { name: '重试搜索' });
+  if (testInfo.project.use.isMobile) await retry.tap(); else await retry.click();
+  await expect.poll(() => requests).toBe(2);
+  await expect(results.getByRole('alert')).toContainText('502');
+  await expect(input).toBeFocused();
+  await retry.focus();
+  await page.keyboard.press('Enter');
+  await expect(results.getByRole('link', { name: /Q206/ })).toBeVisible();
+  await expect(input).toHaveValue('Q206');
+  await expect(input).toBeFocused();
+  await input.press('ArrowDown');
+  await expect(results.getByRole('link', { name: /Q206/ })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/article=interview-react#q206$/);
+  expect(requests).toBe(3);
+});
+
 test('搜索结果点击或触摸可跳转，键盘选择与移出焦点仍正常', async ({ page }, testInfo) => {
   await page.goto('/');
   const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });

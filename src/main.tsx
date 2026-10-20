@@ -173,12 +173,12 @@ const App = () => {
         if (event.key === 'Enter' && event.target === searchRef.current) { event.preventDefault(); links[0]?.click(); }
       }}><span className="search-icon" aria-hidden="true">⌕</span><input ref={searchRef} type="search" onClick={() => setSearchOpen(true)} aria-label="搜索题目和笔记" aria-describedby="search-help" placeholder="搜索题号（如 Q134）、知识点、笔记…" value={query} onChange={(event) => { setQuery(event.target.value); setSearchOpen(true); }} /><span id="search-help" className="sr-only">输入关键词后，用上下方向键选择结果，回车打开，Escape 关闭。</span><kbd>⌘ K</kbd>
         {searchOpen && query.trim() && <div className="search-results" aria-label="搜索结果" onMouseDown={event => {
-          const target = event.target instanceof Element ? event.target.closest('a') : null;
-          // Safari 鼠标点击链接不一定转移焦点，避免输入框先失焦并卸载结果。
+          const target = event.target instanceof Element ? event.target.closest<HTMLElement>('a, button') : null;
+          // Safari 点击链接或按钮不一定转移焦点，避免输入框先失焦并卸载结果。
           if (event.button === 0 && target) { event.preventDefault(); target.focus({ preventScroll: true }); }
         }}><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
           {noteResults.slice(0, 6).map((item) => <Link key={item.href} href={item.href} navigate={navigate}><small>{item.questionNumber ? '题目' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></Link>)}
-          {search.error && <p role="alert">{search.error}<button onClick={search.retry}>重试搜索</button></p>}
+          {search.error && <p role="alert">{search.error}<button onClick={() => { searchRef.current?.focus({ preventScroll: true }); search.retry(); }}>重试搜索</button></p>}
           {!search.loading && !search.error && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
           <div className="search-all">{link(`?view=notes&q=${encodeURIComponent(query)}`, '查看专题与笔记 →')}{link(`?view=questions&q=${encodeURIComponent(query)}`, '查看全部题目结果 →')}</div>
         </div>}
