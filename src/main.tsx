@@ -73,6 +73,7 @@ const App = () => {
     && (!question || toc.some(heading => heading.id === question));
 
   const navigate = useCallback((href: string, replace = false) => {
+    const previousFocus = document.activeElement;
     const target = new URL(href, document.baseURI);
     const previous = new URL(window.location.href);
     const changesListPage = (previous.searchParams.get('page') || '1') !== (target.searchParams.get('page') || '1');
@@ -86,6 +87,8 @@ const App = () => {
       window.scrollTo({ top: 0, behavior: 'instant' });
       if (changesPage) setTimeout(() => {
         if (window.location.href !== target.href) return;
+        // 用户已主动聚焦其他控件时，导航不能再抢走焦点。
+        if (document.activeElement !== previousFocus && document.activeElement !== document.body) return;
         const main = document.getElementById('main');
         const first = changesListPage ? main?.querySelector<HTMLElement>('.question-list h2 a, .resource-list h2 a') : undefined;
         (first ?? main)?.focus({ preventScroll: true });

@@ -96,3 +96,45 @@ test('题内小节导航保留学习题号，目录 Escape 恢复键盘焦点', 
   await expect(page.getByRole('heading', { name: '保存的是变量，不是快照', exact: true })).toBeFocused();
   expect(new URL(page.url()).searchParams.get('study')).toBe('1');
 });
+
+test('初始化注册监听期间发生的收藏更新不会遗漏', async ({ page }) => {
+  await page.addInitScript(() => {
+    const add = window.addEventListener;
+    window.addEventListener = function (type, ...args) {
+      if (type === 'storage') {
+        // 模拟其他标签在首次读取之后、storage 监听就绪之前写入。
+        localStorage.setItem('fe-library-learning-v1', JSON.stringify({ version: 1, entries: {
+          'q:5': { bookmarked: true, status: 'review', updatedAt: new Date().toISOString() },
+        } }));
+        window.addEventListener = add;
+      }
+      return add.call(this, type, ...args);
+    };
+  });
+  await page.goto('/?view=questions&q=Q5');
+  const controls = page.locator('.question-row .learning-controls');
+  await expect(controls.getByRole('button', { name: '★ 收藏', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(controls.getByRole('button', { name: '↺ 复习', exact: true })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('恢复页面时补齐遗漏的跨标签页更新，同时保留未保存的本地记录', async ({ page, context }) => {
+  await page.addInitScript(() => window.addEventListener('storage', event => event.stopImmediatePropagation()));
+  await page.goto('/?view=questions&q=Q6');
+  await page.evaluate(() => {
+    window.restoreStorageWrite = Storage.prototype.setItem;
+    Storage.prototype.setItem = function () { throw new Error('quota'); };
+  });
+  await page.locator('.question-row').getByRole('button', { name: '☆ 收藏', exact: true }).click();
+  await page.evaluate(() => { Storage.prototype.setItem = window.restoreStorageWrite; });
+  const other = await context.newPage();
+  await other.goto('/?view=questions&q=Q5');
+  await other.locator('.question-row').getByRole('button', { name: '☆ 收藏', exact: true }).click();
+  await expect(other.locator('.question-row').getByRole('button', { name: '★ 收藏', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
+  await page.getByRole('searchbox', { name: '搜索题目', exact: true }).fill('');
+  for (const number of [5, 6]) {
+    const row = page.locator('.question-row').filter({ has: page.locator('.question-number', { hasText: new RegExp(`^Q${number}$`) }) });
+    await expect(row.getByRole('button', { name: '★ 收藏', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  }
+  await expect(page.getByRole('alert')).toContainText('保存');
+});

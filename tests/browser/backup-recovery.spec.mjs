@@ -35,7 +35,8 @@ test('保存失败直接导出内存记录与清单，长底栏不会遮住正�
   expect(backup.study.keys).toEqual(['q:5']);
   expect(backup.study.currentKey).toBe('q:5');
   await expect(bar.getByRole('status')).toContainText('请确认文件已保存');
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  // 此处验收底栏占位，避免后台 WebKit 暂停平滑滚动导致尚未抵达页底。
+  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
   await expect.poll(async () => {
     const footer = await page.locator('.page-footer').boundingBox(), bounds = await bar.boundingBox();
     return footer.y + footer.height <= bounds.y;

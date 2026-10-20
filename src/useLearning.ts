@@ -14,12 +14,27 @@ export const useLearning = () => {
     return result;
   }, []);
   useEffect(() => {
-    try { load(); } catch { setError('本地记录无法读取，请导入备份恢复；新记录仍可在本次访问使用。'); }
+    const refresh = () => {
+      try { const next = mergeLearning(current.current, load()); current.current = next; setData(next); }
+      catch { setError('本地记录无法读取，请导入备份恢复；新记录仍可在本次访问使用。'); }
+    };
+    const visible = () => { if (document.visibilityState === 'visible') refresh(); };
     const sync = (event: StorageEvent) => {
       if (event.key !== storageKey || !event.newValue) return;
       try { const next = mergeLearning(current.current, importLearning(event.newValue)); current.current = next; setData(next); } catch { /* 忽略无效跨标签页输入 */ }
     };
-    window.addEventListener('storage', sync); return () => window.removeEventListener('storage', sync);
+    window.addEventListener('storage', sync);
+    window.addEventListener('pageshow', refresh);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', visible);
+    // 先监听再补读，覆盖首次渲染与订阅之间的写入；合并保留尚未保存的本地修改。
+    refresh();
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('pageshow', refresh);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', visible);
+    };
   }, []);
   const update = useCallback((key: string, patch: Partial<Pick<LearningEntry, 'bookmarked' | 'status'>>) => commit(base => ({ ...base, entries: { ...base.entries,
     [key]: { ...(base.entries[key] ?? { bookmarked: false, status: 'unread' }), ...patch, updatedAt: learningTimestamp(base) } } })), [commit]);

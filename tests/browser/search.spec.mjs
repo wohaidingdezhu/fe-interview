@@ -35,6 +35,24 @@ test('全局搜索优先笔记标题与别名，并保留精确题号', async ({
   await expect(hits.first()).toHaveAttribute('href', /#q1$/);
 });
 
+test('跳转后立即继续搜索不会被导航抢走焦点', async ({ page }) => {
+  await page.goto('/');
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await input.fill('词法作用域');
+  const result = page.locator('.search-results > a').first();
+  await expect(result).toHaveAttribute('href', '?article=closure');
+  await result.evaluate(link => {
+    link.focus(); link.click();
+    document.querySelector('.search-wrap input').focus();
+  });
+  // 等导航的下一任务完成，验证后续焦点选择仍然保留。
+  await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 0)));
+  await expect(page).toHaveURL(/article=closure$/);
+  await expect(input).toBeFocused();
+  await input.fill('Q5');
+  await expect(page.locator('.search-results').getByRole('link', { name: /Q5/ })).toBeVisible();
+});
+
 test('笔记列表默认相关性，手动排序及刷新保持选择', async ({ page }) => {
   await page.goto('/?view=notes&q=词法作用域');
   const sort = page.getByRole('combobox', { name: '列表排序' });
