@@ -220,3 +220,8 @@ html:has(.image-preview[open]) { overflow:hidden; }
 .study-workspace .article-body > h1 { margin:22px 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line); font-size:29px; letter-spacing:-.45px; }
 .workspace.study-workspace { padding-bottom:max(210px, calc(var(--study-session-height, 0px) + 24px)); }
 @media(max-width:760px) { .study-session { padding:8px 12px calc(6px + env(safe-area-inset-bottom)); }.study-session .study-session-title { margin:4px 0; }.study-session nav { gap:6px; }.study-session-footer { margin-top:0; gap:16px; }.workspace.study-workspace { padding-bottom:max(190px, calc(var(--study-session-height, 0px) + 24px)); }.study-session nav :is(a,button) { padding:8px 4px; }.study-summary { padding:20px; }.learning-management { padding:12px; }.study-article-header { padding:16px; }.study-article-actions { align-items:flex-start; flex-direction:column; }.study-workspace .article-body > h1 { font-size:25px; } }
+@media(max-height:540px) {
+  .study-session { max-height:45dvh; overflow-y:auto; overscroll-behavior:contain; }
+  .study-session .study-more[open] { flex-basis:100%; }
+  .study-session .study-more > div { position:static; min-width:0; max-height:none; box-shadow:none; }
+}

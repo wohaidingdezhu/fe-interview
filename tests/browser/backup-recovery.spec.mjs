@@ -84,3 +84,29 @@ test('导出失败保留当前页和记录，并允许原地重试', async ({ pa
   expect(backup.learning.entries['q:5'].status).toBe('read');
   await expect(bar.locator('.backup-export').getByRole('alert')).toHaveCount(0);
 });
+
+test('横屏长提示保留正文空间，备份和更多操作仍可到达', async ({ page }, testInfo) => {
+  for (const viewport of [{ width: 667, height: 375 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport);
+    await startUnsaved(page);
+    const bar = page.getByRole('region', { name: '连续学习' });
+    const header = await page.locator('.header').boundingBox(), bounds = await bar.boundingBox();
+    expect(bounds.y - header.y - header.height).toBeGreaterThanOrEqual(100);
+    const backup = await exportBackup(page, bar, testInfo.outputPath(`landscape-${viewport.width}.json`));
+    expect(backup.learning.entries['q:5'].status).toBe('read');
+    await bar.getByText('更多操作', { exact: true }).click();
+    await bar.getByRole('button', { name: '查看结果 / 结束清单' }).click();
+    const result = page.getByRole('dialog', { name: '本次清单结果' });
+    await expect(result).toBeVisible();
+    await result.getByRole('button', { name: '关闭结果', exact: true }).click();
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+    await expect.poll(async () => {
+      const footer = await page.locator('.page-footer').boundingBox(), barBounds = await bar.boundingBox();
+      return footer.y + footer.height <= barBounds.y;
+    }).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    if (testInfo.project.name === 'mobile-webkit') await page.screenshot({ path: testInfo.outputPath(`landscape-${viewport.width}.png`) });
+    await bar.getByRole('link', { name: '暂停', exact: true }).click();
+    await expect(page.getByRole('region', { name: '暂停的学习清单' })).toBeVisible();
+  }
+});
