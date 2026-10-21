@@ -86,6 +86,13 @@
 .mobile-toc-dialog .toc-question { display:grid; grid-template-columns:42px minmax(0,1fr); column-gap:8px; }
 .toc-question-number { font:600 9.5px/1.7 'SFMono-Regular',Consolas,monospace; letter-spacing:-.02em; }
 .mobile-toc-dialog .toc-question-number { padding-top:2px; color:#71866f; }
+.toc-search { flex-shrink:0; }
+.toc-search-controls { display:flex; gap:6px; }
+.toc-search input { width:100%; min-width:0; padding:8px; border:1px solid var(--line); border-radius:5px; background:white; color:inherit; font-size:12px; }
+.toc-search button { flex-shrink:0; border:1px solid var(--line); border-radius:5px; background:#f5f8f0; padding:6px 8px; font-size:12px; }
+.toc-search p { margin:8px 0 0; color:var(--muted); font-size:12px; line-height:1.6; }
+.mobile-toc-dialog .toc-search { padding:12px 20px 0; }
+.mobile-toc-dialog .toc-search input { font-size:16px; min-height:44px; }
 .article-body :is(h1,h2,h3)[tabindex="-1"]:focus { outline:2px solid #a8c4aa; outline-offset:5px; border-radius:3px; }
 
 /* 学习统计只计算当前目录；折叠分类明细，让记录列表仍然容易到达。 */

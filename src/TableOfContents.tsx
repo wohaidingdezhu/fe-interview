@@ -8,6 +8,12 @@ import { studyHref } from './study-session';
 
 const isQuestion = (heading: Heading) => /^q[1-9]\d*$/.test(heading.id);
 
+export const filterHeadings = (headings: Heading[], query: string) => {
+  const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  return headings.filter(heading => terms.every(term => /^q[1-9]\d*$/.test(term)
+    ? heading.id === term : heading.title.toLocaleLowerCase().includes(term)));
+};
+
 export const visibleDesktopHeadings = (headings: Heading[], active: string): Heading[] => {
   const questions = headings.filter(isQuestion);
   if (questions.length) return questions;
@@ -33,6 +39,7 @@ const headingLabel = (heading: Heading) => {
 
 export const TableOfContents = ({ headings, articleId, hash, navigate, onActive, learning, studyMode = false, question, dialogRef }: { headings: Heading[]; articleId: string; hash: string; navigate: Navigate; onActive: (heading?: Heading) => void; learning: Learning; studyMode?: boolean; question?: string; dialogRef?: RefObject<HTMLDialogElement | null> }) => {
   const [active, setActive] = useState(''), [collapsed, setCollapsed] = useState(false);
+  const [query, setQuery] = useState('');
   const nav = useRef<HTMLElement>(null), ownDialog = useRef<HTMLDialogElement>(null), button = useRef<HTMLButtonElement>(null);
   const dialog = dialogRef ?? ownDialog;
   const toggle = useRef<HTMLButtonElement>(null);
@@ -54,7 +61,7 @@ export const TableOfContents = ({ headings, articleId, hash, navigate, onActive,
     if (!link || !nav.current || collapsed) return;
     const top = link.getBoundingClientRect().top - nav.current.getBoundingClientRect().top + nav.current.scrollTop;
     if (top < nav.current.scrollTop || top + link.offsetHeight > nav.current.scrollTop + nav.current.clientHeight) nav.current.scrollTop = Math.max(0, top - nav.current.clientHeight / 3);
-  }, [active, collapsed]);
+  }, [active, collapsed, query]);
   const questions = headings.filter(isQuestion);
   const headingIndex = headings.findIndex(h => h.id === active);
   const current = headings.slice(0, headingIndex + 1).reverse().find(isQuestion);
@@ -67,18 +74,21 @@ export const TableOfContents = ({ headings, articleId, hash, navigate, onActive,
   const readingHref = (anchor: string) => studyMode ? studyHref({ href: articleHref(articleId, anchor) }, question) : articleHref(articleId, anchor);
   const links = (items: Heading[], mobile = false) => items.map(heading => <Link key={heading.id} navigate={navigate} onClick={mobile ? close : undefined} className={[heading.level === 3 ? 'toc-sub' : '', isQuestion(heading) ? 'toc-question' : ''].filter(Boolean).join(' ')} href={readingHref(heading.id)} aria-current={active === heading.id || !mobile && current?.id === heading.id ? 'location' : undefined}>{headingLabel(heading)}</Link>);
   const desktopHeadings = visibleDesktopHeadings(headings, active);
+  const filtering = Boolean(query.trim()), matches = filterHeadings(headings, query);
+  const search = () => <div className="toc-search"><div className="toc-search-controls"><input type="search" aria-label="搜索本篇目录" placeholder="题号或标题" value={query} onChange={event => setQuery(event.target.value)} />{query && <button type="button" onClick={event => { setQuery(''); event.currentTarget.parentElement?.querySelector('input')?.focus(); }}>清空</button>}</div>{filtering && <p role="status">{matches.length ? `找到 ${matches.length} 个标题` : '没有匹配的标题，请换个关键词或清空。'}</p>}</div>;
   const countLabel = questions.length ? `${questions.length} 道` : `${headings.filter(heading => heading.level === 2).length} 节`;
   const previous = index > 0 ? steps[index - 1] : undefined, next = index >= 0 && index < steps.length - 1 ? steps[index + 1] : undefined;
   if (!headings.length) return null;
   return <><aside className="toc" aria-label="本篇目录" onKeyDown={event => {
     if (event.key === 'Escape' && !collapsed) { event.preventDefault(); setCollapsed(true); toggle.current?.focus(); }
   }}><button ref={toggle} className="toc-toggle" aria-expanded={!collapsed} aria-controls="toc-links" onClick={() => setCollapsed(!collapsed)}><span className="toc-heading">本篇目录 <small>{countLabel}</small></span><span className="toc-action">{collapsed ? '展开' : '收起'}</span></button>
-    {!collapsed && <nav id="toc-links" className="toc-links desktop-toc-links" ref={nav}>{links(desktopHeadings)}</nav>}
+    {!collapsed && <>{search()}<nav id="toc-links" className="toc-links desktop-toc-links" ref={nav}>{links(filtering ? matches : desktopHeadings)}</nav></>}
     {!collapsed && current && <div className="toc-study"><small><span>阅读定位</span><strong>{current.id.toUpperCase()}</strong></small><LearningControls itemKey={`q:${current.id.slice(1)}`} learning={learning} compact /></div>}
   </aside>
   {!studyMode && <nav className="mobile-reading-bar" aria-label="手机阅读导航"><button ref={button} onClick={() => dialog.current?.showModal()} aria-haspopup="dialog">☰ 目录 <span>{current?.id.toUpperCase() ?? (index >= 0 ? `${index + 1}/${steps.length}` : '正文')}</span></button>{previous ? <Link href={articleHref(articleId, previous.id)} navigate={navigate}>← 上一{unit}</Link> : <button disabled>← 上一{unit}</button>}{next ? <Link href={articleHref(articleId, next.id)} navigate={navigate}>下一{unit} →</Link> : <button disabled>下一{unit} →</button>}</nav>}
   <dialog className="mobile-toc-dialog" ref={dialog} aria-labelledby="mobile-toc-title" onClick={event => { if (event.target === dialog.current) close(); }} onClose={() => button.current?.focus()}><div className="mobile-toc-header"><h2 id="mobile-toc-title">本页目录 <small>{questions.length ? `${questions.length} 道题` : ''}</small></h2><button onClick={close} aria-label="关闭正文目录">关闭 ×</button></div>
     {current && <div className="mobile-current-question"><strong>{current.title}</strong><LearningControls itemKey={`q:${current.id.slice(1)}`} learning={learning} /></div>}
-    <nav className="toc-links">{links(headings, true)}</nav>
+    {search()}
+    <nav className="toc-links">{links(filtering ? matches : headings, true)}</nav>
   </dialog></>;
 };

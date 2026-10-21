@@ -39,8 +39,13 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   assert.doesNotMatch(focusedHeader,/共 39 题|分钟阅读|收录 Q1–Q39/);
   const normalHeader=renderToStaticMarkup(createElement(ArticleHeader,{article:headerArticle,navigate(){}}));
   assert.match(normalHeader,/共 39 题/);assert.match(normalHeader,/20 分钟阅读/);assert.match(normalHeader,/收录 Q1–Q39/);assert.match(normalHeader,/复制文章链接/);
-  const {TableOfContents,visibleDesktopHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
+  const {TableOfContents,visibleDesktopHeadings,filterHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
   const articleHeadings=[{id:'overview',title:'概览',level:2},{id:'prepare',title:'准备工作',level:3},{id:'network',title:'网络调试',level:2},{id:'headers',title:'请求头',level:3}];
+  assert.deepEqual(filterHeadings(articleHeadings,' 调试 网络 ').map(heading=>heading.id),['network']);
+  assert.deepEqual(filterHeadings(articleHeadings,'请求头').map(heading=>heading.id),['headers']);
+  assert.deepEqual(filterHeadings(articleHeadings,'无匹配'),[]);
+  assert.deepEqual(filterHeadings(articleHeadings,'  '),articleHeadings);
+  assert.deepEqual(filterHeadings([{id:'q1',title:'Q1｜HTML',level:2},{id:'q10',title:'Q10｜HTML',level:2}],' Q1 html ').map(heading=>heading.id),['q1']);
   assert.deepEqual(visibleDesktopHeadings(articleHeadings,'headers').map(heading=>heading.id),['overview','network','headers']);
   assert.deepEqual(visibleDesktopHeadings(articleHeadings,'').map(heading=>heading.id),['overview','prepare','network']);
   assert.deepEqual(visibleDesktopHeadings([{id:'q1',title:'Q1｜第一题',level:2},{id:'detail',title:'补充',level:3},{id:'q2',title:'Q2｜第二题',level:2}],'q2').map(heading=>heading.id),['q1','q2']);
