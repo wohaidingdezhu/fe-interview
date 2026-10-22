@@ -8,6 +8,8 @@ import { createStudySession, studyQueue } from '../src/study-session.ts';
 const questions = Array.from({ length: 30 }, (_, i) => ({ number: i + 1, title: `题目${i + 1}`, articleId: 'topic', category: i % 2 ? 'React' : 'JS', tags: i % 2 ? ['Hooks'] : ['基础'], status: 'published' }));
 test('首页独立统计题目、专题、笔记和资料，不重复计数', () => {
   assert.deepEqual(libraryCounts([{ questionCount: 20, publishedQuestionCount: 15 }, { questionCount: 10, publishedQuestionCount: 10 }, { questionCount: 0 }], [1,2]), { questions:25, topics:2, notes:1, resources:2 });
+  assert.deepEqual(libraryCounts([{ questionCount: 0, section: 'resources' }, { questionCount: 0 }], []), { questions:0, topics:0, notes:1, resources:1 });
+  assert.deepEqual(learningTargets([], [{ id:'note', questionCount:0 }, { id:'related', questionCount:0, section:'resources' }]).map(target=>target.key), ['a:note']);
 });
 test('题目筛选、精确 Q 编号、分页和全文命中保持正确', () => {
   const base = { query:'', category:'', tag:'', page:1, size:12 };
@@ -27,7 +29,7 @@ test('静态文章路径和旧查询链接都可恢复，view 可以返回首页
   assert.equal(articleIdFromLocation('/','?article=welcome'),'welcome');
   assert.equal(articleHref('test','中文 标题'),'?article=test#%E4%B8%AD%E6%96%87%20%E6%A0%87%E9%A2%98');
   assert.equal(publicView('notes'),'notes');
-  assert.equal(publicView('resources'),'home');
+  assert.equal(publicView('resources'),'resources');
   assert.equal(publicView('unknown'),'home');
 });
 test('题库跨页清单与当前页严格共享全文、分类、标签和阅读筛选，保持题号顺序', () => {

@@ -6,6 +6,8 @@ const startUnsaved = async page => {
   await page.goto('/?view=questions&q=Q5');
   await page.getByRole('button', { name: '开始学习 →', exact: true }).click();
   await expect(page.getByRole('button', { name: '标记已读并查看结果' })).toBeEnabled();
+  // 先完成自动记录位置，再注入故障，避免定时保存提示恰好移动正在点击的底栏。
+  await expect.poll(() => page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}').lastRead?.anchor, learningKey)).toBe('q5');
   await page.evaluate(key => {
     const setItem = Storage.prototype.setItem;
     Storage.prototype.setItem = function (name, value) {

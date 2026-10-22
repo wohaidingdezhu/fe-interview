@@ -2,13 +2,14 @@ import type { ArticleMetadata } from './data-utils';
 import type { SearchDocument } from './search-utils';
 import { searchHits } from './search-utils.ts';
 export type QuestionEntry = { number: number; title: string; articleId: string; category: string; tags: string[]; status: 'draft' | 'published' };
-export type LibraryView = 'home' | 'questions' | 'learning' | 'notes';
+export type LibraryView = 'home' | 'questions' | 'learning' | 'notes' | 'resources';
 export const publicView = (value: string | null): LibraryView => {
-  return value === 'questions' || value === 'learning' || value === 'notes' ? value : 'home';
+  return value === 'questions' || value === 'learning' || value === 'notes' || value === 'resources' ? value : 'home';
 };
 export const libraryCounts = (articles: ArticleMetadata[], resources: unknown[]) => {
   const topics = articles.filter(article => article.questionCount > 0);
-  return { questions: topics.reduce((sum, article) => sum + article.publishedQuestionCount, 0), topics: topics.length, notes: articles.length - topics.length, resources: resources.length };
+  const related = articles.filter(article => article.section === 'resources').length;
+  return { questions: topics.reduce((sum, article) => sum + article.publishedQuestionCount, 0), topics: topics.length, notes: articles.length - topics.length - related, resources: resources.length + related };
 };
 export const articleHref = (id: string, anchor = '') => { return `?article=${encodeURIComponent(id)}${anchor ? `#${encodeURIComponent(anchor)}` : ''}`; };
 export const articleIdFromLocation = (pathname: string, search: string) => {

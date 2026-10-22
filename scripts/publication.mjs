@@ -69,7 +69,7 @@ export function publishedQuestionContent(article, questions, library) {
 export function articlePublicationErrors(article) {
   const errors = [];
   if (article.quality !== 'complete') errors.push('quality 必须是 complete');
-  if (!article.sources?.length) errors.push('缺少文章来源 sources');
+  if (!article.sources?.length && !(article.section === 'resources' && article.sourceNote)) errors.push('缺少文章来源 sources');
   if (!article.technologyVersion) errors.push('缺少适用版本 technologyVersion');
   const nodes = markdownNodes(article.content, ['text']);
   const text = nodes.map(node => node.value).join(' ').replace(/[^\p{L}\p{N}]/gu, '');

@@ -6,10 +6,13 @@ import { NavigationLink as Link } from './NavigationLink';
 
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
 export const LibraryList = ({ params, navigate }: Props) => {
+  const resources = params.get('view') === 'resources';
+  const view = resources ? 'resources' : 'notes', title = resources ? '相关资料' : '专题与笔记';
   const collection = ['notes', 'topics'].includes(params.get('collection') || '') ? params.get('collection')! : '';
-  const resetHref = `?view=notes${collection === 'notes' || collection === 'topics' ? `&collection=${collection}` : ''}`;
-  const noteArticles = articles.filter(article => collection === 'topics' ? article.questionCount > 0 : collection === 'notes' ? article.questionCount === 0 : true);
-  const items: ListItem[] = noteArticles.map((item) => ({ ...item, type: item.kind, source: '专题与笔记' }));
+  const resetHref = `?view=${view}${!resources && collection ? `&collection=${collection}` : ''}`;
+  const noteArticles = articles.filter(article => resources ? article.section === 'resources' : article.section !== 'resources'
+    && (collection === 'topics' ? article.questionCount > 0 : collection === 'notes' ? article.questionCount === 0 : true));
+  const items: ListItem[] = noteArticles.map((item) => ({ ...item, type: item.kind, source: item.sourceNote || title }));
   const category = normalizeCategory(params.get('category') || '');
   const selectedTags = params.getAll('tag');
   const query = params.get('q') || '';
@@ -34,7 +37,7 @@ export const LibraryList = ({ params, navigate }: Props) => {
 
   const update = (key: string, value: string, replace = false) => {
     const next = new URLSearchParams(params);
-    next.set('view', 'notes');
+    next.set('view', view);
     if (!showMaintenance) next.delete('maintenance');
     next.delete('page');
     if (value) next.set(key, value); else next.delete(key);
@@ -51,9 +54,9 @@ export const LibraryList = ({ params, navigate }: Props) => {
   const hasFilters = Boolean(query || category || type || maintenance || selectedTags.length);
 
   return <>
-    <div className="breadcrumb">前端资料库 <span>/</span> <b>专题与笔记</b></div>
-    <div className="list-heading"><div><span className="eyebrow">TOPICS & NOTES</span><h1>{collection === 'topics' ? '面试专题' : collection === 'notes' ? '知识笔记' : '专题与笔记'}</h1><p className="description">按专题建立结构，用独立笔记沉淀实践中的理解。</p></div><span className="collection-count">{items.length}<small>篇内容</small></span></div>
-    <nav className="collection-tabs" aria-label="笔记类型">{[['','全部'],['topics','面试专题'],['notes','独立笔记']].map(([value,label]) => <button key={value} aria-pressed={collection === value} onClick={() => update('collection', value)}>{label}</button>)}</nav>
+    <div className="breadcrumb">前端资料库 <span>/</span> <b>{title}</b></div>
+    <div className="list-heading"><div><span className="eyebrow">{resources ? 'RESOURCES & INSPIRATION' : 'TOPICS & NOTES'}</span><h1>{resources ? title : collection === 'topics' ? '面试专题' : collection === 'notes' ? '知识笔记' : title}</h1><p className="description">{resources ? '收藏工具与实践，留住成长建议和生活中的片刻感悟。' : '按专题建立结构，用独立笔记沉淀实践中的理解。'}</p></div><span className="collection-count">{items.length}<small>篇内容</small></span></div>
+    {!resources && <nav className="collection-tabs" aria-label="笔记类型">{[['','全部'],['topics','面试专题'],['notes','独立笔记']].map(([value,label]) => <button key={value} aria-pressed={collection === value} onClick={() => update('collection', value)}>{label}</button>)}</nav>}
     <section className="filters" aria-label="资料筛选">
       <label className="list-search"><span>关键词</span><input type="search" aria-label="检索当前列表" placeholder="题号、标题、标签或正文关键词" value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
       <div className={`filter-selects ${showMaintenance ? 'has-maintenance' : ''}`}>
@@ -79,7 +82,7 @@ export const LibraryList = ({ params, navigate }: Props) => {
       {questionMatches.has(item.id) && <Link className="question-result-link" href={questionMatches.get(item.id)!.href} navigate={navigate}>阅读 {questionMatches.get(item.id)!.title} →</Link>}
       <div className="resource-bottom"><span className="resource-source">{item.source}</span><div>{item.tags.map((tag) => <button className="tag" key={tag} aria-label={`筛选标签 ${tag}`} onClick={() => toggleTag(tag)}>{tag}</button>)}</div></div>
     </article>)}</div>
-    {!search.loading && !search.error && !result.total && <div className="empty-state"><span aria-hidden="true">⌕</span><h2>没有找到匹配内容</h2><p>减少筛选条件，或换一个关键词再试。</p><Link className="text-button" href="?view=notes" navigate={navigate}>查看全部专题与笔记 →</Link></div>}
+    {!search.loading && !search.error && !result.total && <div className="empty-state"><span aria-hidden="true">⌕</span><h2>没有找到匹配内容</h2><p>减少筛选条件，或换一个关键词再试。</p><Link className="text-button" href={`?view=${view}`} navigate={navigate}>查看全部{title} →</Link></div>}
     <nav className="list-pagination" aria-label="列表分页"><button disabled={result.page === 1} onClick={() => update('page', String(result.page - 1))}>← 上一页</button><span>第 {result.page} / {result.pages} 页</span><button disabled={result.page === result.pages} onClick={() => update('page', String(result.page + 1))}>下一页 →</button></nav>
   </>;
 };

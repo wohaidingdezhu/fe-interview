@@ -14,7 +14,7 @@ export const learningFilters: { value: LearningFilter; label: string }[] = [
 export const learningTargets = (questions: QuestionEntry[], articles: ArticleMetadata[]): LearningTarget[] => {
   return [
     ...questions.map(q => ({ key: `q:${q.number}`, title: `Q${q.number}｜${q.title}`, category: q.category, href: articleHref(q.articleId, `q${q.number}`) })),
-    ...articles.filter(a => !a.questionCount).map(a => ({ key: `a:${a.id}`, title: a.title, category: a.category, href: articleHref(a.id) })),
+    ...articles.filter(a => !a.questionCount && a.section !== 'resources').map(a => ({ key: `a:${a.id}`, title: a.title, category: a.category, href: articleHref(a.id) })),
   ];
 };
 

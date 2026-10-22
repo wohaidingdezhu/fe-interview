@@ -35,6 +35,14 @@ test('普通文章不能仅改状态发布空提纲，缺少来源或版本也�
     assert.equal(draft.errors.length, 0); assert.ok(draft.warnings.some(warning => expected.test(warning)));
   }
 });
+test('相关资料允许说明非链接来源，普通知识文章仍要求来源 URL', () => {
+  const article = parseArticle(markdown('quote', '这是一份个人收藏的文字与配图，正文说明来源和适用范围，不推断原作者身份，也不虚构公开链接。', 'status: published\nquality: complete\nsection: resources\nsourceNote: 个人收藏，公开出处未提供'), 'quote.md');
+  article.sources = [];
+  const publish = value => selectPublished({ articles: [value], resources: [], questionPublication: {} });
+  assert.equal(publish(article).articles.length, 1);
+  assert.throws(() => publish({ ...article, sourceNote: undefined }), /来源/);
+  assert.throws(() => publish({ ...article, section: 'notes' }), /来源/);
+});
 test('代码围栏中的示例题号不会把普通文章误识别为题库', async () => {
   for (const fence of ['```', '````', '~~~']) {
     const body = `这是一篇完整的 Markdown 使用说明，解释格式、使用步骤、可观察结果和常见错误边界。\n\n${fence}md\n## Q999｜示例标题\n示例正文\n${fence}`;

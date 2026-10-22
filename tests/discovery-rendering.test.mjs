@@ -16,7 +16,14 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   const library=await readLibrary();const total=library.articles.reduce((sum,a)=>sum+inspectQuestions(a).length,0);
   assert.match(home,new RegExp(`<strong>${total}</strong>`));
   for(const path of ['?view=questions','?view=notes&amp;collection=topics','?view=notes&amp;collection=notes','?view=learning'])assert.ok(home.includes(path));
-  assert.doesNotMatch(home,/\?view=resources/);
+  assert.match(home,/\?view=resources/);
+  const {LibraryList}=await server.ssrLoadModule('/src/LibraryList.tsx');
+  const resources=renderToStaticMarkup(createElement(LibraryList,{navigate(){},params:new URLSearchParams('view=resources')}));
+  assert.match(resources,/<h1>相关资料<\/h1>/);
+  assert.match(resources,/article=zsh-custom-config/);
+  assert.doesNotMatch(resources,/article=react-state|笔记类型/);
+  const notes=renderToStaticMarkup(createElement(LibraryList,{navigate(){},params:new URLSearchParams('view=notes&size=24')}));
+  assert.doesNotMatch(notes,/article=zsh-custom-config/);
   const {LearningPage}=await server.ssrLoadModule('/src/LearningPage.tsx');
   const shelf=renderToStaticMarkup(createElement(LearningPage,{navigate(){},params:new URLSearchParams(),learning:{...learning,data:{version:1,entries:{'q:1':{bookmarked:true,status:'read',updatedAt:'2026-10-09T10:00:00.000Z'}}}}}));
   assert.match(shelf,/<button disabled="">清理失效记录<\/button>/);
@@ -39,6 +46,8 @@ test('首页提供题目、专题、笔记入口，手机目录保留原生 dial
   assert.doesNotMatch(focusedHeader,/共 39 题|分钟阅读|收录 Q1–Q39/);
   const normalHeader=renderToStaticMarkup(createElement(ArticleHeader,{article:headerArticle,navigate(){}}));
   assert.match(normalHeader,/共 39 题/);assert.match(normalHeader,/20 分钟阅读/);assert.match(normalHeader,/收录 Q1–Q39/);assert.match(normalHeader,/复制文章链接/);
+  const resourceHeader=renderToStaticMarkup(createElement(ArticleHeader,{article:{...headerArticle,section:'resources'},navigate(){}}));
+  assert.match(resourceHeader,/href="\?view=resources"/);assert.match(resourceHeader,/\?view=resources&amp;category=/);assert.doesNotMatch(resourceHeader,/\?view=notes/);
   const {TableOfContents,visibleDesktopHeadings,filterHeadings}=await server.ssrLoadModule('/src/TableOfContents.tsx');
   const articleHeadings=[{id:'overview',title:'概览',level:2},{id:'prepare',title:'准备工作',level:3},{id:'network',title:'网络调试',level:2},{id:'headers',title:'请求头',level:3}];
   assert.deepEqual(filterHeadings(articleHeadings,' 调试 网络 ').map(heading=>heading.id),['network']);

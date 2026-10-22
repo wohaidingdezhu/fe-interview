@@ -23,6 +23,10 @@ test('Markdown 元数据自动解析，支持 CRLF 与包含冒号的标题', ()
   const raw = '---\r\nid: note\r\ntitle: "React: 状态"\r\ncategory: React\r\ndescription: 说明\r\nkind: 知识文章\r\ntags: [React, React]\r\naddedAt: "2026-10-08"\r\n---\r\n\r\n## 正文';
   const result = parseArticle(raw, 'note.md');
   assert.equal(result.title, 'React: 状态'); assert.deepEqual(result.tags, ['React']); assert.equal(result.content, '## 正文');
+  assert.equal(result.section, 'notes');
+  const related = parseArticle(raw.replace('kind: 知识文章', 'section: resources\r\nsourceNote: 收藏配图\r\nkind: 知识文章'), 'related.md');
+  assert.equal(related.section, 'resources'); assert.equal(related.sourceNote, '收藏配图');
+  assert.throws(() => parseArticle(raw.replace('kind: 知识文章', 'section: invalid\r\nkind: 知识文章'), 'invalid.md'), /section/);
   assert.throws(() => parseArticle('## 无元数据', 'bad.md'), /缺少 YAML/);
 });
 test('文章元数据支持搜索别名、相关文章和保鲜日期', () => {

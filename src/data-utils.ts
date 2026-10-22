@@ -13,6 +13,7 @@ export type Resource = {
 };
 export type Article = {
   id: string; title: string; category: string; description: string;
+  section?: 'notes' | 'resources'; sourceNote?: string;
   kind: '阅读指南' | '知识文章' | '手写题解'; tags: string[]; addedAt: string; order: number; content: string;
   status: PublicationStatus; quality: 'complete' | 'incomplete'; sources: string[]; technologyVersion?: string;
   aliases: string[]; related: string[]; updatedAt?: string; reviewedAt?: string;
@@ -113,6 +114,8 @@ export const parseArticle = (raw: string, path: string): Article => {
   const data = record(parse(match[1]), path);
   const kind = text(data.kind, `${path}类型`);
   if (!['阅读指南', '知识文章', '手写题解'].includes(kind)) throw new Error(`${path} 的 kind 无效`);
+  const section = data.section ?? 'notes';
+  if (section !== 'notes' && section !== 'resources') throw new Error(`${path} 的 section 必须是 notes 或 resources`);
   const order = data.order ?? 100;
   if (typeof order !== 'number' || !Number.isFinite(order)) throw new Error(`${path} 的 order 必须是数字`);
   const quality = data.quality ?? 'incomplete';
@@ -126,6 +129,7 @@ export const parseArticle = (raw: string, path: string): Article => {
     id: identifier(data.id, `${path} ID`), title: text(data.title, `${path}标题`),
     category: normalizeCategory(text(data.category, `${path}分类`)), description: text(data.description, `${path}简介`),
     kind: kind as Article['kind'], tags: tags(data.tags, `${path}标签`),
+    section, sourceNote: data.sourceNote === undefined ? undefined : text(data.sourceNote, `${path}来源说明`),
     addedAt, order, content: text(match[2], `${path}正文`),
     status: publicationStatus(data, path), quality,
     sources: sources.map((value: unknown) => validateURL(value)),
