@@ -23,6 +23,7 @@ import { StudySessionBar } from './StudySessionBar';
 import type { LearningTarget } from './learning-view';
 import { articleIdFromLocation, libraryCounts, publicView } from './library-utils';
 import { NavigationLink as Link } from './NavigationLink';
+import { navigationListReturn, readListReturn } from './list-return';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
 
@@ -84,7 +85,8 @@ const App = () => {
       || (previous.searchParams.get('view') || 'home') !== (target.searchParams.get('view') || 'home')
       || changesListPage
       || previous.searchParams.get('path') !== target.searchParams.get('path');
-    window.history[replace ? 'replaceState' : 'pushState']({}, '', target);
+    const listReturn = navigationListReturn(previous, target, window.history.state);
+    window.history[replace ? 'replaceState' : 'pushState'](listReturn ? { listReturn: listReturn.href } : {}, '', target);
     setLocation(window.location.href); setQuery(''); setMenuOpen(false);
     if (!replace && !window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -198,7 +200,7 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' || view === 'resources' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
-        <ArticleHeader article={article} navigate={navigate} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
+        <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}

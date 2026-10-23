@@ -110,6 +110,7 @@ test('导出与导入备份恢复阅读状态及学习清单', async ({ page, br
     await restored.goto('/?view=learning');
     await restored.getByText('记录管理 · 备份与清理', { exact: true }).click();
     await restored.locator('input[type=file]').setInputFiles(backup);
+    await restored.getByRole('dialog', { name: '导入备份预览' }).getByRole('button', { name: '确认导入', exact: true }).click();
     await expect(restored.getByRole('region', { name: '暂停的学习清单' })).toContainText('待复习 1');
     await restored.getByRole('link', { name: '继续清单 →' }).click();
     await expect(restored.getByRole('region', { name: '连续学习' })).toContainText('当前项待复习');

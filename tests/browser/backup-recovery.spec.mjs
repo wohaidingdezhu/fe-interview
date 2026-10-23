@@ -66,6 +66,7 @@ test('内容加载失败可先备份未保存修改，再在新页面导入恢�
     await restored.goto('/?view=learning');
     await restored.getByText('记录管理 · 备份与清理', { exact: true }).click();
     await restored.locator('input[type=file]').setInputFiles(path);
+    await restored.getByRole('dialog', { name: '导入备份预览' }).getByRole('button', { name: '确认导入', exact: true }).click();
     await expect(restored.getByRole('region', { name: '暂停的学习清单' })).toContainText('已读 1');
     await restored.getByRole('link', { name: '继续清单 →' }).click();
     await expect(restored.getByRole('region', { name: '连续学习' })).toContainText('当前项已读');
