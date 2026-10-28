@@ -186,6 +186,21 @@
 .learning-management > summary::before,.batch-management > summary::before { content:'＋'; }
 .learning-management[open] > summary::before,.batch-management[open] > summary::before { content:'−'; }
 .batch-management > div { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.learning-selection-actions { padding-bottom:12px; border-bottom:1px solid var(--line); }
+.learning-selection-review > summary { display:flex; align-items:center; min-height:44px; cursor:pointer; color:var(--green); }
+.learning-selection-review > summary::before { content:'＋'; margin-right:8px; }
+.learning-selection-review[open] > summary::before { content:'−'; }
+.learning-selection-review ol { max-height:320px; overflow:auto; margin:8px 0 0; padding:0 8px 0 28px; }
+.learning-selection-review li { padding:12px 0; border-bottom:1px solid var(--line); }
+.learning-selection-review strong { display:block; font-size:14px; line-height:1.7; overflow-wrap:anywhere; }
+.learning-selection-review li > div { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.learning-selection-review p { font-size:13px; line-height:1.7; margin:8px 0; }
+.learning-selection-footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; color:var(--green); }
+.learning-selection-footer button { min-height:44px; padding:10px 12px; border:1px solid #cddcc8; border-radius:5px; background:white; color:var(--green); }
+.learning-select { display:flex; align-items:center; gap:10px; width:fit-content; min-height:44px; margin-bottom:8px; color:var(--green); cursor:pointer; }
+.learning-select input { width:20px; height:20px; margin:0; accent-color:var(--green); }
+.resource-card:has(> .learning-select) { padding-inline:12px; }
+.resource-card[data-selected=true] { background:#f1f7ed; box-shadow:inset 3px 0 var(--green); }
 .study-more { position:relative; margin-left:auto; }
 .study-more > summary { cursor:pointer; min-height:44px; display:flex; align-items:center; color:var(--green); font-size:12px; }
 .study-more > div { position:absolute; bottom:100%; right:0; min-width:210px; padding:12px; background:white; border:1px solid #cddcc8; border-radius:8px; box-shadow:0 8px 30px #24462c20; display:grid; gap:6px; max-height:50vh; overflow:auto; }
