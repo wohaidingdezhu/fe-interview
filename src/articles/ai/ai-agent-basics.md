@@ -6,7 +6,7 @@ kind: "知识文章"
 description: "理解 Agent 的工具循环、与固定工作流的区别，以及权限、重试、停止条件和 MCP。"
 tags: ["AI", "Agent", "工具调用", "MCP"]
 aliases: ["AI Agent", "ai-agent", "智能体", "tool calling", "function calling", "MCP", "工作流"]
-related: ["ai-fundamentals", "rag-basics"]
+related: ["ai-evaluation", "ai-fundamentals", "rag-basics"]
 addedAt: "2026-11-01"
 updatedAt: "2026-11-02"
 reviewedAt: "2026-11-02"
@@ -104,3 +104,5 @@ Agent 可以使用普通函数或 HTTP 接口，并非必须使用 MCP；接入 
 - RAG 与 Agent 是否互斥？不互斥，检索可以成为 Agent 使用的能力。
 
 先读 [AI 基础](?article=ai-fundamentals)，再读 [RAG](?article=rag-basics)，最后用本篇案例练习描述工具边界和停止条件。
+
+想比较提示词或流程改动是否有效，继续阅读 [AI 应用评估：从示例演示到回归验证](?article=ai-evaluation)。

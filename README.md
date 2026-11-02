@@ -9,7 +9,7 @@ React + TypeScript + Vite 构建的静态资料库，公开阅读分成四个入
 
 内容列表支持关键词、分类、类型和多个标签组合筛选，标签取交集；支持排序与分页。分类自动汇总，无需修改页面代码。列表筛选条件保存在 URL 中，可直接分享和刷新。
 
-“AI 与 Agent”分类新增三篇入门笔记，建议依次阅读 [AI 基础](src/articles/ai/ai-fundamentals.md)、[RAG](src/articles/ai/rag-basics.md)、[AI Agent](src/articles/ai/ai-agent-basics.md)。内容包括 Token 与上下文、检索与引用评估、工具调用与执行边界，以及 MCP 的定位；来源和审核日期随文章保存。可通过 `ai-agent`、`人工智能入门`、`检索增强生成` 等别名搜索，也可收藏后纳入现有学习清单。这里只补充知识内容，未接入模型服务。
+“AI 与 Agent”分类提供四篇入门笔记，建议依次阅读 [AI 基础](src/articles/ai/ai-fundamentals.md)、[RAG](src/articles/ai/rag-basics.md)、[AI Agent](src/articles/ai/ai-agent-basics.md)，再用 [AI 应用评估](src/articles/ai/ai-evaluation.md)练习判断改动是否有效。内容包括 Token 与上下文、检索与引用评估、工具调用与执行边界，以及 MCP 的定位；来源和审核日期随文章保存。可通过 `ai-agent`、`人工智能入门`、`检索增强生成`、`evals` 等别名搜索，也可收藏后纳入现有学习清单。这里只补充知识内容，未接入模型服务。
 
 首页分类同时覆盖只有笔记的主题：此类分类进入笔记列表并显示篇数，有面试题的分类仍进入题库。
 

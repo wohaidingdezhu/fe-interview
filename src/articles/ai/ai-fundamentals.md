@@ -6,7 +6,7 @@ kind: "知识文章"
 description: "面向前端开发者，理解大语言模型、Token、上下文、提示词和结果验证。"
 tags: ["AI", "LLM", "Token", "入门"]
 aliases: ["AI 基础", "人工智能入门", "大语言模型", "LLM", "提示词", "prompt"]
-related: ["rag-basics", "ai-agent-basics"]
+related: ["ai-evaluation", "rag-basics", "ai-agent-basics"]
 addedAt: "2026-11-01"
 updatedAt: "2026-11-02"
 reviewedAt: "2026-11-02"
@@ -104,3 +104,5 @@ console.log(hasValidSummaryShape({ summary: '', sources: ['closure'] })); // fal
 - [Hugging Face：Tokenizers](https://huggingface.co/learn/llm-course/chapter2/4)
 
 本文的界面练习为本资料库自拟。实际 Token 上限、计费、输出格式支持和数据保留规则，应查询所用服务的当前文档。
+
+想比较提示词或流程改动是否有效，继续阅读 [AI 应用评估：从示例演示到回归验证](?article=ai-evaluation)。

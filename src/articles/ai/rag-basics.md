@@ -6,7 +6,7 @@ kind: "知识文章"
 description: "区分检索与生成，理解分块、Embedding、引用、权限过滤和 RAG 评估。"
 tags: ["AI", "RAG", "检索", "评估"]
 aliases: ["RAG", "检索增强生成", "向量检索", "Embedding", "知识库问答"]
-related: ["ai-fundamentals", "ai-agent-basics"]
+related: ["ai-evaluation", "ai-fundamentals", "ai-agent-basics"]
 addedAt: "2026-11-01"
 updatedAt: "2026-11-02"
 reviewedAt: "2026-11-02"
@@ -98,3 +98,5 @@ S2：用户可以导出备份，在另一浏览器导入；相同记录按时间
 
 - 不清楚 Token 和上下文的区别：先读 [AI 基础](?article=ai-fundamentals)。
 - 需要根据检索结果继续执行动作：再读 [AI Agent](?article=ai-agent-basics)。
+
+想比较提示词或流程改动是否有效，继续阅读 [AI 应用评估：从示例演示到回归验证](?article=ai-evaluation)。
