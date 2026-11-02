@@ -38,7 +38,15 @@ export const useLearning = () => {
   }, []);
   const update = useCallback((key: string, patch: Partial<Pick<LearningEntry, 'bookmarked' | 'status'>>) => commit(base => ({ ...base, entries: { ...base.entries,
     [key]: { ...(base.entries[key] ?? { bookmarked: false, status: 'unread' }), ...patch, updatedAt: learningTimestamp(base) } } })), [commit]);
-  const remember = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => commit(base => ({ ...base, lastRead: { ...position, updatedAt: learningTimestamp(base) } })), [commit]);
+  const remember = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => {
+    const change = (base: LearningData): LearningData => ({ ...base, lastRead: { ...position, updatedAt: learningTimestamp(base) } });
+    // 保存失败后，后台阅读定位只更新内存，不能悄悄清除提示或移走重试按钮。
+    if (error) {
+      const next = change(current.current); current.current = next; setData(next);
+      return { data: next, error };
+    }
+    return commit(change);
+  }, [commit, error]);
   const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
   const clear = useCallback(() => commit(clearLearning, true), [commit]);

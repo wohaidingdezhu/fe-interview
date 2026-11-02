@@ -48,11 +48,16 @@ test('连续学习重试只保存阅读记录，不推进清单或重复标记',
   await expect(page.getByRole('button', { name: '标记已读并查看结果', exact: true })).toBeEnabled();
   await expect.poll(async () => (await savedLearning(page))?.lastRead?.anchor).toBe('q5');
   const href = page.url(), session = await page.evaluate(key => localStorage.getItem(key), studyKey);
+  await page.clock.install();
   await failWrites(page);
   await page.getByRole('button', { name: '标记已读并查看结果', exact: true }).click();
   await expect(notice(page).getByRole('alert')).toContainText('尚未保存');
   const original = await page.evaluate(() => window.failedLearningWrite.entries['q:5']);
   await restoreWrites(page);
+  // 给后台定位计时器执行机会，错误提示必须保留到用户主动保存。
+  await page.clock.runFor(1000);
+  await expect(notice(page).getByRole('alert')).toContainText('尚未保存');
+  expect((await savedLearning(page)).entries['q:5']).toBeUndefined();
   await notice(page).getByRole('button', { name: '重试保存阅读记录', exact: true }).click();
   await expect(notice(page).getByRole('status')).toContainText('学习清单位置保持不变');
   await expect(notice(page).getByRole('status')).toBeFocused();
