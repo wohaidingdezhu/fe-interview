@@ -8,12 +8,13 @@ tags: ["AI", "LLM", "Token", "入门"]
 aliases: ["AI 基础", "人工智能入门", "大语言模型", "LLM", "提示词", "prompt"]
 related: ["rag-basics", "ai-agent-basics"]
 addedAt: "2026-11-01"
-reviewedAt: "2026-11-01"
+updatedAt: "2026-11-02"
+reviewedAt: "2026-11-02"
 order: 101
 status: published
 quality: complete
 sources: ["https://huggingface.co/learn/llm-course/chapter1/4", "https://huggingface.co/learn/llm-course/chapter2/4"]
-technologyVersion: "大语言模型通用概念；2026-11-01 核对，不绑定模型或 SDK 版本"
+technologyVersion: "大语言模型通用概念；2026-11-02 核对，不绑定模型或 SDK 版本"
 ---
 
 ## 先明确讨论范围
@@ -56,6 +57,39 @@ AI 涵盖的任务比聊天更广。这篇聚焦生成文本的大语言模型�
 这是不同层次的验证。例如一份 JSON 可以语法正确，却包含不存在的文章 ID；界面应根据真实目录校验 ID，不能直接把模型生成的网址当作可信导航。
 
 设计练习：为摘要界面分别写出“正在生成”“已取消”“格式不正确”“生成完成”的显示文案。流式输出中途取消时，不要把已收到的片段标成完整结果；服务端密钥也不应放进浏览器构建产物。
+
+## 一个可以本地运行的输出校验练习
+
+下面是自拟的简化摘要结构。把代码粘贴到浏览器控制台或 Node.js 中运行，不调用模型：
+
+```javascript
+const articleIds = new Set(['closure', 'http-cache']);
+const hasValidSummaryShape = value => Boolean(
+  value && typeof value === 'object'
+  && typeof value.summary === 'string' && value.summary.trim()
+  && Array.isArray(value.sources) && value.sources.length > 0
+  && value.sources.every(id => typeof id === 'string' && articleIds.has(id))
+);
+
+console.log(hasValidSummaryShape({ summary: '闭包保留变量绑定。', sources: ['closure'] })); // true
+console.log(hasValidSummaryShape({ summary: '内容待核验。', sources: ['invented'] })); // false
+console.log(hasValidSummaryShape({ summary: '', sources: ['closure'] })); // false
+```
+
+这个检查只验证最小结构和来源 ID 是否在允许集合中。把第一条摘要改成“闭包复制所有变量值”，检查依然会通过：**格式与引用标识有效，仍不能证明摘要得到原文支持**。它也不是完整安全校验，实际服务还需要长度限制、访问控制和内容核对。
+
+输出到网页时，应按普通文本渲染；若产品需要 Markdown，也要使用受控渲染流程，不能把模型文本直接作为 HTML 执行。
+
+## 上下文、应用记忆和微调怎么选
+
+| 需要改善什么 | 先尝试什么 | 如何检查是否有效 |
+| --- | --- | --- |
+| 本次回答缺少条件 | 补充明确指令与相关资料 | 用同一组问题比较遗漏和错误 |
+| 跨次访问保留用户偏好 | 应用按权限保存偏好，需要时提供给模型 | 检查保存、删除和隔离是否生效 |
+| 经常查找更新的知识 | 检索并提供当前资料 | 检查资料版本与引用支持程度 |
+| 稳定的任务行为仍不达标 | 在有基准和数据的前提下评估微调 | 对未用于训练的样例评估收益与退化 |
+
+这是工程选型的起点，不是效果保证。应用记忆不代表模型自动永久记住了对话；检索和微调也可以组合使用。
 
 ## 面试自测
 
