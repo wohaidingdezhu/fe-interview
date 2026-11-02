@@ -8,6 +8,7 @@ import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import { LearningControls } from './LearningControls';
 import { LearningOverview } from './LearningOverview';
 import { LearningSelectionReview } from './LearningSelectionReview';
+import { LearningSaveRecovery } from './LearningSaveRecovery';
 import { learningFilters, learningOverview, learningShelf, learningTargets, type LearningTarget } from './learning-view';
 import type { Learning } from './useLearning';
 import type { LearningBatchUndo, LearningStatus } from './learning-utils';
@@ -19,7 +20,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
   const catalog = useQuestions(), [message, setMessage] = useState('');
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const [selection, setSelection] = useState<{ scope: string; keys: string[] }>();
-  const feedback = useRef<HTMLParagraphElement>(null);
+  const feedback = useRef<HTMLParagraphElement>(null), searchRef = useRef<HTMLInputElement>(null);
   const actions = useRef<HTMLElement>(null), list = useRef<HTMLDivElement>(null);
   const targets = learningTargets(catalog.questions, articles);
   const result = learningShelf(targets, learning.data, params);
@@ -75,13 +76,13 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
   };
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
     <p><Link href={reactPathHref} navigate={navigate}>查看 React 学习路径 →</Link></p>
-    {learning.error && <p role="alert">{learning.error}</p>}
+    <LearningSaveRecovery learning={learning} study={study} onSaved={() => setMessage('')} />
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && !readingInStudy(study?.session, last) && articles.some(a => a.id === last.articleId) && <section className="resume-card"><div><small>上次读到</small><h2>{last.title}</h2></div><Link navigate={navigate} href={articleHref(last.articleId, last.anchor)}>继续自由阅读 →</Link></section>}
     {catalogReady && <LearningOverview targets={targets} data={learning.data} navigate={navigate} />}
     <div className="learning-tabs" aria-label="学习记录筛选">{learningFilters.map(({ value, label }) => <button key={value} aria-pressed={result.filter === value} onClick={() => update('filter', value)}>{label} <span>{catalogReady ? counts.total[value] : '—'}</span></button>)}</div>
     <section className="filters learning-filters" aria-label="筛选学习记录">
-      <label>题号或标题<input type="search" aria-label="搜索学习记录" placeholder="例如 Q134、闭包" value={query} onChange={event => update('q', event.target.value, true)} /></label>
+      <label>题号或标题<input ref={searchRef} type="search" aria-label="搜索学习记录" placeholder="例如 Q134、闭包" value={query} onChange={event => update('q', event.target.value, true)} /></label>
       <label>分类<select aria-label="学习记录分类" value={result.category} onChange={event => update('category', event.target.value)}><option value="">全部分类</option>{categories.map(category => <option key={category}>{category}</option>)}{result.category && !categories.includes(result.category) && <option>{result.category}</option>}</select></label>
       <label>内容类型<select aria-label="学习内容类型" value={result.kind} onChange={event => update('kind', event.target.value)}><option value="">题目和笔记</option><option value="questions">仅题目</option><option value="notes">仅笔记</option></select></label>
       <label>排序<select aria-label="学习记录排序" value={result.sort} onChange={event => update('sort', event.target.value)}><option value="recent">最近标记优先</option><option value="oldest">较早标记优先</option><option value="title">题号与标题顺序</option></select></label>
@@ -90,7 +91,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
     <div className="learning-feedback"><p ref={feedback} tabIndex={-1} role="status" className="backup-message">{message}</p>{undo && <button onClick={undoBatch}>撤销上次批量标记</button>}</div>
     {catalog.error && <p role="alert">{catalog.error}<button onClick={catalog.retry}>重试题目目录</button></p>}
     {catalog.loading && <p role="status">正在加载题目目录…</p>}
-    {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category || result.kind) && <button className="text-button" onClick={() => { const next = new URLSearchParams(params); for (const key of ['q', 'category', 'kind', 'page']) next.delete(key); next.set('view', 'learning'); navigate(`?${next}`); }}>清除筛选 ×</button>}</div>
+    {catalogReady && <><div className="list-summary"><span role="status">共找到 {result.total} 条内容</span>{(query || result.category || result.kind) && <button className="text-button" onClick={() => { const next = new URLSearchParams(params); for (const key of ['q', 'category', 'kind', 'page']) next.delete(key); next.set('view', 'learning'); navigate(`?${next}`); searchRef.current?.focus(); }}>清除筛选 ×</button>}</div>
       {!!result.total && <section ref={actions} tabIndex={-1} className="learning-actions" aria-label="学习与批量标记">
         <div className="learning-selection-actions">
           <span role="status">本页 {result.items.length} 条{selecting ? ` · 已选择 ${selectedItems.length} 条` : ''}</span>

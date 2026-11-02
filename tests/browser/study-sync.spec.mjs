@@ -35,7 +35,7 @@ test('切回页面补齐遗漏的清单替换与结束，损坏数据保留原�
   await other.evaluate(key => localStorage.setItem(key, '{broken'), studyKey);
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await expect(card).toContainText('Q6');
-  await expect(card.getByRole('alert')).toContainText('保留');
+  await expect(page.getByRole('region', { name: '学习清单保存', exact: true }).getByRole('alert')).toContainText('保留');
   await other.evaluate(key => localStorage.setItem(key, 'null'), studyKey);
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   // WebKit 后台标签可能仍为 hidden；模拟切回时的窗口焦点。

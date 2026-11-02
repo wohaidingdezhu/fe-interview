@@ -38,6 +38,7 @@ const QuestionPermalink = ({ href, number }: { href: string; number: string }) =
 };
 const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; onReady?: (ready: boolean) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const previousHash = useRef<string | undefined>(undefined);
   useLayoutEffect(() => {
     onHeadings(Array.from(ref.current?.querySelectorAll('h1, h2, h3') || []).map((heading) => {
       const copy = heading.cloneNode(true) as HTMLElement; copy.querySelector('.question-link-control')?.remove();
@@ -47,10 +48,17 @@ const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', art
     return () => onReady?.(false);
   }, [content, question, studyMode, onHeadings, onReady]);
   useLayoutEffect(() => {
+    const hashNavigation = previousHash.current !== undefined && previousHash.current !== hash;
+    previousHash.current = hash;
     if (!hash) return;
     // 下一任务再定位，避免后台标签页暂停 requestAnimationFrame 时深链接一直停在页首。
     const timer = window.setTimeout(() => {
       try {
+        const active = document.activeElement;
+        // 正文延迟加载时，保留用户在搜索框、学习底栏等区域的新焦点。
+        // 目录链接仍需定位正文；正文内部的锚点切换也保持原行为。
+        if (!hashNavigation && active instanceof HTMLElement && active !== document.body && active.id !== 'main'
+          && !ref.current?.contains(active) && !(active instanceof HTMLAnchorElement)) return;
         const anchor = document.getElementById(decodeURIComponent(hash.slice(1)));
         anchor?.scrollIntoView({ behavior: 'instant' });
         const heading = anchor?.closest('h1, h2, h3') ?? anchor;

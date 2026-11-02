@@ -1,3 +1,4 @@
+import { StudySaveRecovery } from './StudySaveRecovery';
 import { StrictMode, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { articles, searchArticles, loadArticle, useSearchIndex } from './content';
@@ -63,7 +64,7 @@ const App = () => {
   const relatedArticles = article?.related.map((relatedId) => articles.find((item) => item.id === relatedId)).filter((item): item is (typeof articles)[number] => Boolean(item)) ?? [];
   const resourceSection = view === 'resources' || article?.section === 'resources';
   const categoryView = resourceSection ? 'resources' : view === 'questions' || view === 'home' ? 'questions' : 'notes';
-  const collection = articles.filter(item => categoryView === 'resources' ? item.section === 'resources' : categoryView === 'questions' ? item.questionCount > 0 : item.section !== 'resources');
+  const collection = articles.filter(item => categoryView === 'resources' ? item.section === 'resources' : categoryView === 'questions' && view !== 'home' ? item.questionCount > 0 : item.section !== 'resources');
   const categories = [...new Set(collection.map((item) => item.category))];
   const category = article?.category || normalizeCategory(params.get('category') || '');
   const noteResults = query.trim() ? searchArticles(query, search.documents) : [];
@@ -194,12 +195,18 @@ const App = () => {
       <div className="sidebar-label">LIBRARY <span>{counts.questions} 题 · {counts.notes} 笔记</span></div>
       <nav className="section-nav" aria-label="资料库入口">{link('?view=home', '首页', view === 'home' ? 'section-link active' : 'section-link')}{link('?view=questions', '全部题目', view === 'questions' ? 'section-link active' : 'section-link')}{link('?view=notes', '专题与笔记', view === 'notes' || view === 'article' && !resourceSection ? 'section-link active' : 'section-link')}{link('?view=resources', '相关资料', resourceSection ? 'section-link active' : 'section-link')}{link('?view=learning', '我的学习', view === 'learning' ? 'section-link active' : 'section-link')}</nav>
       <div className="sidebar-label category-label">按分类浏览</div>
-      <nav aria-label="分类导航">{link(`?view=${categoryView}`, '全部分类', !category ? 'nav-link active' : 'nav-link')}{categories.map((value) => <div className="category-row" key={value}>{link(`?view=${categoryView}&category=${encodeURIComponent(value)}`, value, category === value ? 'nav-link active' : 'nav-link')}<span>{view === 'home' || view === 'questions' ? articles.filter(a => a.category === value).reduce((sum,a) => sum+a.publishedQuestionCount,0) : collection.filter((item) => item.category === value).length}</span></div>)}</nav>
+      <nav aria-label="分类导航">{link(`?view=${categoryView}`, '全部分类', !category ? 'nav-link active' : 'nav-link')}{categories.map((value) => {
+        const items = collection.filter(item => item.category === value);
+        const questions = items.reduce((sum, item) => sum + item.publishedQuestionCount, 0);
+        const targetView = view === 'home' && questions === 0 ? 'notes' : categoryView;
+        return <div className="category-row" key={value}>{link(`?view=${targetView}&category=${encodeURIComponent(value)}`, value, category === value ? 'nav-link active' : 'nav-link')}<span>{targetView === 'questions' ? questions : `${items.length} 篇`}</span></div>;
+      })}</nav>
     </aside>
     {inStudy && <StudySessionBar key={`${id}:${question || "note"}`} study={study} learning={learning} route={route} navigate={navigate} openDirectory={() => studyDirectoryRef.current?.showModal()} directoryReady={toc.length > 0} readingReady={readingReady} />}
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
-      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}{study.error && <p role="status">{study.error}</p>}</> : view === 'notes' || view === 'resources' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
+      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}

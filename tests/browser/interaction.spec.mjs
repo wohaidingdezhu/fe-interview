@@ -1,6 +1,23 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
+test('正文延迟加载不抢走用户已转到搜索框的焦点', async ({ page }) => {
+  let release;
+  const ready = new Promise(resolve => { release = resolve; });
+  await page.route('**/content/interview-html-css-*.json', async route => {
+    await ready;
+    await route.continue();
+  });
+  await page.goto('/?article=interview-html-css#q5', { waitUntil: 'domcontentloaded' });
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await input.fill('闭包');
+  release();
+  await expect(page.getByRole('heading', { name: /Q5｜/ })).toBeAttached();
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue('闭包');
+  await expect(page.locator('.search-results')).toBeVisible();
+});
+
 test('事件循环笔记示例在真实浏览器中输出与说明一致', async ({ page }) => {
   const article = await readFile(new URL('../../src/articles/event-loop.md', import.meta.url), 'utf8');
   const snippets = [...article.matchAll(/```javascript\n([\s\S]*?)```/g)].map(match => match[1]);

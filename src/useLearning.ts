@@ -42,6 +42,8 @@ export const useLearning = () => {
   const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
   const clear = useCallback(() => commit(clearLearning, true), [commit]);
+  // 只重试持久化，沿用合并和损坏数据保护，不生成新的标记时间。
+  const retrySave = useCallback(() => commit(base => base), [commit]);
   const updateMany = useCallback((keys: readonly string[], status: LearningStatus) => {
     let undo: LearningBatchUndo = { appliedAt: '', previous: {} }, count = 0;
     const saved = commit(base => { const batch = updateLearningBatch(base, keys, status); undo = batch.undo; count = batch.count; return batch.data; });
@@ -52,6 +54,6 @@ export const useLearning = () => {
     const saved = commit(base => { const result = undoLearningBatch(base, undo); count = result.count; return result.data; });
     return { ...saved, count };
   }, [commit]);
-  return { data, update, updateMany, undoMany, remember, restore, prune, clear, error };
+  return { data, update, updateMany, undoMany, remember, restore, prune, clear, retrySave, error };
 };
 export type Learning = ReturnType<typeof useLearning>;

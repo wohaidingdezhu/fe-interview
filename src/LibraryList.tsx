@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { articles, useSearchIndex } from './content';
 import { filterItems, type ListItem } from './data-utils';
 import { searchDocuments, searchHits } from './search-utils';
@@ -6,6 +7,7 @@ import { NavigationLink as Link } from './NavigationLink';
 
 type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
 export const LibraryList = ({ params, navigate }: Props) => {
+  const searchRef = useRef<HTMLInputElement>(null);
   const resources = params.get('view') === 'resources';
   const view = resources ? 'resources' : 'notes', title = resources ? '相关资料' : '专题与笔记';
   const collection = ['notes', 'topics'].includes(params.get('collection') || '') ? params.get('collection')! : '';
@@ -58,7 +60,7 @@ export const LibraryList = ({ params, navigate }: Props) => {
     <div className="list-heading"><div><span className="eyebrow">{resources ? 'RESOURCES & INSPIRATION' : 'TOPICS & NOTES'}</span><h1>{resources ? title : collection === 'topics' ? '面试专题' : collection === 'notes' ? '知识笔记' : title}</h1><p className="description">{resources ? '收藏工具与实践，留住成长建议和生活中的片刻感悟。' : '按专题建立结构，用独立笔记沉淀实践中的理解。'}</p></div><span className="collection-count">{items.length}<small>篇内容</small></span></div>
     {!resources && <nav className="collection-tabs" aria-label="笔记类型">{[['','全部'],['topics','面试专题'],['notes','独立笔记']].map(([value,label]) => <button key={value} aria-pressed={collection === value} onClick={() => update('collection', value)}>{label}</button>)}</nav>}
     <section className="filters" aria-label="资料筛选">
-      <label className="list-search"><span>关键词</span><input type="search" aria-label="检索当前列表" placeholder="题号、标题、标签或正文关键词" value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
+      <label className="list-search"><span>关键词</span><input ref={searchRef} type="search" aria-label="检索当前列表" placeholder="题号、标题、标签或正文关键词" value={query} onChange={(event) => update('q', event.target.value, true)} /></label>
       <div className={`filter-selects ${showMaintenance ? 'has-maintenance' : ''}`}>
         <label>分类<select aria-label="按分类筛选" value={category} onChange={(event) => update('category', event.target.value)}><option value="">全部分类</option>{categories.map((value) => <option key={value}>{value}</option>)}{category && !categories.includes(category) && <option>{category}</option>}</select></label>
         <label>类型<select aria-label="按类型筛选" value={type} onChange={(event) => update('type', event.target.value)}><option value="">全部类型</option>{types.map((value) => <option key={value}>{value}</option>)}{type && !types.includes(type) && <option>{type}</option>}</select></label>
@@ -71,7 +73,7 @@ export const LibraryList = ({ params, navigate }: Props) => {
       </details>
       {selectedTags.length > 0 && <div className="selected-tags" aria-label="已选标签"><span>已选</span>{selectedTags.map((tag) => <button key={tag} className="tag selected" aria-label={`移除标签 ${tag}`} onClick={() => toggleTag(tag)}>{tag} <span aria-hidden="true">×</span></button>)}</div>}
     </section>
-    <div className="list-summary"><span role="status">{search.loading ? '正在搜索正文…' : search.error ? '搜索暂时不可用，请重试' : <>共找到 <strong>{result.total}</strong> 篇内容</>}</span>{hasFilters && <button className="text-button" onClick={() => navigate(resetHref)}>清除筛选 ×</button>}<label>每页<select aria-label="每页条数" value={pageSize} onChange={(event) => update('size', event.target.value)}>{[6,12,24].map((size) => <option key={size} value={size}>{size} 条</option>)}</select></label></div>
+    <div className="list-summary"><span role="status">{search.loading ? '正在搜索正文…' : search.error ? '搜索暂时不可用，请重试' : <>共找到 <strong>{result.total}</strong> 篇内容</>}</span>{hasFilters && <button className="text-button" onClick={() => { navigate(resetHref); searchRef.current?.focus(); }}>清除筛选 ×</button>}<label>每页<select aria-label="每页条数" value={pageSize} onChange={(event) => update('size', event.target.value)}>{[6,12,24].map((size) => <option key={size} value={size}>{size} 条</option>)}</select></label></div>
     {search.error && <p role="alert">{search.error}<button className="text-button" onClick={search.retry}>重试搜索</button></p>}
     <div className="resource-list">{result.items.map((item) => <article key={item.id} className="resource-card">
       <div className="resource-meta"><span className="pill">{item.type}</span>{import.meta.env.DEV && item.status === 'published' && <span className="pill published-label">已公开</span>}{item.status === 'draft' && item.quality === 'complete' && <span className="pill review-label">待审核</span>}{item.status === 'draft' && item.quality === 'incomplete' && <span className="pill incomplete-label">待补充</span>}{item.status === 'draft' && item.quality === undefined && <span className="pill draft-label">草稿 · 仅本地预览</span>}<span>{item.category}</span><time dateTime={item.addedAt}>{item.addedAt}</time></div>

@@ -15,7 +15,6 @@ export const HomePage = ({ navigate, learning, study }: { navigate: Navigate; le
       [counts.questions, '道面试题', '?view=questions', '按题查找'], [counts.topics, '个专题', '?view=notes&collection=topics', '系统学习'],
       [counts.notes, '篇知识笔记', '?view=notes&collection=notes', '理解与实践'],
     ].map(([count, label, href, caption]) => <Link key={label} href={String(href)} navigate={navigate}><strong>{count}</strong><span>{label}</span><small>{caption} →</small></Link>)}</nav>
-    {study?.error && !study.session && <p role="alert">{study.error}</p>}
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && lastArticle && !readingInStudy(study?.session, last) && <section className="resume-card"><div><span className="eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2>上次自由阅读</h2><p>{last.title} <span>· {lastArticle.category}</span></p></div><Link className="primary-link" navigate={navigate} href={articleHref(last.articleId, last.anchor)}>接着读 →</Link></section>}
     <section className="home-learning" aria-labelledby="react-path-title"><span className="eyebrow">A GUIDED LEARNING PATH</span><h2 id="react-path-title">从状态到 Hooks，顺着一条路径学 React</h2><p>把题目、原理笔记与代码实践串成 7 步。先看清每步目标，再按顺序学习。</p><Link navigate={navigate} href={reactPathHref}>查看 React 学习路径 →</Link></section>

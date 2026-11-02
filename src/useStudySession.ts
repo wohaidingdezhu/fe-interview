@@ -54,6 +54,17 @@ export const useStudySession = () => {
   }, [save]);
   const start = useCallback((session: StudySession) => save(session), [save]);
   const end = useCallback(() => save(undefined), [save]);
-  return { session: state.session, start, move, end, error: state.error };
+  const retrySave = useCallback(() => {
+    try {
+      // 重试只保存当前进度，版本已变化时采用最新清单，不能复活旧清单。
+      const next = saveStudyStorage(localStorage, current.current.session, current.current.raw);
+      apply({ ...next, error: '' });
+      return next.changed ? 'saved' as const : 'synced' as const;
+    } catch {
+      apply({ ...current.current, error: '清单仍未保存，已保留本页清单和浏览器原数据，请导出备份后重试。' });
+      return 'failed' as const;
+    }
+  }, [apply]);
+  return { session: state.session, start, move, end, retrySave, error: state.error };
 };
 export type Study = ReturnType<typeof useStudySession>;

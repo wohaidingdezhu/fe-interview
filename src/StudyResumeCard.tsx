@@ -16,7 +16,7 @@ export const StudyResumeCard = ({ study, learning, navigate }: { study: Study; l
   if (catalog.error) return <section className="resume-card"><p role="alert">{catalog.error}</p><button onClick={catalog.retry}>重试学习清单</button><button onClick={study.end}>结束清单</button></section>;
   const queue = studyQueue(study.session, learningTargets(catalog.questions, articles)), target = studyResumeTarget(study.session, queue), counts = studyProgress(queue, learning.data);
   return <>
-    <section className="resume-card study-resume" aria-label="暂停的学习清单"><div><small>保存在此浏览器的学习清单</small><h2>继续学习清单</h2>{target ? <><p>上次清单位置：第 {queue.indexOf(target) + 1} / {queue.length} 项 · {target.title}</p><p>已读 {counts.read} · 待复习 {counts.review} · 未读 {counts.unread}</p>{target.key !== study.session.currentKey && <p>原位置已失效，将从清单第一项继续。</p>}</> : <p>清单中的内容已不在当前目录中，可以结束后重新选择。</p>}{study.error && <p role="alert">{study.error}</p>}</div>
+    <section className="resume-card study-resume" aria-label="暂停的学习清单"><div><small>保存在此浏览器的学习清单</small><h2>继续学习清单</h2>{target ? <><p>上次清单位置：第 {queue.indexOf(target) + 1} / {queue.length} 项 · {target.title}</p><p>已读 {counts.read} · 待复习 {counts.review} · 未读 {counts.unread}</p>{target.key !== study.session.currentKey && <p>原位置已失效，将从清单第一项继续。</p>}</> : <p>清单中的内容已不在当前目录中，可以结束后重新选择。</p>}</div>
       <div className="study-resume-actions">{target && <><Link navigate={navigate} href={studyHref(target)}>继续清单 →</Link><button ref={trigger} aria-haspopup="dialog" onClick={() => dialog.current?.showModal()}>查看清单</button></>}<button onClick={() => setSummary(true)}>查看结果 / 结束清单</button></div>
     </section>
     {summary && <StudySummary queue={queue} learning={learning} study={study} navigate={navigate} onClose={() => setSummary(false)} />}
