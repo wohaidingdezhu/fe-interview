@@ -11,9 +11,24 @@ const failWrites = page => page.evaluate(key => {
     return window.originalStorageWrite.call(this, name, value);
   };
 }, learningKey);
-const restoreWrites = page => page.evaluate(() => { Storage.prototype.setItem = window.originalStorageWrite; });
+const restoreWrites = page => page.evaluate(key => {
+  window.recoveryEvents = [];
+  for (const type of ['mousedown', 'mouseup', 'click', 'focusin']) document.addEventListener(type, event => {
+    window.recoveryEvents.push({ type, target: event.target?.textContent?.slice(0, 90), at: performance.now() });
+  }, true);
+  Storage.prototype.setItem = function (name, value) {
+    if (name === key) window.recoveryEvents.push({ type: 'save', data: JSON.parse(value), stack: new Error().stack, at: performance.now() });
+    return window.originalStorageWrite.call(this, name, value);
+  };
+}, learningKey);
 const savedLearning = page => page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? 'null'), learningKey);
 const notice = page => page.getByRole('region', { name: '阅读记录保存', exact: true });
+
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus || page.isClosed()) return;
+  const diagnostics = await page.evaluate(key => ({ events: window.recoveryEvents, stored: localStorage.getItem(key), href: location.href }), learningKey);
+  await testInfo.attach('save-recovery-diagnostics', { body: JSON.stringify(diagnostics, null, 2), contentType: 'application/json' });
+});
 
 test('保存重试保留原标记时间并合并其他标签页修改，失败可再次重试', async ({ page, context }) => {
   await page.goto('/?view=learning&filter=unread&q=Q5', { waitUntil: 'domcontentloaded' });
