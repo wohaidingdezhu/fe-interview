@@ -58,12 +58,12 @@ test('保存重试保留原标记时间并合并其他标签页修改，失败�
 });
 
 test('连续学习重试只保存阅读记录，不推进清单或重复标记', async ({ page }) => {
+  await page.clock.install();
   await page.goto('/?view=questions&q=Q5', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: '开始学习 →', exact: true }).click();
   await expect(page.getByRole('button', { name: '标记已读并查看结果', exact: true })).toBeEnabled();
   await expect.poll(async () => (await savedLearning(page))?.lastRead?.anchor).toBe('q5');
   const href = page.url(), session = await page.evaluate(key => localStorage.getItem(key), studyKey);
-  await page.clock.install();
   await failWrites(page);
   await page.getByRole('button', { name: '标记已读并查看结果', exact: true }).click();
   await expect(notice(page).getByRole('alert')).toContainText('尚未保存');
@@ -99,4 +99,34 @@ test('损坏记录重试不会覆盖原数据，读取恢复后再保存内存�
   await notice(page).getByRole('button', { name: '重试保存阅读记录', exact: true }).click();
   await expect(notice(page).getByRole('status')).toContainText('阅读记录已保存');
   expect((await savedLearning(page)).entries['q:5'].bookmarked).toBe(true);
+});
+
+test('保存失败后已排队的旧定位任务仍读取最新保存状态', async ({ page }) => {
+  await page.goto('/?view=questions&q=Q5', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    const schedule = window.setTimeout;
+    window.readingPositionTasks = [];
+    window.setTimeout = function (callback, delay, ...args) {
+      // 保留排队时的定位任务，模拟它在后续保存失败后才获得执行机会。
+      if (delay === 500 && typeof callback === 'function') window.readingPositionTasks.push(callback);
+      return schedule.call(this, callback, delay, ...args);
+    };
+  });
+  await page.getByRole('button', { name: '开始学习 →', exact: true }).click();
+  await expect.poll(async () => (await savedLearning(page))?.lastRead?.anchor).toBe('q5');
+  expect(await page.evaluate(() => {
+    window.queuedReadingPosition = window.readingPositionTasks[0];
+    return typeof window.queuedReadingPosition;
+  })).toBe('function');
+  await failWrites(page);
+  await page.getByRole('button', { name: '标记已读并查看结果', exact: true }).click();
+  await expect(notice(page).getByRole('alert')).toContainText('尚未保存');
+  const original = await page.evaluate(() => window.failedLearningWrite.entries['q:5']);
+  await restoreWrites(page);
+  await page.evaluate(() => window.queuedReadingPosition());
+  await expect(notice(page).getByRole('alert')).toContainText('尚未保存');
+  expect((await savedLearning(page)).entries['q:5']).toBeUndefined();
+  await notice(page).getByRole('button', { name: '重试保存阅读记录', exact: true }).click();
+  await expect(notice(page).getByRole('status')).toContainText('阅读记录已保存');
+  expect((await savedLearning(page)).entries['q:5']).toEqual(original);
 });

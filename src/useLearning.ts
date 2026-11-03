@@ -4,19 +4,21 @@ const storageKey = 'fe-library-learning-v1';
 const load = () => { const text = localStorage.getItem(storageKey); return text ? importLearning(text) : emptyLearning(); };
 export const useLearning = () => {
   const [error, setError] = useState('');
+  const saveError = useRef(''); // 已排队的旧定位回调也必须读取当前错误，不能依赖渲染时的闭包。
   const [data, setData] = useState<LearningData>(() => { try { return load(); } catch { return emptyLearning(); } });
   const current = useRef(data);
   const commit = useCallback((change: (data: LearningData) => LearningData, recover = false) => {
     // 获取 localStorage 本身也可能被浏览器权限策略拒绝。
     const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) };
     const result = persistLearning(storage, storageKey, current.current, change, recover);
-    current.current = result.data; setData(result.data); setError(result.error);
+    current.current = result.data; saveError.current = result.error;
+    setData(result.data); setError(result.error);
     return result;
   }, []);
   useEffect(() => {
     const refresh = () => {
       try { const next = mergeLearning(current.current, load()); current.current = next; setData(next); }
-      catch { setError('本地记录无法读取，请导入备份恢复；新记录仍可在本次访问使用。'); }
+      catch { saveError.current = '本地记录无法读取，请导入备份恢复；新记录仍可在本次访问使用。'; setError(saveError.current); }
     };
     const visible = () => { if (document.visibilityState === 'visible') refresh(); };
     const sync = (event: StorageEvent) => {
@@ -41,12 +43,12 @@ export const useLearning = () => {
   const remember = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => {
     const change = (base: LearningData): LearningData => ({ ...base, lastRead: { ...position, updatedAt: learningTimestamp(base) } });
     // 保存失败后，后台阅读定位只更新内存，不能悄悄清除提示或移走重试按钮。
-    if (error) {
+    if (saveError.current) {
       const next = change(current.current); current.current = next; setData(next);
-      return { data: next, error };
+      return { data: next, error: saveError.current };
     }
     return commit(change);
-  }, [commit, error]);
+  }, [commit]);
   const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
   const clear = useCallback(() => commit(clearLearning, true), [commit]);
