@@ -46,7 +46,9 @@ const App = () => {
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const studyDirectoryRef = useRef<HTMLDialogElement>(null);
-  const [body, setBody] = useState<{ id: string; content?: string; error?: string }>({ id: '' });
+  const readerRef = useRef<HTMLDivElement>(null);
+  const retryBodyRef = useRef<HTMLButtonElement>(null);
+  const [body, setBody] = useState<{ id: string; content?: string; error?: string; retrying?: boolean }>({ id: '' });
   const [rendered, setRendered] = useState<{ body: typeof body; question: string; studyMode: boolean }>();
   const [loadAttempt, setLoadAttempt] = useState(0);
   const search = useSearchIndex(query);
@@ -143,8 +145,13 @@ const App = () => {
     setToc([]); setActiveHeading(undefined);
     if (!article) return;
     let current = true;
-    setBody({ id: article.id });
-    loadArticle(article).then((content) => { if (current) setBody({ id: article.id, content }); }, (error: Error) => { if (current) setBody({ id: article.id, error: error.message }); });
+    setBody(previous => previous.id === article.id && previous.retrying ? previous : { id: article.id });
+    loadArticle(article).then((content) => {
+      if (!current) return;
+      const retryButton = retryBodyRef.current;
+      if (retryButton && document.activeElement === retryButton) readerRef.current?.focus({ preventScroll: true });
+      setBody({ id: article.id, content });
+    }, (error: Error) => { if (current) setBody({ id: article.id, error: error.message }); });
     return () => { current = false; };
   }, [article?.bodyPath, loadAttempt]);
   useEffect(() => {
@@ -212,9 +219,19 @@ const App = () => {
         {learning.error && <p role="status">{learning.error}</p>}
         {article.quality === 'incomplete' && <p className="quality-notice" role="note">{article.questionCount > 0 ? '这篇专题尚未完成逐题审核；已审核题目可以单独上线，其余内容继续保留为草稿。' : '这篇知识文章仍待补充和审核，暂不公开发布。'}</p>}
         {!inStudy && article.category === 'JavaScript' && <ReaderBoundary key={`playground-${article.id}`}><Suspense fallback={<p role="status">正在加载代码运行工具…</p>}><CodePlayground /></Suspense></ReaderBoundary>}
-        {body.id === article.id && body.error ? <p role="alert">{body.error}<button className="text-button" onClick={() => setLoadAttempt((value) => value + 1)}>重新加载正文</button></p>
-          : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id} onError={onReaderError}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} onReady={onReaderReady} studyMode={inStudy} question={question || (inStudy && article.questionCount ? "missing" : undefined)} /></Suspense></ReaderBoundary>
-          : <p role="status">正在加载正文…</p>}
+        <div id="article-reader" ref={readerRef} role="region" aria-label="文章正文" tabIndex={-1}>
+          {body.id === article.id && body.error ? <p>
+            <span role="status">{body.retrying ? '正在重新加载正文…' : ''}</span>
+            {!body.retrying && <span role="alert">{body.error}</span>}
+            <button type="button" ref={retryBodyRef} className="text-button" aria-disabled={body.retrying} onClick={event => {
+              if (body.retrying) return;
+              event.currentTarget.focus({ preventScroll: true });
+              setBody({ ...body, retrying: true });
+              setLoadAttempt((value) => value + 1);
+            }}>重新加载正文</button>
+          </p> : body.id === article.id && body.content !== undefined ? <ReaderBoundary key={article.id} onError={onReaderError}><Suspense fallback={<p role="status">正在加载阅读界面…</p>}><ArticleContent articleId={article.id} key={article.id} hash={location.includes('#') ? location.slice(location.indexOf('#')) : ''} content={body.content} navigate={navigate} onHeadings={setToc} onReady={onReaderReady} studyMode={inStudy} question={question || (inStudy && article.questionCount ? "missing" : undefined)} /></Suspense></ReaderBoundary>
+            : <p role="status">正在加载正文…</p>}
+        </div>
         {!inStudy && relatedArticles.length > 0 && <section className="related-articles" aria-labelledby="related-title"><div className="related-heading"><span>KEEP EXPLORING</span><h2 id="related-title">继续阅读</h2></div><div className="related-grid">{relatedArticles.map((related) => <Link key={related.id} href={articleHref(related.id)} navigate={navigate}><small>{related.category}</small><strong>{related.title}</strong><p>{related.description}</p><span aria-hidden="true">→</span></Link>)}</div></section>}
         <div className="article-end"><span />把读过的内容，变成自己的理解。<span /></div>{!inStudy && <nav className="pagination" aria-label="上一篇和下一篇">{currentIndex > 0 ? <div><small>← 上一篇</small>{link(articleHref(siblings[currentIndex - 1].id), siblings[currentIndex - 1].title)}</div> : <div />}{currentIndex < siblings.length - 1 && <div><small>下一篇 →</small>{link(articleHref(siblings[currentIndex + 1].id), siblings[currentIndex + 1].title)}</div>}</nav>}
       </> : <div className="not-found"><span className="pill">404</span><h1>这篇内容还不存在</h1><p>链接可能有误，或内容已经移动。</p>{link('?view=notes', '返回专题与笔记 →')}</div>}

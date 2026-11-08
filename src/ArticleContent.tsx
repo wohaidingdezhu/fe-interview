@@ -56,8 +56,8 @@ const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', art
       try {
         const active = document.activeElement;
         // 正文延迟加载时，保留用户在搜索框、学习底栏等区域的新焦点。
-        // 目录链接仍需定位正文；正文内部的锚点切换也保持原行为。
-        if (!hashNavigation && active instanceof HTMLElement && active !== document.body && active.id !== 'main'
+        // 正文重试、目录链接和正文内部的锚点切换仍可定位标题。
+        if (!hashNavigation && active instanceof HTMLElement && active !== document.body && active.id !== 'main' && active.id !== 'article-reader'
           && !ref.current?.contains(active) && !(active instanceof HTMLAnchorElement)) return;
         const anchor = document.getElementById(decodeURIComponent(hash.slice(1)));
         anchor?.scrollIntoView({ behavior: 'instant' });
