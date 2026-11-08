@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react';
 import { publicationPlugin } from '../scripts/publication-plugin.mjs';
 import { readLibrary } from '../scripts/library.mjs';
 import { inspectQuestions } from '../scripts/publication.mjs';
-const learning={data:{version:1,entries:{}},update(){},remember(){},restore(){},error:''};
+const learning={data:{version:1,entries:{}},update(){},prepareReadingPosition(){return () => {};},restore(){},error:''};
 test('首页提供题目、专题、笔记入口，手机目录保留原生 dialog', async () => {
  const server=await createServer({configFile:false,cacheDir:'.reports/vite-discovery-test-cache',optimizeDeps:{noDiscovery:true,include:[]},plugins:[react(),publicationPlugin()],server:{middlewareMode:true,hmr:false},appType:'custom'});
  try{

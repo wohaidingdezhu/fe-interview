@@ -156,9 +156,10 @@ const App = () => {
   }, [article?.bodyPath, loadAttempt]);
   useEffect(() => {
     if (!article || body.id !== article.id || !body.content) return;
-    const timer = setTimeout(() => learning.remember({ articleId: article.id, anchor: question || activeHeading?.id || '', title: (question ? toc.find(heading => heading.id === question)?.title : activeHeading?.title) ?? article.title }), 500);
+    const remember = learning.prepareReadingPosition({ articleId: article.id, anchor: question || activeHeading?.id || '', title: (question ? toc.find(heading => heading.id === question)?.title : activeHeading?.title) ?? article.title });
+    const timer = setTimeout(remember, 500);
     return () => clearTimeout(timer);
-  }, [article?.id, body.id, body.content, activeHeading?.id, question, learning.remember]);
+  }, [article?.id, body.id, body.content, activeHeading?.id, question, learning.prepareReadingPosition]);
   const link = (href: string, title: string, className?: string) => <Link href={href} className={className} navigate={navigate}>{title}</Link>;
   const startStudy = (targets: LearningTarget[], filters: URLSearchParams, random = false) => {
     if (!targets.length) throw new Error('当前筛选没有可学习的内容');

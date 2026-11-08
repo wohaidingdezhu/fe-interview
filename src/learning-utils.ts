@@ -43,6 +43,16 @@ export const importLearning = (text: string) => {
   if (text.length > 4_000_000) throw new Error('备份不能超过 4 MB');
   return parseLearning(JSON.parse(text));
 };
+const mergeReadingPosition = (current?: ReadingPosition, incoming?: ReadingPosition, resetAt?: string, removedAt?: string) => {
+  const latest = incoming && (!current || incoming.updatedAt > current.updatedAt) ? incoming : current;
+  if (latest && latest.updatedAt > (resetAt ?? '') && latest.updatedAt > (removedAt ?? '')) return latest;
+};
+
+export const recordReadingPosition = (data: LearningData, position: ReadingPosition) => {
+  const lastRead = mergeReadingPosition(data.lastRead, position, data.resetAt, data.removed?.lastRead);
+  if (lastRead !== data.lastRead) return { ...data, lastRead };
+};
+
 export const mergeLearning = (current: LearningData, incoming: LearningData): LearningData => {
   const resetAt = [current.resetAt, incoming.resetAt].filter((value): value is string => Boolean(value)).sort().at(-1);
   const removed = { ...current.removed };
@@ -50,8 +60,7 @@ export const mergeLearning = (current: LearningData, incoming: LearningData): Le
   const entries = { ...current.entries };
   for (const [key, value] of Object.entries(incoming.entries)) if (!entries[key] || value.updatedAt > entries[key].updatedAt) entries[key] = value;
   for (const [key, value] of Object.entries(entries)) if (value.updatedAt <= (resetAt ?? '') || value.updatedAt <= (removed[key] ?? '')) delete entries[key];
-  let lastRead = incoming.lastRead && (!current.lastRead || incoming.lastRead.updatedAt > current.lastRead.updatedAt) ? incoming.lastRead : current.lastRead;
-  if (lastRead && (lastRead.updatedAt <= (resetAt ?? '') || lastRead.updatedAt <= (removed.lastRead ?? ''))) lastRead = undefined;
+  const lastRead = mergeReadingPosition(current.lastRead, incoming.lastRead, resetAt, removed.lastRead);
   return { version: 1, entries, ...(lastRead ? { lastRead } : {}), ...(resetAt ? { resetAt } : {}), ...(Object.keys(removed).length ? { removed } : {}) };
 };
 
@@ -101,11 +110,12 @@ export const pruneLearning = (data: LearningData, validKeys: ReadonlySet<string>
   return mergeLearning(data, { ...emptyLearning(), removed });
 };
 
-export const persistLearning = (storage: Pick<Storage, 'getItem' | 'setItem'>, key: string, current: LearningData, change: (data: LearningData) => LearningData, recover = false) => {
+export const persistLearning = (storage: Pick<Storage, 'getItem' | 'setItem'>, key: string, current: LearningData, change: (data: LearningData) => LearningData | undefined, recover = false) => {
   let base = current, unreadable = false;
   try { const text = storage.getItem(key); if (text) base = mergeLearning(base, importLearning(text)); } catch { unreadable = true; }
-  const data = change(base);
+  const updated = change(base), data = updated ?? base;
   if (unreadable && !recover) return { data, error: '本地记录无法读取，原数据已保留；新记录仅在本次访问有效，请导出备份或导入备份恢复。' };
+  if (!updated) return { data, error: '' };
   try { storage.setItem(key, JSON.stringify(data)); return { data, error: '' }; }
   catch { return { data, error: '浏览器无法保存，当前记录仅在本次访问有效，请导出备份。' }; }
 };

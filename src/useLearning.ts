@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { clearLearning, emptyLearning, importLearning, learningTimestamp, mergeLearning, persistLearning, pruneLearning, updateLearningBatch, undoLearningBatch, type LearningBatchUndo, type LearningStatus, type LearningData, type LearningEntry, type ReadingPosition } from './learning-utils';
+import { clearLearning, emptyLearning, importLearning, learningTimestamp, mergeLearning, persistLearning, pruneLearning, recordReadingPosition, updateLearningBatch, undoLearningBatch, type LearningBatchUndo, type LearningStatus, type LearningData, type LearningEntry, type ReadingPosition } from './learning-utils';
 const storageKey = 'fe-library-learning-v1';
 const load = () => { const text = localStorage.getItem(storageKey); return text ? importLearning(text) : emptyLearning(); };
 export const useLearning = () => {
@@ -7,7 +7,7 @@ export const useLearning = () => {
   const saveError = useRef(''); // 已排队的旧定位回调也必须读取当前错误，不能依赖渲染时的闭包。
   const [data, setData] = useState<LearningData>(() => { try { return load(); } catch { return emptyLearning(); } });
   const current = useRef(data);
-  const commit = useCallback((change: (data: LearningData) => LearningData, recover = false) => {
+  const commit = useCallback((change: (data: LearningData) => LearningData | undefined, recover = false) => {
     // 获取 localStorage 本身也可能被浏览器权限策略拒绝。
     const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) };
     const result = persistLearning(storage, storageKey, current.current, change, recover);
@@ -40,14 +40,17 @@ export const useLearning = () => {
   }, []);
   const update = useCallback((key: string, patch: Partial<Pick<LearningEntry, 'bookmarked' | 'status'>>) => commit(base => ({ ...base, entries: { ...base.entries,
     [key]: { ...(base.entries[key] ?? { bookmarked: false, status: 'unread' }), ...patch, updatedAt: learningTimestamp(base) } } })), [commit]);
-  const remember = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => {
-    const change = (base: LearningData): LearningData => ({ ...base, lastRead: { ...position, updatedAt: learningTimestamp(base) } });
-    // 保存失败后，后台阅读定位只更新内存，不能悄悄清除提示或移走重试按钮。
-    if (saveError.current) {
-      const next = change(current.current); current.current = next; setData(next);
-      return { data: next, error: saveError.current };
-    }
-    return commit(change);
+  const prepareReadingPosition = useCallback((position: Omit<ReadingPosition, 'updatedAt'>) => {
+    // 以排队时刻记录阅读位置，延迟执行时不能盖过较新的清空或阅读。
+    const reading = { ...position, updatedAt: learningTimestamp(current.current) };
+    const change = (base: LearningData) => recordReadingPosition(base, reading);
+    return () => {
+      // 保存失败后，后台阅读定位只更新内存，保留提示和重试按钮。
+      if (saveError.current) {
+        const next = change(current.current);
+        if (next) { current.current = next; setData(next); }
+      } else commit(change);
+    };
   }, [commit]);
   const restore = useCallback((text: string) => { const incoming = importLearning(text); return commit(base => mergeLearning(base, incoming), true); }, [commit]);
   const prune = useCallback((validKeys: ReadonlySet<string>, validArticles: ReadonlySet<string>) => commit(base => pruneLearning(base, validKeys, validArticles)), [commit]);
@@ -64,6 +67,6 @@ export const useLearning = () => {
     const saved = commit(base => { const result = undoLearningBatch(base, undo); count = result.count; return result.data; });
     return { ...saved, count };
   }, [commit]);
-  return { data, update, updateMany, undoMany, remember, restore, prune, clear, retrySave, error };
+  return { data, update, updateMany, undoMany, prepareReadingPosition, restore, prune, clear, retrySave, error };
 };
 export type Learning = ReturnType<typeof useLearning>;
