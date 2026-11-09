@@ -46,6 +46,7 @@ const App = () => {
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const studyDirectoryRef = useRef<HTMLDialogElement>(null);
+  const listFocus = useRef<{ href: string; entry: string; previousFocus: Element | null } | undefined>(undefined);
   const [body, setBody] = useState<{ id: string; content?: string; error?: string }>({ id: '' });
   const [rendered, setRendered] = useState<{ body: typeof body; question: string; studyMode: boolean }>();
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -77,7 +78,18 @@ const App = () => {
     && rendered.question === question && rendered.studyMode === inStudy
     && (!question || toc.some(heading => heading.id === question));
 
-  const navigate = useCallback((href: string, replace = false) => {
+  const onListReady = useCallback(() => {
+    const pending = listFocus.current;
+    if (!pending) return;
+    listFocus.current = undefined;
+    if (window.location.href !== pending.href || (document.activeElement !== pending.previousFocus && document.activeElement !== document.body)) return;
+    const main = document.getElementById('main');
+    const entry = Array.from(main?.querySelectorAll<HTMLAnchorElement>('a[data-list-entry]') ?? []).find(link => link.getAttribute('href') === pending.entry);
+    (entry ?? main)?.focus({ preventScroll: true });
+    if (entry) entry.scrollIntoView({ block: 'center', behavior: 'instant' });
+    else window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+  const navigate = useCallback((href: string, replace = false, source?: HTMLAnchorElement) => {
     const previousFocus = document.activeElement;
     const target = new URL(href, document.baseURI);
     const previous = new URL(window.location.href);
@@ -86,12 +98,15 @@ const App = () => {
       || (previous.searchParams.get('view') || 'home') !== (target.searchParams.get('view') || 'home')
       || changesListPage
       || previous.searchParams.get('path') !== target.searchParams.get('path');
-    const listReturn = navigationListReturn(previous, target, window.history.state);
-    window.history[replace ? 'replaceState' : 'pushState'](listReturn ? { listReturn: listReturn.href } : {}, '', target);
+    const returning = source?.hasAttribute('data-list-return') ? readListReturn(window.history.state) : undefined;
+    const restore = !replace && returning?.entry && returning.href === target.search ? { href: target.href, entry: returning.entry, previousFocus } : undefined;
+    listFocus.current = restore;
+    const listReturn = navigationListReturn(previous, target, window.history.state, source?.hasAttribute('data-list-entry') ? href : undefined);
+    window.history[replace ? 'replaceState' : 'pushState'](listReturn ? { listReturn: listReturn.href, listEntry: listReturn.entry } : {}, '', target);
     setLocation(window.location.href); setQuery(''); setMenuOpen(false);
     if (!replace && !window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' });
-      if (changesPage) setTimeout(() => {
+      if (changesPage && !restore) setTimeout(() => {
         if (window.location.href !== target.href) return;
         // 用户已主动聚焦其他控件时，导航不能再抢走焦点。
         if (document.activeElement !== previousFocus && document.activeElement !== document.body) return;
@@ -107,7 +122,7 @@ const App = () => {
     }
   }, []);
   useEffect(() => {
-    const onPopState = () => { setLocation(window.location.href); setQuery(''); setMenuOpen(false); };
+    const onPopState = () => { listFocus.current = undefined; setLocation(window.location.href); setQuery(''); setMenuOpen(false); };
     const onKey = (event: KeyboardEvent) => {
       if (event.isComposing) return;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); searchRef.current?.focus(); setSearchOpen(true); }
@@ -206,7 +221,7 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
-      {!id ? view === 'questions' ? <QuestionList params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}

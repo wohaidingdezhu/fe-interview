@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { articles, useQuestions } from './content';
 import { learningTargets } from './learning-view';
 import { reactPathHref, reactPathSteps } from './react-path';
@@ -10,8 +10,9 @@ import type { StartStudy } from './StudyStartActions';
 import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 
-export const ReactLearningPath = ({ learning, study, navigate, startStudy }: { learning: Learning; study: Study; navigate: Navigate; startStudy: StartStudy }) => {
+export const ReactLearningPath = ({ learning, study, navigate, startStudy, onListReady }: { learning: Learning; study: Study; navigate: Navigate; startStudy: StartStudy; onListReady?: () => void }) => {
   const catalog = useQuestions();
+  useLayoutEffect(() => { if (!catalog.loading) onListReady?.(); }, [catalog.loading, onListReady]);
   const [error, setError] = useState('');
   const targets = new Map(learningTargets(catalog.questions, articles).map(target => [target.key, target]));
   const steps = reactPathSteps.map(step => ({ ...step, target: targets.get(step.key) }));
@@ -45,7 +46,7 @@ export const ReactLearningPath = ({ learning, study, navigate, startStudy }: { l
     <p className="path-note">每一步都可以直接收藏、标记已读或待复习。从某一步开始学习时，清单只包含这一步及后续内容。</p>
     <ol className="learning-path-steps" aria-label="React 学习步骤">{steps.map((step, index) => <li key={step.key}>
       <div className="path-step-meta"><strong>{step.stage}</strong><span>{({ read: '已读', review: '待复习', unread: '未读' })[learning.data.entries[step.key]?.status ?? 'unread']}</span></div>
-      <h2>{step.target ? <Link href={step.target.href} navigate={navigate}>{step.target.title} →</Link> : catalog.loading ? '正在加载…' : '内容暂不可用'}</h2><p>{step.goal}</p>
+      <h2>{step.target ? <Link data-list-entry="" href={step.target.href} navigate={navigate}>{step.target.title} →</Link> : catalog.loading ? '正在加载…' : '内容暂不可用'}</h2><p>{step.goal}</p>
       <div className="path-step-actions" role="group" aria-label={`第 ${index + 1} 步学习操作`}>
         {step.target && <LearningControls itemKey={step.key} learning={learning} compact />}
         <button className="path-step-start" type="button" disabled={!ready} aria-label={`从第 ${index + 1} 步开始学习`} aria-describedby="path-start-note" onClick={() => begin(queue.slice(index))}>从这一步开始 →</button>

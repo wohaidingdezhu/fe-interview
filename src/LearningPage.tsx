@@ -1,7 +1,7 @@
 import { LearningBackupImport } from './LearningBackupImport';
 import { LearningBackupButton } from './LearningBackupButton';
 import { readingInStudy } from './study-session';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { articles, useQuestions } from './content';
 import { articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
@@ -16,8 +16,9 @@ import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
 import { StudyStartActions } from './StudyStartActions';
 import { reactPathHref } from './react-path';
-export const LearningPage = ({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) => {
+export const LearningPage = ({ learning, navigate, params, startStudy, study, onListReady }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study; onListReady?: () => void }) => {
   const catalog = useQuestions(), [message, setMessage] = useState('');
+  useLayoutEffect(() => { if (!catalog.loading) onListReady?.(); }, [catalog.loading, onListReady]);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const [selection, setSelection] = useState<{ scope: string; keys: string[] }>();
   const feedback = useRef<HTMLParagraphElement>(null), searchRef = useRef<HTMLInputElement>(null);
@@ -108,7 +109,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
       </section>}
       <div ref={list} className="resource-list">{result.items.map(item => <article className="resource-card" key={item.key} data-selected={selecting && selection.keys.includes(item.key) ? 'true' : undefined}>
         {selecting && <label className="learning-select"><input type="checkbox" value={item.key} aria-label={`选择 ${item.title}`} checked={selection.keys.includes(item.key)} onChange={event => selectItem(item.key, event.target.checked)} /><span>选择此项</span></label>}
-        <small>{item.category}</small><h2><Link navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} />
+        <small>{item.category}</small><h2><Link data-list-entry="" navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} />
       </article>)}</div>
       {selecting && !!result.items.length && <div className="learning-selection-footer" role="region" aria-label="本页选择快捷操作"><span>本页已选择 {selectedItems.length} 条</span><button type="button" onClick={() => {
         actions.current?.focus({ preventScroll: true }); actions.current?.scrollIntoView({ block: 'start', behavior: 'instant' });

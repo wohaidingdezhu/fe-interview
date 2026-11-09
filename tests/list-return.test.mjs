@@ -25,6 +25,16 @@ test('正文锚点和继续阅读沿用来源，切换列表或进入学习模�
   assert.equal(navigationListReturn(url('?view=home'), url('?article=closure'), state), undefined);
 });
 
+test('原条目保留在正文历史中，并且只接受站内文章链接', () => {
+  const entry = '?article=interview-html-css#q25';
+  const initial = navigationListReturn(url('?view=questions&page=3'), url(entry), null, entry);
+  assert.equal(initial.entry, entry);
+  const state = { listReturn: initial.href, listEntry: entry };
+  assert.deepEqual(navigationListReturn(url(entry), url('?article=event-loop'), state), initial);
+  assert.equal(readListReturn({ ...state, listEntry: 'https://example.com/' }).entry, undefined);
+  assert.equal(readListReturn({ ...state, listEntry: '?view=questions' }).entry, undefined);
+});
+
 test('忽略无效或站外返回值，分享直达和其他站点不能继承列表来源', () => {
   for (const value of [null, 1, '?view=unknown', '?article=closure', '?view=questions&article=closure', '?view=learning&study=1', '?view=notes#other', 'https://evil.example/?view=questions', '//evil.example/?view=questions', 'javascript:alert(1)', '?view=notes&q=' + 'x'.repeat(10_000)]) assert.equal(readListReturn({ listReturn: value }), undefined);
   assert.equal(readListReturn(null), undefined);
