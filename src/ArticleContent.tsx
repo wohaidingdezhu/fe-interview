@@ -10,9 +10,14 @@ import { ArticleImage, LinkedImage } from './ArticleImage';
 export type Heading = { id: string; title: string; level: number };
 const CodeBlock = ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => {
   const ref = useRef<HTMLPreElement>(null), [status, setStatus] = useState('复制代码');
+  const request = useRef(0);
+  useEffect(() => () => { request.current++; }, []);
   return <div className="code-block"><button className="copy-button" onClick={async () => {
-    try { await navigator.clipboard.writeText(ref.current?.textContent || ''); setStatus('已复制'); }
+    const selected = ++request.current;
+    setStatus('正在复制…');
+    try { await navigator.clipboard.writeText(ref.current?.textContent || ''); if (selected === request.current) setStatus('已复制'); }
     catch {
+      if (selected !== request.current) return;
       const selection = window.getSelection(), range = document.createRange();
       if (selection && ref.current) {
         range.selectNodeContents(ref.current); selection.removeAllRanges(); selection.addRange(range);

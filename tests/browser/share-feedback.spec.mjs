@@ -91,3 +91,18 @@ for (const latestSucceeds of [true, false]) test(`题目链接连续复制只显
   await page.evaluate(() => window.clipboardRequests[2].resolve());
   await expect(copy).toHaveText('已复制');
 });
+
+test('代码连续复制后旧失败不会覆盖结果或选中代码', async ({ page }) => {
+  await deferClipboard(page);
+  await page.goto('/?article=closure');
+  const block = page.locator('.article-body .code-block').first();
+  const copy = block.getByRole('button', { name: '复制代码' });
+  await copy.click();
+  await block.locator('.copy-button').click();
+  await expect.poll(() => page.evaluate(() => window.clipboardRequests.length)).toBe(2);
+  await page.evaluate(() => window.clipboardRequests[1].resolve());
+  await expect(block.locator('.copy-button')).toHaveText('已复制');
+  await page.evaluate(() => window.clipboardRequests[0].reject(new Error('Late failure')));
+  await expect(block.locator('.copy-button')).toHaveText('已复制');
+  expect(await page.evaluate(() => window.getSelection().toString())).toBe('');
+});
