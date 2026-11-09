@@ -11,6 +11,8 @@
 .hero-actions > a:last-child { font-size:12px; color:var(--green); }
 .primary-link { display:inline-flex; justify-content:space-between; gap:28px; align-items:center; min-height:44px; background:var(--green); color:white; border-radius:4px; padding:12px 20px; font-size:13px; }
 .primary-link:hover { background:#1b5f49; }
+.path-entry-links { display:flex; flex-wrap:wrap; gap:0 20px; }
+.path-entry-links a { display:inline-flex; align-items:center; min-height:44px; }
 .path-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:24px 0; }
 .path-actions button { border:0; font:inherit; font-size:14px; cursor:pointer; }
 .path-actions button:disabled { opacity:.5; cursor:not-allowed; }

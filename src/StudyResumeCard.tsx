@@ -10,7 +10,7 @@ import type { Study } from './useStudySession';
 
 export const StudyResumeCard = ({ study, learning, navigate }: { study: Study; learning: Learning; navigate: Navigate }) => {
   const [summary, setSummary] = useState(false);
-  const catalog = useQuestions(), dialog = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
+  const catalog = useQuestions(study.session?.keys.some(key => key.startsWith('q:')) ?? false), dialog = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
   if (!study.session) return null;
   if (catalog.loading) return <section className="resume-card"><p role="status">正在恢复暂停的学习清单…</p></section>;
   if (catalog.error) return <section className="resume-card"><p role="alert">{catalog.error}</p><button onClick={catalog.retry}>重试学习清单</button><button onClick={study.end}>结束清单</button></section>;

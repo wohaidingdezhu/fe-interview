@@ -7,11 +7,12 @@ export const articles = library.articles.sort((a, b) => a.order - b.order || a.t
 const bodies = new Map<string, Promise<string>>();
 let searchRequest: Promise<SearchDocument[]> | undefined;
 let questionRequest: Promise<QuestionEntry[]> | undefined;
-export const useQuestions = () => {
+export const useQuestions = (enabled = true) => {
   const [questions, setQuestions] = useState<QuestionEntry[]>([]), [error, setError] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
+    if (!enabled) return;
     let active = true;
     setError('');
     questionRequest ??= readJSON(library.questionsPath).then(data => {
@@ -21,8 +22,8 @@ export const useQuestions = () => {
     }).catch(error => { questionRequest = undefined; throw error; });
     questionRequest.then(data => { if (active) { setQuestions(data); setLoaded(true); } }, error => { if (active) setError(error.message); });
     return () => { active = false; };
-  }, [attempt]);
-  return { questions, error, loading: !loaded && !error, retry: () => setAttempt(n => n + 1) };
+  }, [attempt, enabled]);
+  return { questions: enabled ? questions : [], error: enabled ? error : '', loading: enabled && !loaded && !error, retry: () => setAttempt(n => n + 1) };
 };
 const readJSON = async (path: string): Promise<unknown> => {
   const response = await fetch(new URL(`${import.meta.env.BASE_URL}${path}`, document.baseURI));

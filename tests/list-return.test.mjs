@@ -13,6 +13,7 @@ test('从各列表进入正文保留完整筛选，支持重复标签和 React �
     assert.deepEqual(readListReturn({ listReturn: context.href }), context);
   }
   assert.equal(navigationListReturn(url(queries[4]), url('?article=react-state'), null).label, 'React 学习路径');
+  assert.equal(navigationListReturn(url('?view=learning&path=ai-basics'), url('?article=rag-basics'), null).label, 'AI 学习路径');
 });
 
 test('正文锚点和继续阅读沿用来源，切换列表或进入学习模式清除来源', () => {

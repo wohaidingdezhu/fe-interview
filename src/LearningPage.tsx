@@ -15,7 +15,7 @@ import type { LearningBatchUndo, LearningStatus } from './learning-utils';
 import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
 import { StudyStartActions } from './StudyStartActions';
-import { reactPathHref } from './react-path';
+import { learningPaths, learningPathHref } from './learning-paths';
 export const LearningPage = ({ learning, navigate, params, startStudy, study, onListReady }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study; onListReady?: () => void }) => {
   const catalog = useQuestions(), [message, setMessage] = useState('');
   useLayoutEffect(() => { if (!catalog.loading) onListReady?.(); }, [catalog.loading, onListReady]);
@@ -76,7 +76,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study, on
     feedback.current?.focus();
   };
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
-    <p><Link href={reactPathHref} navigate={navigate}>查看 React 学习路径 →</Link></p>
+    <nav className="path-entry-links" aria-label="学习路径">{learningPaths.map(path => <Link key={path.id} navigate={navigate} href={learningPathHref(path)}>查看 {path.subject} 学习路径 →</Link>)}</nav>
     <LearningSaveRecovery learning={learning} study={study} onSaved={() => setMessage('')} />
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && !readingInStudy(study?.session, last) && articles.some(a => a.id === last.articleId) && <section className="resume-card"><div><small>上次读到</small><h2>{last.title}</h2></div><Link navigate={navigate} href={articleHref(last.articleId, last.anchor)}>继续自由阅读 →</Link></section>}

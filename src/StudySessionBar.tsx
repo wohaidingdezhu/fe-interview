@@ -12,7 +12,8 @@ import { LearningBackupButton } from './LearningBackupButton';
 import { LearningSaveRecovery } from './LearningSaveRecovery';
 
 export const StudySessionBar = ({ study, learning, route, navigate, openDirectory, directoryReady, readingReady = true }: { study: Study; learning: Learning; route: URL; navigate: Navigate; openDirectory: () => void; directoryReady: boolean; readingReady?: boolean }) => {
-  const catalog = useQuestions();
+  const session = study.session;
+  const catalog = useQuestions(session?.keys.some(key => key.startsWith('q:')) ?? false);
   const [summary, setSummary] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
   const bar = useRef<HTMLElement>(null);
@@ -24,7 +25,6 @@ export const StudySessionBar = ({ study, learning, route, navigate, openDirector
     const observer = new ResizeObserver(measure); observer.observe(element);
     return () => { observer.disconnect(); document.documentElement.style.removeProperty('--study-session-height'); };
   }, []);
-  const session = study.session;
   const queue = session ? studyQueue(session, learningTargets(catalog.questions, articles)) : [];
   const index = studyIndex(queue, route), current = queue[index];
   useEffect(() => { if (!catalog.loading && !catalog.error && current) study.move(current.key); }, [catalog.loading, catalog.error, current?.key, study.move]);

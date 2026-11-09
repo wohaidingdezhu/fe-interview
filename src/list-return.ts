@@ -1,4 +1,5 @@
 import { articleIdFromLocation } from './library-utils.ts';
+import { findLearningPath } from './learning-paths.ts';
 
 const labels = { questions: '题目列表', notes: '专题与笔记', resources: '相关资料', learning: '我的学习' };
 export type ListReturn = { href: string; label: string; entry?: string };
@@ -8,7 +9,8 @@ const parseListReturn = (value: unknown): ListReturn | undefined => {
   const url = new URL(value, 'https://library.local/'), params = url.searchParams;
   const view = params.get('view');
   if (url.hash || params.has('article') || params.has('study') || !view || !Object.hasOwn(labels, view)) return;
-  return { href: url.search, label: view === 'learning' && params.get('path') === 'react-basics' ? 'React 学习路径' : labels[view as keyof typeof labels] };
+  const path = view === 'learning' ? findLearningPath(params.get('path')) : undefined;
+  return { href: url.search, label: path ? `${path.subject} 学习路径` : labels[view as keyof typeof labels] };
 };
 
 export const readListReturn = (state: unknown): ListReturn | undefined => {

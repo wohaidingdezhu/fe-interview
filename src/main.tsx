@@ -15,7 +15,8 @@ import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
 import { QuestionList } from './QuestionList';
 import { LearningPage } from './LearningPage';
-import { ReactLearningPath } from './ReactLearningPath';
+import { LearningPath } from './LearningPath';
+import { findLearningPath } from './learning-paths';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
 import { useStudySession } from './useStudySession';
@@ -57,7 +58,7 @@ const App = () => {
   const inStudy = Boolean(id && params.get('study') === '1');
   const question = inStudy ? studyQuestion(route) : '';
   const view = id ? 'article' : publicView(params.get('view'));
-  const isReactPath = view === 'learning' && params.get('path') === 'react-basics';
+  const path = view === 'learning' ? findLearningPath(params.get('path')) : undefined;
   const counts = libraryCounts(articles, []);
   const article = articles.find((item) => item.id === id);
   const siblings = articles.filter(item => (item.section === 'resources') === (article?.section === 'resources'));
@@ -136,7 +137,7 @@ const App = () => {
     return () => { window.removeEventListener('popstate', onPopState); window.removeEventListener('hashchange', onPopState); window.removeEventListener('keydown', onKey); };
   }, []);
   useEffect(() => {
-    const title = id ? focusedHeading?.title || article?.title || '笔记未找到' : isReactPath ? 'React 基础学习路径' : ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', resources: '相关资料', article: '阅读文章' }[view] || '首页');
+    const title = id ? focusedHeading?.title || article?.title || '笔记未找到' : path?.title ?? ({ home: '首页', questions: '全部题目', learning: '我的学习', notes: '专题与笔记', resources: '相关资料', article: '阅读文章' }[view] || '首页');
     document.title = `${title} · 前端资料库`;
     const description = focusedHeading && article ? `${focusedHeading.title}，来自《${article.title}》。` : article?.description || '按题查找、按主题学习，收藏值得反复阅读的前端知识。';
     for (const selector of ['meta[name=description]', 'meta[property="og:description"]']) document.querySelector(selector)?.setAttribute('content', description);
@@ -153,7 +154,7 @@ const App = () => {
       if (!node.parentNode) document.head.append(node);
     } else structured?.remove();
 
-  }, [article, id, view, isReactPath, focusedHeading?.title]);
+  }, [article, id, view, path, focusedHeading?.title]);
   useEffect(() => {
     setToc([]); setActiveHeading(undefined);
     if (!article) return;
@@ -221,7 +222,7 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
-      {!id ? view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{isReactPath ? <ReactLearningPath onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
