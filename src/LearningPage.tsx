@@ -1,7 +1,7 @@
 import { LearningBackupImport } from './LearningBackupImport';
 import { LearningBackupButton } from './LearningBackupButton';
 import { readingInStudy } from './study-session';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { articles, useQuestions } from './content';
 import { articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
@@ -15,9 +15,10 @@ import type { LearningBatchUndo, LearningStatus } from './learning-utils';
 import { StudyResumeCard } from './StudyResumeCard';
 import type { Study } from './useStudySession';
 import { StudyStartActions } from './StudyStartActions';
-import { reactPathHref } from './react-path';
-export const LearningPage = ({ learning, navigate, params, startStudy, study }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study }) => {
+import { learningPaths, learningPathHref } from './learning-paths';
+export const LearningPage = ({ learning, navigate, params, startStudy, study, onListReady }: { learning: Learning; navigate: Navigate; params: URLSearchParams; startStudy: (targets: LearningTarget[], params: URLSearchParams, random?: boolean) => void; study?: Study; onListReady?: () => void }) => {
   const catalog = useQuestions(), [message, setMessage] = useState('');
+  useLayoutEffect(() => { if (!catalog.loading) onListReady?.(); }, [catalog.loading, onListReady]);
   const [undo, setUndo] = useState<LearningBatchUndo | null>(null);
   const [selection, setSelection] = useState<{ scope: string; keys: string[] }>();
   const feedback = useRef<HTMLParagraphElement>(null), searchRef = useRef<HTMLInputElement>(null);
@@ -75,7 +76,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
     feedback.current?.focus();
   };
   return <><div className="breadcrumb">前端资料库 <span>/</span> 我的学习</div><span className="eyebrow">YOUR PERSONAL READING SHELF</span><h1>我的学习</h1><p className="description">收藏、已读与待复习。把下一次阅读，接在这一次之后。</p>
-    <p><Link href={reactPathHref} navigate={navigate}>查看 React 学习路径 →</Link></p>
+    <nav className="path-entry-links" aria-label="学习路径">{learningPaths.map(path => <Link key={path.id} navigate={navigate} href={learningPathHref(path)}>查看 {path.subject} 学习路径 →</Link>)}</nav>
     <LearningSaveRecovery learning={learning} study={study} onSaved={() => setMessage('')} />
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && !readingInStudy(study?.session, last) && articles.some(a => a.id === last.articleId) && <section className="resume-card"><div><small>上次读到</small><h2>{last.title}</h2></div><Link navigate={navigate} href={articleHref(last.articleId, last.anchor)}>继续自由阅读 →</Link></section>}
@@ -108,7 +109,7 @@ export const LearningPage = ({ learning, navigate, params, startStudy, study }: 
       </section>}
       <div ref={list} className="resource-list">{result.items.map(item => <article className="resource-card" key={item.key} data-selected={selecting && selection.keys.includes(item.key) ? 'true' : undefined}>
         {selecting && <label className="learning-select"><input type="checkbox" value={item.key} aria-label={`选择 ${item.title}`} checked={selection.keys.includes(item.key)} onChange={event => selectItem(item.key, event.target.checked)} /><span>选择此项</span></label>}
-        <small>{item.category}</small><h2><Link navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} />
+        <small>{item.category}</small><h2><Link data-list-entry="" navigate={navigate} href={item.href}>{item.title} →</Link></h2><LearningControls itemKey={item.key} learning={learning} />
       </article>)}</div>
       {selecting && !!result.items.length && <div className="learning-selection-footer" role="region" aria-label="本页选择快捷操作"><span>本页已选择 {selectedItems.length} 条</span><button type="button" onClick={() => {
         actions.current?.focus({ preventScroll: true }); actions.current?.scrollIntoView({ block: 'start', behavior: 'instant' });

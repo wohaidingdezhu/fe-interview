@@ -1,12 +1,12 @@
-import { useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { articles, useSearchIndex } from './content';
 import { filterItems, type ListItem } from './data-utils';
 import { searchDocuments, searchHits } from './search-utils';
 import { normalizeCategory } from './categories';
-import { NavigationLink as Link } from './NavigationLink';
+import { NavigationLink as Link, type Navigate } from './NavigationLink';
 
-type Props = { params: URLSearchParams; navigate: (href: string, replace?: boolean) => void };
-export const LibraryList = ({ params, navigate }: Props) => {
+type Props = { params: URLSearchParams; navigate: Navigate; onListReady?: () => void };
+export const LibraryList = ({ params, navigate, onListReady }: Props) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const resources = params.get('view') === 'resources';
   const view = resources ? 'resources' : 'notes', title = resources ? '相关资料' : '专题与笔记';
@@ -19,6 +19,7 @@ export const LibraryList = ({ params, navigate }: Props) => {
   const selectedTags = params.getAll('tag');
   const query = params.get('q') || '';
   const search = useSearchIndex(query);
+  useLayoutEffect(() => { if (!search.loading) onListReady?.(); }, [search.loading, onListReady]);
   const matches = query.trim() ? searchDocuments(search.documents || [], query) : undefined;
   const questionMatches = new Map<string, { title: string; href: string }>();
   if (query.trim()) for (const hit of searchHits(search.documents || [], query)) {
@@ -77,11 +78,11 @@ export const LibraryList = ({ params, navigate }: Props) => {
     {search.error && <p role="alert">{search.error}<button className="text-button" onClick={search.retry}>重试搜索</button></p>}
     <div className="resource-list">{result.items.map((item) => <article key={item.id} className="resource-card">
       <div className="resource-meta"><span className="pill">{item.type}</span>{import.meta.env.DEV && item.status === 'published' && <span className="pill published-label">已公开</span>}{item.status === 'draft' && item.quality === 'complete' && <span className="pill review-label">待审核</span>}{item.status === 'draft' && item.quality === 'incomplete' && <span className="pill incomplete-label">待补充</span>}{item.status === 'draft' && item.quality === undefined && <span className="pill draft-label">草稿 · 仅本地预览</span>}<span>{item.category}</span><time dateTime={item.addedAt}>{item.addedAt}</time></div>
-      <h2><Link href={item.url || `?article=${item.id}`} navigate={navigate}>{item.title}<span aria-hidden="true">→</span></Link></h2>
+      <h2><Link data-list-entry="" href={item.url || `?article=${item.id}`} navigate={navigate}>{item.title}<span aria-hidden="true">→</span></Link></h2>
       <p>{item.description}</p>
       {(item.questionCount ?? 0) > 0 && <p className="resource-source">共 {item.questionCount} 题 · 已复核 {item.publishedQuestionCount} · 待处理 {(item.questionCount ?? 0) - (item.publishedQuestionCount ?? 0)}{(item.publishedQuestionCount ?? 0) > 0 && (item.publishedQuestionCount ?? 0) < (item.questionCount ?? 0) ? ' · 部分公开' : ''}</p>}
       {matches?.has(item.id) && <p className="search-snippet">{matches.get(item.id)}</p>}
-      {questionMatches.has(item.id) && <Link className="question-result-link" href={questionMatches.get(item.id)!.href} navigate={navigate}>阅读 {questionMatches.get(item.id)!.title} →</Link>}
+      {questionMatches.has(item.id) && <Link data-list-entry="" className="question-result-link" href={questionMatches.get(item.id)!.href} navigate={navigate}>阅读 {questionMatches.get(item.id)!.title} →</Link>}
       <div className="resource-bottom"><span className="resource-source">{item.source}</span><div>{item.tags.map((tag) => <button className="tag" key={tag} aria-label={`筛选标签 ${tag}`} onClick={() => toggleTag(tag)}>{tag}</button>)}</div></div>
     </article>)}</div>
     {!search.loading && !search.error && !result.total && <div className="empty-state"><span aria-hidden="true">⌕</span><h2>没有找到匹配内容</h2><p>减少筛选条件，或换一个关键词再试。</p><Link className="text-button" href={`?view=${view}`} navigate={navigate}>查看全部{title} →</Link></div>}

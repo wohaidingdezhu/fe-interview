@@ -5,7 +5,7 @@ import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import type { Learning } from './useLearning';
 import type { Study } from './useStudySession';
 import { StudyResumeCard } from './StudyResumeCard';
-import { reactPathHref } from './react-path';
+import { learningPaths, learningPathHref } from './learning-paths';
 export const HomePage = ({ navigate, learning, study }: { navigate: Navigate; learning: Learning; study?: Study }) => {
   const counts = libraryCounts(articles, []), topics = articles.filter(a => a.questionCount > 0), notes = articles.filter(a => !a.questionCount && a.section !== 'resources');
   const last = learning.data.lastRead, lastArticle = articles.find(a => a.id === last?.articleId);
@@ -17,7 +17,7 @@ export const HomePage = ({ navigate, learning, study }: { navigate: Navigate; le
     ].map(([count, label, href, caption]) => <Link key={label} href={String(href)} navigate={navigate}><strong>{count}</strong><span>{label}</span><small>{caption} →</small></Link>)}</nav>
     {study?.session && <StudyResumeCard study={study} learning={learning} navigate={navigate} />}
     {last && lastArticle && !readingInStudy(study?.session, last) && <section className="resume-card"><div><span className="eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2>上次自由阅读</h2><p>{last.title} <span>· {lastArticle.category}</span></p></div><Link className="primary-link" navigate={navigate} href={articleHref(last.articleId, last.anchor)}>接着读 →</Link></section>}
-    <section className="home-learning" aria-labelledby="react-path-title"><span className="eyebrow">A GUIDED LEARNING PATH</span><h2 id="react-path-title">从状态到 Hooks，顺着一条路径学 React</h2><p>把题目、原理笔记与代码实践串成 7 步。先看清每步目标，再按顺序学习。</p><Link navigate={navigate} href={reactPathHref}>查看 React 学习路径 →</Link></section>
+    <section className="home-learning" aria-labelledby="learning-paths-title"><span className="eyebrow">GUIDED LEARNING PATHS</span><h2 id="learning-paths-title">选一条学习路径</h2><p>React 路径从状态讲到 Hooks；AI 路径从模型基础讲到应用评估。每一步都有明确的学习目标。</p><nav className="path-entry-links" aria-label="学习路径">{learningPaths.map(path => <Link key={path.id} navigate={navigate} href={learningPathHref(path)}>查看 {path.subject} 学习路径 →</Link>)}</nav></section>
     <section className="home-section"><div className="section-heading"><div><span className="eyebrow">LEARN BY SUBJECT</span><h2>顺着专题，建立体系</h2></div><Link navigate={navigate} href="?view=questions">全部题目 →</Link></div><div className="subject-grid">{topics.map((topic, index) => <Link navigate={navigate} key={topic.id} href={`?view=questions&category=${encodeURIComponent(topic.category)}`}><span className="subject-number">{String(index + 1).padStart(2, '0')}</span><strong>{topic.category}</strong><small>{topic.publishedQuestionCount} 道题 <span>→</span></small></Link>)}</div></section>
     <section className="home-section"><div className="section-heading"><div><span className="eyebrow">NOTES FOR THE EVERYDAY</span><h2>把知识用在开发里</h2></div><Link navigate={navigate} href="?view=notes&collection=notes">全部笔记 →</Link></div><div className="home-notes">{[...notes].sort((a,b) => b.addedAt.localeCompare(a.addedAt)).slice(0,4).map(note => <Link navigate={navigate} href={articleHref(note.id)} key={note.id}><small>{note.category}</small><h3>{note.title}</h3><p>{note.description}</p><span>阅读笔记 →</span></Link>)}</div></section>
     <section className="home-learning"><h2>让读过的内容，留下痕迹。</h2><p>收藏想深读的题目，标记已经理解的知识，再给需要巩固的内容留一个复习入口。</p><Link navigate={navigate} href="?view=learning">打开我的学习记录 →</Link><small>记录保存在当前浏览器，可导出备份。</small></section>

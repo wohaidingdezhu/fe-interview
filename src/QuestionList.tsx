@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { useQuestions, useSearchIndex } from './content';
 import { questionPage, articleHref } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
@@ -9,7 +9,7 @@ import type { Study } from './useStudySession';
 import { StudyResumeCard } from './StudyResumeCard';
 import { StudyStartActions, type StartStudy } from './StudyStartActions';
 import { learningTargets } from './learning-view';
-export const QuestionList = ({ params, navigate, learning, study, startStudy }: { params: URLSearchParams; navigate: Navigate; learning: Learning; study: Study; startStudy: StartStudy }) => {
+export const QuestionList = ({ params, navigate, learning, study, startStudy, onListReady }: { params: URLSearchParams; navigate: Navigate; learning: Learning; study: Study; startStudy: StartStudy; onListReady?: () => void }) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const catalog = useQuestions(), query = params.get('q') || '', category = normalizeCategory(params.get('category') || ''), tag = params.get('tag') || '';
   const progress = ['bookmarked', 'unread', 'read', 'review'].includes(params.get('progress') || '') ? params.get('progress')! : '';
@@ -18,6 +18,7 @@ export const QuestionList = ({ params, navigate, learning, study, startStudy }: 
   const ids = progress ? new Set(catalog.questions.filter(q => { const e = learning.data.entries[`q:${q.number}`]; return progress === 'bookmarked' ? e?.bookmarked : (e?.status ?? 'unread') === progress; }).map(q => q.number)) : undefined;
   const result = questionPage(catalog.questions, { query, category, tag, ids, documents: search.documents, page: Number(params.get('page')) || 1, size: Number(params.get('size')) || 12 });
   const ready = !catalog.loading && !search.loading && !catalog.error && !search.error;
+  useLayoutEffect(() => { if (!catalog.loading && !search.loading) onListReady?.(); }, [catalog.loading, search.loading, onListReady]);
   const update = (key: string, value: string, replace = false) => { const next = new URLSearchParams(params); next.set('view', 'questions'); next.delete('page'); if (value) next.set(key, value); else next.delete(key); navigate(`?${next}`, replace); };
   const changePage = (page: number) => { const next = new URLSearchParams(params); next.set('page', String(page)); navigate(`?${next}`); };
   return <><div className="breadcrumb">前端资料库 <span>/</span> 全部题目</div><div className="list-heading"><div><span className="eyebrow">ONE QUESTION AT A TIME</span><h1>全部题目</h1><p className="description">按题查找、按主题学习。每一道题，都有直接抵达的入口。</p></div><span className="collection-count">{catalog.questions.length || '—'}<small>道题目</small></span></div>
@@ -32,7 +33,7 @@ export const QuestionList = ({ params, navigate, learning, study, startStudy }: 
     {learning.error && <p role="alert">{learning.error}</p>}
     <div className="list-summary"><span role="status">{catalog.loading || search.loading ? '正在检索题目…' : catalog.error || search.error ? '检索暂不可用，请重试。' : `共找到 ${result.total} 道题`}</span>{(query || category || tag || progress) && <button className="text-button" onClick={() => { navigate('?view=questions'); searchRef.current?.focus(); }}>清除筛选 ×</button>}</div>
     {ready && result.total > 0 && <section className="learning-actions" aria-label="题库连续学习"><StudyStartActions queue={learningTargets(result.queue, [])} items={learningTargets(result.items, [])} params={params} navigate={navigate} startStudy={startStudy} hasSession={Boolean(study.session)} review={progress === 'review'} /></section>}
-    {ready && <div className="question-list">{result.items.map(q => <article className="question-row" key={q.number}><span className="question-number">Q{q.number}</span><div><small>{q.category}{q.status === 'draft' ? ' · 草稿预览' : ''}</small><h2><Link navigate={navigate} href={articleHref(q.articleId, `q${q.number}`)}>{q.title}<span aria-hidden="true"> →</span></Link></h2><LearningControls compact itemKey={`q:${q.number}`} learning={learning} /></div></article>)}</div>}
+    {ready && <div className="question-list">{result.items.map(q => <article className="question-row" key={q.number}><span className="question-number">Q{q.number}</span><div><small>{q.category}{q.status === 'draft' ? ' · 草稿预览' : ''}</small><h2><Link data-list-entry="" navigate={navigate} href={articleHref(q.articleId, `q${q.number}`)}>{q.title}<span aria-hidden="true"> →</span></Link></h2><LearningControls compact itemKey={`q:${q.number}`} learning={learning} /></div></article>)}</div>}
     {!result.total && !catalog.loading && !search.loading && !catalog.error && !search.error && <div className="empty-state"><h2>暂时没有匹配的题目</h2><p>试试更短的关键词，或清除分类和学习状态筛选。</p></div>}
     {ready && <nav className="list-pagination" aria-label="题目分页"><button disabled={result.page <= 1} onClick={() => changePage(result.page - 1)}>← 上一页</button><span>第 {result.page} / {result.pages} 页</span><button disabled={result.page >= result.pages} onClick={() => changePage(result.page + 1)}>下一页 →</button></nav>}
   </>;
