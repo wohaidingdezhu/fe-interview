@@ -22,19 +22,25 @@ const CodeBlock = ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => {
   }} aria-live="polite">{status}</button><pre {...props} ref={ref} tabIndex={0} aria-label="代码示例">{children}</pre></div>;
 };
 const QuestionPermalink = ({ href, number }: { href: string; number: string }) => {
-  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle'), timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  const [status, setStatus] = useState<'idle' | 'pending' | 'copied' | 'failed'>('idle');
+  const timer = useRef<number | undefined>(undefined), request = useRef(0);
+  useLayoutEffect(() => {
+    request.current++; clearTimeout(timer.current); setStatus('idle');
+    return () => { request.current++; clearTimeout(timer.current); };
+  }, [href]);
   const announce = (next: 'copied' | 'failed') => {
     clearTimeout(timer.current); setStatus(next); timer.current = window.setTimeout(() => setStatus('idle'), 1800);
   };
   const copy = async (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    try { await navigator.clipboard.writeText(new URL(href, document.baseURI).href); announce('copied'); }
-    catch { announce('failed'); }
+    const selected = ++request.current;
+    clearTimeout(timer.current); setStatus('pending');
+    try { await navigator.clipboard.writeText(new URL(href, document.baseURI).href); if (selected === request.current) announce('copied'); }
+    catch { if (selected === request.current) announce('failed'); }
   };
-  const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : `复制 Q${number} 题目链接`;
-  return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : ''}</span></span>;
+  const label = status === 'copied' ? `Q${number} 链接已复制` : status === 'failed' ? `Q${number} 链接复制失败，请右键复制` : status === 'pending' ? `正在复制 Q${number} 题目链接` : `复制 Q${number} 题目链接`;
+  return <span className="question-link-control"><a className="question-permalink" href={href} onClick={copy} title={label} aria-label={label}>{status === 'copied' ? '已复制' : status === 'failed' ? '复制失败' : status === 'pending' ? '正在复制…' : '复制链接'}</a><span className="sr-only" aria-live="polite">{status === 'copied' ? '题目链接已复制' : status === 'failed' ? '复制失败，请右键复制题目链接' : status === 'pending' ? '正在复制题目链接' : ''}</span></span>;
 };
 const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', articleId, studyMode = false, question }: { content: string; navigate: (href: string) => void; onHeadings: (headings: Heading[]) => void; onReady?: (ready: boolean) => void; hash?: string; articleId?: string; studyMode?: boolean; question?: string }) => {
   const ref = useRef<HTMLDivElement>(null);

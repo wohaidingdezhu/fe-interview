@@ -67,3 +67,27 @@ test('连续复制只展示最后一次请求结果，失败后仍可重试', as
   await page.evaluate(() => window.clipboardRequests[3].resolve());
   await expect(control(page).getByRole('status')).toHaveText('链接已复制');
 });
+
+for (const latestSucceeds of [true, false]) test(`题目链接连续复制只显示最后一次${latestSucceeds ? '成功' : '失败'}结果`, async ({ page }) => {
+  await deferClipboard(page);
+  await page.goto('/?article=interview-html-css#q5');
+  const heading = page.getByRole('heading', { name: /Q5｜/ });
+  const copy = heading.locator('.question-permalink');
+  await copy.click();
+  await copy.click();
+  await expect.poll(() => page.evaluate(() => window.clipboardRequests.length)).toBe(2);
+  expect(await page.evaluate(() => window.clipboardRequests[1].href)).toMatch(/\?article=interview-html-css#q5$/);
+  await page.evaluate(success => {
+    if (success) window.clipboardRequests[1].resolve();
+    else window.clipboardRequests[1].reject(new Error('Denied'));
+  }, latestSucceeds);
+  await expect(copy).toHaveText(latestSucceeds ? '已复制' : '复制失败');
+  await page.evaluate(success => {
+    if (success) window.clipboardRequests[0].reject(new Error('Late failure'));
+    else window.clipboardRequests[0].resolve();
+  }, latestSucceeds);
+  await expect(copy).toHaveText(latestSucceeds ? '已复制' : '复制失败');
+  await copy.click();
+  await page.evaluate(() => window.clipboardRequests[2].resolve());
+  await expect(copy).toHaveText('已复制');
+});
