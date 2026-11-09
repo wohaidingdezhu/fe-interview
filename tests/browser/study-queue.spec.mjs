@@ -1,5 +1,36 @@
 import { test, expect } from '@playwright/test';
 
+for (const reading of [false, true]) test(`${reading ? '阅读页' : '暂停页'}横屏清单的筛选、当前项与关闭按钮都能滚动到达`, async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('fe-library-study-session-v1', JSON.stringify({ version: 1,
+    keys: Array.from({ length: 39 }, (_, i) => `q:${i + 1}`), currentKey: 'q:39', returnSearch: '?view=questions' })));
+  for (const viewport of [{ width: 667, height: 375 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(reading ? '/?article=interview-html-css&study=1&question=q39#q39' : '/?view=learning');
+    const trigger = page.getByRole('button', { name: reading ? '清单目录' : '查看清单', exact: true });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: '学习清单目录' });
+    await dialog.getByRole('button', { name: '定位当前项', exact: true }).click();
+    const current = dialog.locator('a[aria-current="location"]');
+    await expect(current).toBeFocused();
+    await expect(current).toBeInViewport({ ratio: 0.98 });
+    expect(await current.evaluate(element => element.offsetWidth / element.parentElement.clientWidth)).toBeGreaterThan(0.9);
+    const close = dialog.getByRole('button', { name: '关闭学习清单目录', exact: true });
+    await expect(close).toBeInViewport({ ratio: 1 });
+    await dialog.screenshot({ path: testInfo.outputPath(`landscape-queue-${viewport.width}.png`) });
+    await close.click();
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await dialog.getByRole('searchbox', { name: '搜索清单内容' }).fill('Q1');
+    const links = dialog.getByRole('navigation', { name: '选择清单内容' }).getByRole('link');
+    await expect(links).toHaveCount(1);
+    await links.click();
+    await expect(page).toHaveURL(/question=q1#q1$/);
+    await expect(page.locator('.article-body h1')).toContainText('Q1');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 for (const reading of [false, true]) {
   test(`${reading ? '阅读页' : '暂停页'}清单可清除组合筛选并定位末尾当前项`, async ({ page }, testInfo) => {
     const session = { version: 1, keys: Array.from({ length: 39 }, (_, i) => `q:${i + 1}`), currentKey: 'q:39', returnSearch: '?view=questions&category=HTML%2FCSS' };
