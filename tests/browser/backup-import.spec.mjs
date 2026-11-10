@@ -12,6 +12,7 @@ test('读取失败后导入按钮保留键盘焦点并可重试', async ({ page 
   const loading = page.getByRole('button', { name: '正在读取备份…' });
   await expect(loading).toBeFocused();
   await expect(loading).toBeDisabled();
+  await expect(page.locator('.backup-import').getByRole('status')).toHaveText('正在读取备份，请稍候。');
   await page.evaluate(() => window.finishBackupRead('{}'));
   await expect(page.getByRole('alert')).toContainText('导入失败');
   await expect(button).toBeFocused();

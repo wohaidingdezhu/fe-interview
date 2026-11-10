@@ -66,7 +66,7 @@ export const LearningBackupImport = ({ learning, study, targets, onImported }: {
         if (selected === request.current) setFeedback({ message: `导入失败：${error instanceof Error ? error.message : '文件无效'}`, failed: true });
       } finally { if (selected === request.current) setLoading(false); }
     }} />
-    {!pending && <span className="backup-import-message" role={feedback.failed ? 'alert' : 'status'}>{feedback.message}</span>}
+    {!pending && <span className="backup-import-message" role={feedback.failed ? 'alert' : 'status'}>{loading ? '正在读取备份，请稍候。' : feedback.message}</span>}
     {pending && <BackupPreview key={pending.request} pending={pending} learning={learning} study={study} targets={targets} error={feedback.failed ? feedback.message : ''} trigger={trigger} onConfirm={confirm} onClose={() => { setPending(undefined); setFeedback({ message: '', failed: false }); }} />}
   </div>;
 };
