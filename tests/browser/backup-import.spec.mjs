@@ -1,5 +1,23 @@
 import { test, expect } from '@playwright/test';
 
+test('读取失败后导入按钮保留键盘焦点并可重试', async ({ page }) => {
+  await page.addInitScript(() => {
+    File.prototype.text = () => new Promise(resolve => { window.finishBackupRead = resolve; });
+  });
+  await page.goto('/?view=learning');
+  await page.getByText('记录管理 · 备份与清理', { exact: true }).click();
+  const button = page.getByRole('button', { name: '导入备份', exact: true });
+  await button.focus();
+  await page.locator('input[type=file]').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+  const loading = page.getByRole('button', { name: '正在读取备份…' });
+  await expect(loading).toBeFocused();
+  await expect(loading).toBeDisabled();
+  await page.evaluate(() => window.finishBackupRead('{}'));
+  await expect(page.getByRole('alert')).toContainText('导入失败');
+  await expect(button).toBeFocused();
+  await expect(button).toBeEnabled();
+});
+
 const learningKey = 'fe-library-learning-v1', studyKey = 'fe-library-study-session-v1';
 const entry = (day, status = 'read') => ({ bookmarked: false, status, updatedAt: `2026-10-${day}T00:00:00.000Z` });
 const learning = { version: 1, entries: { 'q:5': entry(10), 'q:6': entry(12), 'q:7': entry(10) } };

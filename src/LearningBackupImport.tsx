@@ -54,7 +54,7 @@ export const LearningBackupImport = ({ learning, study, targets, onImported }: {
     setPending(undefined); setFeedback({ message: restoreStudy ? '备份已合并并保存，学习清单已按选择更新。' : '阅读记录已合并并保存，学习清单保持不变。', failed: false });
   };
   return <div className="backup-import">
-    <button ref={trigger} type="button" disabled={loading} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); input.current?.click(); }}>{loading ? '正在读取备份…' : '导入备份'}</button>
+    <button ref={trigger} type="button" aria-disabled={loading} aria-haspopup="dialog" onClick={event => { if (loading) return; event.currentTarget.focus(); input.current?.click(); }}>{loading ? '正在读取备份…' : '导入备份'}</button>
     <input hidden ref={input} type="file" accept="application/json,.json" onChange={async event => {
       const file = event.target.files?.[0]; event.target.value = ''; if (!file) return;
       const selected = ++request.current; setLoading(true); setPending(undefined); setFeedback({ message: '', failed: false });
