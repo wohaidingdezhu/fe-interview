@@ -3905,5 +3905,19 @@
     "sources": ["https://www.anthropic.com/research/demystifying-evals-for-ai-agents"],
     "technologyVersion": "Agent 应用评估；任务结果与工具副作用检查",
     "reviewedAt": "2026-11-10"
+  },
+  "Q410": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator"],
+    "technologyVersion": "TypeScript 4.9 及以上；satisfies 与类型推断",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q411": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type", "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#defaulting-to-the-unknown-type-in-catch-variables"],
+    "technologyVersion": "TypeScript strict 模式；unknown 与异常收窄",
+    "reviewedAt": "2026-11-10"
   }
 }

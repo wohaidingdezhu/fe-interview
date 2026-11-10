@@ -6,7 +6,7 @@ description: "整理 TypeScript 基础、运行时数据校验与联合类型建
 kind: "知识文章"
 tags: ["TypeScript","类型系统","面试"]
 addedAt: "2026-10-08"
-updatedAt: "2026-10-09"
+updatedAt: "2026-11-10"
 order: 102
 status: draft
 quality: complete
@@ -188,5 +188,31 @@ function describe(state: LoadState): string {
 **追问**：新增 `status: 'refreshing'` 会怎样？若未补对应分支，`state` 在 `default` 中仍可能是刷新态，赋给 `never` 时编译报错。若刷新时应保留旧列表，就给刷新态定义必填的 `data`。穷尽检查约束已类型化的状态，API 返回的数据仍需先通过运行时校验。
 
 参考：[TypeScript 可辨识联合与穷尽检查](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking) · [实战笔记](?article=typescript-api-boundary)。
+
+---
+
+## Q410｜satisfies、类型注解和类型断言有什么区别？
+
+适用：TypeScript 4.9 及以上。
+
+**面试回答**：类型注解用声明的类型约束变量的使用；`satisfies` 检查表达式是否兼容指定类型，同时保留表达式更具体的推断信息；`as` 是类型断言，告诉编译器按指定类型看待值，不能代替运行时校验。
+
+例如调色板的每个值允许字符串或 RGB 元组。给对象标注 `Record<颜色, string | RGB>` 后，某个属性通常只能按联合类型使用。用 `satisfies Record<颜色, string | RGB>` 检查对象时，字符串属性仍可直接调用字符串方法，同时对象字面量中的颜色拼写错误会被检查出来。
+
+**追问**：`satisfies` 会让对象变成只读吗？不会。它会参与上下文类型推断，也不保证所有字面量都原样保留。需要只读或字面量类型时，应根据需求使用 `as const`，并确保目标类型允许只读值。外部输入仍需运行时校验。
+
+参考：[TypeScript 4.9 satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator)。
+
+---
+
+## Q411｜unknown 和 any 有什么区别？接口错误该如何处理？
+
+适用：TypeScript strict 模式。
+
+**面试回答**：`any` 允许直接访问属性和调用方法，相关类型检查会被跳过。`unknown` 可以接收任意值，但使用前需要收窄或断言。对于接口数据、用户输入和捕获的异常，先使用 `unknown`，再通过 `typeof`、`instanceof` 或字段检查确认可用信息。
+
+**追问**：`catch` 中的值一定是 `Error` 吗？不一定，JavaScript 可以抛出字符串或其他值。可以先用 `error instanceof Error` 读取 `message`，否则显示通用错误并保留原始值供日志记录。跨 iframe 等不同执行环境的 `Error` 可能不通过当前环境的 `instanceof`，需要按数据来源决定是否增加安全的结构检查。
+
+参考：[TypeScript unknown](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type) · [catch 中使用 unknown](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#defaulting-to-the-unknown-type-in-catch-variables)。
 
 ---
