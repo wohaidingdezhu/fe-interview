@@ -81,6 +81,23 @@ test('跳转后立即继续搜索不会被导航抢走焦点', async ({ page }) 
   await expect(page.locator('.search-results').getByRole('link', { name: /Q5/ })).toBeVisible();
 });
 
+test('切换同篇题号后，延迟锚点定位保留用户新聚焦的搜索框', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/?article=interview-react#q206');
+  await expect(page.getByRole('heading', { name: /Q206｜/ })).toBeFocused();
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await input.fill('Q207');
+  const result = page.locator('.search-results').getByRole('link', { name: /Q207/ });
+  await expect(result).toBeVisible();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  await result.evaluate(link => { link.focus(); link.click(); });
+  await expect(page).toHaveURL(/article=interview-react#q207$/);
+  await input.fill('Q208');
+  await page.clock.runFor(100);
+  await expect(input).toBeFocused();
+  await expect(page.locator('.search-results').getByRole('link', { name: /Q208/ })).toBeVisible();
+});
+
 test('笔记列表默认相关性，手动排序及刷新保持选择', async ({ page }) => {
   await page.goto('/?view=notes&q=词法作用域');
   const sort = page.getByRole('combobox', { name: '列表排序' });

@@ -3863,5 +3863,47 @@
     ],
     "technologyVersion": "现代浏览器 Worker/AbortController；requestIdleCallback 带降级；OAuth 安全 RFC 9700",
     "reviewedAt": "2026-10-09"
+  },
+  "Q404": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://react.dev/reference/react/useTransition"],
+    "technologyVersion": "React 18/19 客户端；同步输入与可中断渲染",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q405": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://react.dev/reference/react/useSyncExternalStore"],
+    "technologyVersion": "React 18/19；外部 store 订阅与快照",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q406": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.typescriptlang.org/docs/handbook/2/narrowing.html", "https://fetch.spec.whatwg.org/#dom-body-json"],
+    "technologyVersion": "TypeScript strict 模式与标准 Fetch API",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q407": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking"],
+    "technologyVersion": "TypeScript strict 模式；可辨识联合与 never",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q408": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://learn.microsoft.com/en-us/azure/search/search-security-trimming-for-azure-search"],
+    "technologyVersion": "多租户 RAG；检索阶段的文档访问控制",
+    "reviewedAt": "2026-11-10"
+  },
+  "Q409": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.anthropic.com/research/demystifying-evals-for-ai-agents"],
+    "technologyVersion": "Agent 应用评估；任务结果与工具副作用检查",
+    "reviewedAt": "2026-11-10"
   }
 }

@@ -62,10 +62,12 @@ const ArticleContent = ({ content, navigate, onHeadings, onReady, hash = '', art
     const hashNavigation = previousHash.current !== undefined && previousHash.current !== hash;
     previousHash.current = hash;
     if (!hash) return;
+    const previousFocus = document.activeElement;
     // 下一任务再定位，避免后台标签页暂停 requestAnimationFrame 时深链接一直停在页首。
     const timer = window.setTimeout(() => {
       try {
         const active = document.activeElement;
+        if (active !== previousFocus && active !== document.body) return;
         // 正文延迟加载时，保留用户在搜索框、学习底栏等区域的新焦点。
         // 正文重试、目录链接和正文内部的锚点切换仍可定位标题。
         if (!hashNavigation && active instanceof HTMLElement && active !== document.body && active.id !== 'main' && active.id !== 'article-reader'

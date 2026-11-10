@@ -8,8 +8,8 @@ tags: ["阅读指南"]
 aliases: ["使用指南", "资料库入口", "知识库导航"]
 related: ["closure", "react-state", "http-cache"]
 addedAt: "2026-10-08"
-updatedAt: "2026-10-10"
-reviewedAt: "2026-10-10"
+updatedAt: "2026-11-10"
+reviewedAt: "2026-11-10"
 order: 0
 status: published
 quality: complete
@@ -19,7 +19,7 @@ technologyVersion: "本站资料库维护流程（2026-10-10）"
 
 ## 写在开始之前
 
-“全部题目”按单题展示 403 道题；“专题与笔记”用文章形式组织面试专题和前端开发中值得反复思考的问题；“我的学习”只保存当前浏览器里的收藏、已读和待复习状态。每篇内容围绕一个主题展开：先说清楚问题，再拆解原理，最后用代码验证。
+“全部题目”支持按题号、分类和关键词浏览；“专题与笔记”用文章形式组织面试专题和前端开发中值得反复思考的问题；“我的学习”只保存当前浏览器里的收藏、已读和待复习状态。每篇内容围绕一个主题展开，先说清楚问题，再拆解原理，并用示例说明如何验证。
 
 不必一次读完所有内容。遇到一个不熟悉的知识点，顺着它的上下文多走一步，逐渐建立自己的知识体系。
 
@@ -34,6 +34,7 @@ technologyVersion: "本站资料库维护流程（2026-10-10）"
 | JavaScript 的底层概念 | [理解作用域与闭包](?article=closure) |
 | 异步代码的执行顺序 | [事件循环与执行顺序](?article=event-loop) |
 | React 状态管理基础 | [React 状态为什么像快照](?article=react-state) |
+| TypeScript 接口校验 | [从 unknown 到可渲染的用户数据](?article=typescript-api-boundary) |
 | 高频手写题 | [手写防抖函数](?article=debounce) |
 | 算法思路与复杂度 | [两数之和](?article=two-sum) |
 | 浏览器与网络 | [理解 HTTP 缓存](?article=http-cache) |

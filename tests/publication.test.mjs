@@ -116,6 +116,16 @@ test('引用式站内链接仍阻断公开到草稿，代码示例不会产生�
   assert.ok(report.errors.some(error => error.includes('不存在的笔记：absent')));
   assert.ok(report.errors.every(error => !error.includes('code-only')));
 });
+test('站内题号链接允许公开题，拦截草稿题和专题中不存在的题号', async () => {
+  const topic = parseArticle(markdown('topic', '## Q1｜已公开\n这是一段足够完整的参考答案，提供适用范围、原理说明、错误边界与验证步骤。\n\n## Q2｜草稿题\n草稿说明'), 'topic.md');
+  const article = parseArticle(markdown('note', '这是一段足够完整的知识说明，提供适用范围、原理说明、错误边界与验证步骤。\n\n[公开](?article=topic#q1)\n[草稿](?article=topic#q2)\n[不存在](?article=topic#q3)', 'status: published\nquality: complete'), 'note.md');
+  const questionPublication = { Q1: { status: 'published', quality: 'complete', sources: ['https://example.com/ref'], technologyVersion: '测试环境', reviewedAt: '2026-10-09' } };
+  const report = await validateContent({ articles: [topic, article], resources: [], questionPublication }, tmpdir());
+  assert.deepEqual(report.errors, [
+    'note 引用了 topic 中不存在的题目：Q3',
+    'note 公开内容链接到了草稿题：topic Q2',
+  ]);
+});
 test('逐题发布清单只接受稳定 Q 编号、URL 来源和合法审核日期', () => {
   const result = validateQuestionPublicationMap({ Q134: { status: 'draft' } });
   assert.equal(result.Q134.status, 'draft'); assert.equal(result.Q134.quality, 'incomplete');

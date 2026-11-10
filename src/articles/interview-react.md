@@ -379,3 +379,64 @@ initial 只影响初次挂载，后续 prop 改变不会自动重置计数。抽
 参考：[资料 1](https://react.dev/learn/reusing-logic-with-custom-hooks)。
 
 ---
+
+## Q404｜搜索输入不卡顿，哪些更新可以放进 React Transition？
+
+适用：React 18/19 客户端渲染。下例只演示本地筛选。
+
+**面试回答**：受控输入框的值要立即更新。大量结果的渲染可以用 `startTransition` 标记为可中断更新，用户继续输入时，React 可以优先处理输入，再渲染最新结果。`isPending` 可用于提示结果正在更新。
+
+```jsx
+import { memo, useState, useTransition } from 'react';
+
+const Results = memo(function Results({ titles, query }) {
+  const matches = titles.filter(title => title.includes(query));
+  return (
+    <>
+      <p>匹配 {matches.length} 项</p>
+      <ul>{matches.map(title => <li key={title}>{title}</li>)}</ul>
+    </>
+  );
+});
+
+export function Search({ titles }) {
+  const [text, setText] = useState('');
+  const [query, setQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  function handleChange(event) {
+    const next = event.target.value;
+    setText(next);
+    startTransition(() => setQuery(next));
+  }
+
+  return (
+    <section aria-busy={isPending}>
+      <label>搜索<input value={text} onChange={handleChange} /></label>
+      <Results titles={titles} query={query} />
+    </section>
+  );
+}
+```
+
+示例假定标题唯一，且输入变化时 `titles` 的引用保持稳定。这样 `memo` 可以跳过仅由输入值变化引起的结果列表重渲染。`startTransition` 会立即执行回调，直接在回调里运行耗时计算仍会阻塞主线程。即使计算移到渲染期间，React 也无法切开单次很长的 `filter`。实际排查时先测量是计算慢还是列表渲染慢，再考虑缓存、移到 Worker 或虚拟化。
+
+**追问**：如果结果来自服务端，Transition 能防止旧响应覆盖新结果吗？请求并发与 React 渲染优先级是两个问题。用请求标识判断结果是否过期，需要时用 `AbortController` 取消旧请求。可以让第一个请求故意晚返回，验证界面仍显示最新关键词的结果。
+
+参考：[React useTransition](https://react.dev/reference/react/useTransition) · [请求乱序场景](?article=interview-business#q399)。
+
+---
+
+## Q405｜React 接入外部状态时，getSnapshot 为什么要缓存？
+
+适用：React 18/19 的 `useSyncExternalStore`。
+
+**面试回答**：当状态保存在 React 之外，例如浏览器 API 或独立 store，`subscribe` 负责订阅和取消订阅，`getSnapshot` 返回 React 当前应该看到的值。React 通过 `Object.is` 比较快照。状态未变时应返回相同值，变更后才返回新快照并通知订阅者。
+
+例如 `getSnapshot = () => ({ ...store.state })` 每次读取都创建新对象，React 会把重复读取当成变化，可能触发反复渲染。另一种错误是在同一个快照对象上原地修改，导致 React 看不出它变过。可直接使用 store 保存的不可变快照；可变数据源需要在写入时生成并缓存快照。
+
+**追问**：服务端渲染读不到 `window` 怎么办？提供 `getServerSnapshot`，让服务端和客户端 hydration 首次读取使用同一初始数据。浏览器独有的信息在 hydration 后再由客户端读取。验证时检查连续两次未修改的读取引用相同，写入后快照变化，取消订阅后回调也停止。
+
+参考：[React useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)。
+
+---

@@ -105,6 +105,14 @@ export function linkPaths(content) {
   return markdownNodes(content, ['link', 'linkReference']).map(node => node.type === 'link' ? node.url : references.get(node.identifier)).filter(Boolean);
 }
 
+function articleTargets(content) {
+  return linkPaths(content).filter(value => value.startsWith('?article=')).map(value => {
+    const url = new URL(value, 'https://example.invalid/');
+    const question = /^#q([1-9]\d*)$/.exec(url.hash);
+    return { id: url.searchParams.get('article'), number: question ? Number(question[1]) : null };
+  });
+}
+
 export function localImagePath(value, publicDirectory) {
   if (/^https?:\/\//i.test(value)) return null;
   if (/^[a-z][a-z\d+.-]*:/i.test(value) || value.startsWith('//')) throw new Error(`不支持的图片地址：${value}`);
@@ -223,13 +231,18 @@ export async function validateContent(library, publicDirectory) {
     } else if (!perQuestion && article.status === 'published' && article.quality !== 'complete') errors.push(`${article.id} 的公开内容必须 quality: complete`);
     const publicContent = perQuestion && questions.length ? publishedQuestionContent(article, questions, library)
       : article.status === 'published' ? article.content : '';
-    for (const value of linkPaths(article.content).filter(value => value.startsWith('?article='))) {
-      const id = new URLSearchParams(value.slice(1)).get('article');
+    for (const { id, number } of articleTargets(article.content)) {
       if (!ids.has(id)) errors.push(`${article.id} 引用了不存在的笔记：${id}`);
+      else if (number !== null && !inspected.get(id).some(question => question.number === number)) {
+        errors.push(`${article.id} 引用了 ${id} 中不存在的题目：Q${number}`);
+      }
     }
-    for (const value of linkPaths(publicContent).filter(value => value.startsWith('?article='))) {
-      const id = new URLSearchParams(value.slice(1)).get('article');
+    for (const { id, number } of articleTargets(publicContent)) {
       if (ids.has(id) && !publishedIds.has(id)) errors.push(`${article.id} 公开内容链接到了草稿：${id}`);
+      else if (perQuestion && number !== null && inspected.get(id)?.some(question => question.number === number)
+        && questionPublicationFor(library, number).status !== 'published') {
+        errors.push(`${article.id} 公开内容链接到了草稿题：${id} Q${number}`);
+      }
     }
     try {
       for (const value of imagePaths(article.content)) {
