@@ -11,7 +11,9 @@ export const LearningBackupButton = ({ learning, study }: { learning: Learning; 
       const blob = new Blob([JSON.stringify(createLearningBackup(learning.data, study?.session), null, 2)], { type: 'application/json' });
       url = URL.createObjectURL(blob);
       link = document.createElement('a');
-      link.href = url; link.download = `前端资料库-学习记录-${new Date().toISOString().slice(0, 10)}.json`; link.hidden = true;
+      const date = new Date();
+      const localDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+      link.href = url; link.download = `前端资料库-学习记录-${localDate}.json`; link.hidden = true;
       document.body.append(link); link.click();
       setFeedback({ message: '备份已导出，请确认文件已保存。', failed: false });
     } catch {
