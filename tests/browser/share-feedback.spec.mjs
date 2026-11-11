@@ -106,3 +106,23 @@ test('代码连续复制后旧失败不会覆盖结果或选中代码', async ({
   await expect(block.locator('.copy-button')).toHaveText('已复制');
   expect(await page.evaluate(() => window.getSelection().toString())).toBe('');
 });
+
+test('代码复制失败时不抢走用户转移后的焦点和选择', async ({ page }) => {
+  await deferClipboard(page);
+  await page.goto('/?article=closure');
+  const block = page.locator('.article-body .code-block').first();
+  await block.getByRole('button', { name: '复制代码' }).click();
+  const search = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  await search.fill('闭包');
+  await search.selectText();
+  await page.evaluate(() => window.clipboardRequests[0].reject(new Error('Denied')));
+  await expect(block.locator('.copy-button')).toHaveText('复制失败，请手动选择');
+  await expect(search).toBeFocused();
+  expect(await search.evaluate(element => element.value.slice(element.selectionStart, element.selectionEnd))).toBe('闭包');
+  await page.keyboard.press('Escape');
+  await block.locator('.copy-button').evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await block.locator('.copy-button').click();
+  await page.evaluate(() => window.clipboardRequests[1].reject(new Error('Denied again')));
+  await expect(block.locator('.copy-button')).toHaveText('代码已选中，请按复制快捷键');
+  expect(await page.evaluate(() => window.getSelection().toString().length)).toBeGreaterThan(0);
+});

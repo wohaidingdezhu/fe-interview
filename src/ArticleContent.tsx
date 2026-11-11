@@ -12,14 +12,16 @@ const CodeBlock = ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => {
   const ref = useRef<HTMLPreElement>(null), [status, setStatus] = useState('复制代码');
   const request = useRef(0);
   useEffect(() => () => { request.current++; }, []);
-  return <div className="code-block"><button className="copy-button" onClick={async () => {
+  return <div className="code-block"><button className="copy-button" onClick={async event => {
     const selected = ++request.current;
+    const button = event.currentTarget;
+    button.focus({ preventScroll: true });
     setStatus('正在复制…');
     try { await navigator.clipboard.writeText(ref.current?.textContent || ''); if (selected === request.current) setStatus('已复制'); }
     catch {
       if (selected !== request.current) return;
       const selection = window.getSelection(), range = document.createRange();
-      if (selection && ref.current) {
+      if (selection && ref.current && document.activeElement === button) {
         range.selectNodeContents(ref.current); selection.removeAllRanges(); selection.addRange(range);
         setStatus('代码已选中，请按复制快捷键');
       } else setStatus('复制失败，请手动选择');
