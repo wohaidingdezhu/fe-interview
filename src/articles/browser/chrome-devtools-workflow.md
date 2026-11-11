@@ -8,8 +8,8 @@ tags: ["Chrome DevTools","调试","性能","浏览器"]
 aliases: ["Google 浏览器调试","Chrome 开发者工具","F12 调试","前端调试流程"]
 related: ["http-cache","interview-browser","interview-performance"]
 addedAt: "2026-10-09"
-updatedAt: "2026-10-10"
-reviewedAt: "2026-10-09"
+updatedAt: "2026-11-11"
+reviewedAt: "2026-11-11"
 order: 1000
 status: published
 quality: complete
@@ -259,7 +259,7 @@ Application 面板常用于检查：
 
 重点观察：
 
-- Long task：主线程长时间被 JavaScript 占用。
+- Long task：主线程长时间执行同一任务，期间新输入可能要排队。
 - Recalculate Style / Layout：频繁样式计算或布局。
 - Paint / Composite：绘制面积过大或图层合成异常。
 - Function call：具体函数的自耗时和总耗时。
@@ -267,6 +267,54 @@ Application 面板常用于检查：
 - 网络瀑布：关键资源是否阻塞渲染。
 
 应在接近目标用户的 CPU 和网络条件下验证。节流是模拟工具，不等于所有真实设备；最终性能问题应结合真实设备和线上监控确认。
+
+### 对比一次长任务与分批执行
+
+打开一个空白标签页 `about:blank`，把下方代码粘贴到 Console。页面会出现两个按钮。它们都模拟 24 批计算，每批占用主线程约 12 ms。第一个按钮连续执行，第二个在批次之间把控制权交回浏览器。
+
+```javascript
+(() => {
+  const feedback = document.createElement('p');
+  feedback.setAttribute('role', 'status');
+  const blocking = document.createElement('button');
+  blocking.textContent = '一次执行';
+  const batched = document.createElement('button');
+  batched.textContent = '分批执行';
+  document.body.append(blocking, batched, feedback);
+
+  async function run(inBatches) {
+    blocking.disabled = batched.disabled = true;
+    feedback.textContent = '计算中…';
+    try {
+      for (let batch = 0; batch < 24; batch++) {
+        const start = performance.now();
+        while (performance.now() - start < 12) {
+          // 用空循环模拟 CPU 工作，便于在时间线上比较。
+        }
+        if (inBatches && batch < 23) {
+          if (typeof globalThis.scheduler?.yield === 'function') {
+            await globalThis.scheduler.yield();
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 0));
+          }
+        }
+      }
+      feedback.textContent = '完成 24 批';
+    } finally {
+      blocking.disabled = batched.disabled = false;
+    }
+  }
+
+  blocking.addEventListener('click', () => run(false));
+  batched.addEventListener('click', () => run(true));
+})();
+```
+
+1. 在 Performance 开启截图并开始录制。点击「一次执行」，看到「完成 24 批」后停止录制。
+2. 找到 Interactions 上的点击，悬停看输入延迟、处理耗时和呈现延迟。对照 Main 上的长任务，查看「计算中…」是否来得及呈现。
+3. 用相同条件录制「分批执行」。观察 Main 上是否出现多个较短任务，以及「计算中…」是否在完成前有机会呈现。再比较从点击到完成的时间，分批可能因调度耗时而延长整项任务。
+
+这里观察的是受控点击。要定位线上 INP，先找出真实用户遇到的慢交互，再用同样的方法拆解。 [Interactions 轨道说明](https://developer.chrome.com/docs/devtools/performance/reference/#interactions) · [长任务拆分指南](https://web.dev/articles/optimize-long-tasks) · [Q411 交互耗时拆解](?article=interview-performance#q411)
 
 ## Memory：排查内存泄漏
 

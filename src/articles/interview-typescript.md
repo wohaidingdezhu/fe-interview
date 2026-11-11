@@ -191,7 +191,7 @@ function describe(state: LoadState): string {
 
 ---
 
-## Q410｜satisfies、类型注解和类型断言有什么区别？
+## Q414｜satisfies、类型注解和类型断言有什么区别？
 
 适用：TypeScript 4.9 及以上。
 
@@ -205,7 +205,7 @@ function describe(state: LoadState): string {
 
 ---
 
-## Q411｜unknown 和 any 有什么区别？接口错误该如何处理？
+## Q415｜unknown 和 any 有什么区别？接口错误该如何处理？
 
 适用：TypeScript strict 模式。
 
