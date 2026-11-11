@@ -3905,5 +3905,33 @@
     "sources": ["https://www.anthropic.com/research/demystifying-evals-for-ai-agents"],
     "technologyVersion": "Agent 应用评估；任务结果与工具副作用检查",
     "reviewedAt": "2026-11-10"
+  },
+  "Q410": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://web.dev/articles/inp", "https://web.dev/articles/tbt"],
+    "technologyVersion": "Core Web Vitals INP 与 Lighthouse 导航测试 TBT",
+    "reviewedAt": "2026-11-11"
+  },
+  "Q411": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://web.dev/articles/optimize-inp", "https://developer.chrome.com/docs/devtools/performance/reference/#interactions"],
+    "technologyVersion": "Chrome DevTools Performance Interactions 轨道",
+    "reviewedAt": "2026-11-11"
+  },
+  "Q412": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://web.dev/articles/optimize-long-tasks"],
+    "technologyVersion": "浏览器主线程；scheduler.yield 按能力检测回退",
+    "reviewedAt": "2026-11-11"
+  },
+  "Q413": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://web.dev/articles/optimize-lcp"],
+    "technologyVersion": "图片型 LCP 元素的四段耗时",
+    "reviewedAt": "2026-11-11"
   }
 }
