@@ -47,6 +47,7 @@ export const CodePlayground = () => {
   };
 
   const onEditorKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.nativeEvent.isComposing) return;
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
       run();
