@@ -127,9 +127,9 @@ RAG 把检索到的外部资料作为生成上下文，使模型可以利用训�
 
 ## Q376｜前端实现 LLM 的流式输出。
 
-适用：LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09。
+适用范围为浏览器 Fetch 与 Web Streams。
 
-前端通过自己的 BFF 请求模型流，供应商密钥只在服务端保存。下面约定 BFF 返回 SSE，data 为 {"delta":"文本"}，结束可发 [DONE]；真实供应商的事件类型应在 BFF 映射。不能把一次 reader.read() 当作一条完整事件或一个完整 UTF-8 字符。
+前端通过自己的 BFF 请求模型流，供应商密钥只在服务端保存。示例约定 BFF 返回 SSE，`data` 为 `{"delta":"文本"}`，正常结束时发送完整的 `data: [DONE]` 事件并关闭响应。供应商事件在 BFF 映射成这一协议。一次 `reader.read()` 拿到的是字节块，可能只含一个 UTF-8 字符的一部分，也可能包含多个事件。
 
 ```js
 async function consumeSSE(stream, onEvent, { maxEventChars = 1_000_000 } = {}) {
@@ -177,25 +177,35 @@ async function consumeSSE(stream, onEvent, { maxEventChars = 1_000_000 } = {}) {
 ```
 
 ```js
-const controller = new AbortController();
-async function start(prompt, onDelta) {
+async function start(prompt, onDelta, { signal } = {}) {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }), signal: controller.signal,
+    body: JSON.stringify({ prompt }), signal,
   });
-  if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
+  const contentType = response.headers.get("Content-Type")?.split(";")[0].trim().toLowerCase();
+  if (!response.ok || !response.body || contentType !== "text/event-stream") {
+    await response.body?.cancel();
+    throw new Error(`Expected SSE response, received HTTP ${response.status} (${contentType || 'unknown'})`);
+  }
+
+  let completed = false;
   await consumeSSE(response.body, ({ data }) => {
-    if (data === "[DONE]") return;
+    if (completed) throw new Error("Unexpected SSE event after [DONE]");
+    if (data === "[DONE]") {
+      completed = true;
+      return;
+    }
     const payload = JSON.parse(data);
-    if (typeof payload.delta !== "string") throw new TypeError("invalid delta");
+    if (typeof payload?.delta !== "string") throw new TypeError("invalid delta");
     onDelta(payload.delta);
   });
+  if (!completed) throw new Error("Stream ended before [DONE]");
 }
-// UI 调用 start(...).catch(...)；停止/卸载时 controller.abort()。
+// UI 为每次 start 调用创建 AbortController，传入 signal，停止或卸载时取消该次请求。
 ```
 
-消费器处理跨块 UTF-8、CR/LF、连续 data 行与大小上限；回调是同步接口，不实现自动重连/retry。UI 应批量提交增量，避免每 token 重排；错误/结束状态单独展示，Markdown/HTML 渲染仍需防注入。
+消费器处理跨块 UTF-8、CR/LF、多行 `data` 和大小上限。界面可批量提交同步回调收到的增量，减少每个 Token 引发的渲染。正常结束、输出中断和用户主动停止应有各自的状态。展示模型生成的 Markdown 时仍需防止注入。[Q418 流式响应的结束判断](?article=interview-network#q418)
 
 参考：[资料 1](https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream) · [资料 2](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams)。
 

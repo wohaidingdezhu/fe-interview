@@ -2,7 +2,7 @@
 id: "interview-network"
 title: "计算机网络面试题"
 category: "网络"
-description: "收录 Q293–Q329 的参考答案、原理说明与配图。"
+description: "整理 HTTP、TCP、跨域与网络安全，并用实际案例练习 SSE 断线续传和代理排查。"
 kind: "知识文章"
 tags: ["HTTP","TCP","网络安全"]
 addedAt: "2026-10-08"
@@ -553,5 +553,90 @@ HTTP/2 在一个 TCP 连接中用二进制帧多路复用多个流，使用 HPAC
 它缓解 HTTP/1.1 应用层排队，但 TCP 丢包仍可能阻塞整个连接的交付；HTTP/3 用 QUIC 的独立流减少这类跨流阻塞。流控不自动保证公平，优先级是协作提示。Server Push 虽在协议中存在，浏览器支持已收缩，不能当成通用前端优化默认启用；现代浏览器的 HTTP/2 通常经 TLS 协商。
 
 参考：[资料 1](https://www.rfc-editor.org/rfc/rfc9113) · [资料 2](https://developer.chrome.com/blog/removing-push)。
+
+---
+
+## Q416｜SSE 断线后，怎样从上次收到的事件继续？
+
+服务端给每条可重放事件写入稳定的 `id`。同一个 `EventSource` 自动重连时，浏览器会在有游标的情况下发送 `Last-Event-ID`。服务端根据该游标查找其后的事件，再继续推送。每次重连都要校验游标属于当前订阅并重新检查访问权限。
+
+如果游标已落在保留窗口之外，可以发出应用约定的重置信号，让客户端拉取新快照及对应游标。快照、重放和实时订阅之间需要衔接，避免接入实时流时漏掉刚写入的事件。用事件 ID 或业务主键幂等更新界面，可以处理主动重试或快照与增量交叠产生的重复。
+
+**追问**　`Last-Event-ID` 表示业务已经处理成功吗？它反映浏览器接收流的位置。事件处理器里的数据库写入仍可能失败。若业务要求确认处理结果，需要由应用保存已处理的游标或设计确认机制。刷新页面后创建的新 `EventSource` 也需要应用自行恢复订阅位置。
+
+将下面的代码保存为 `sse-resume.mjs`，用 `node sse-resume.mjs` 启动。这个练习固定四条事件，每次最多返回两条，然后关闭响应模拟断开。
+
+```javascript
+import { createServer } from 'node:http';
+
+const messages = ['连接已建立', '开始处理', '处理中', '处理完成'];
+
+createServer((request, response) => {
+  if (request.method === 'GET' && request.url === '/') {
+    response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    response.end('请在本页 Console 中运行 EventSource 示例。');
+    return;
+  }
+  if (request.method !== 'GET' || request.url !== '/events') {
+    response.writeHead(404).end();
+    return;
+  }
+
+  const cursor = request.headers['last-event-id'] ?? '0';
+  if (!/^[0-4]$/.test(cursor)) {
+    response.writeHead(400).end();
+    return;
+  }
+  const lastId = Number(cursor);
+  if (lastId === messages.length) {
+    response.writeHead(204).end();
+    return;
+  }
+
+  response.writeHead(200, {
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    'Cache-Control': 'no-cache',
+  });
+  response.write('retry: 1000\n\n');
+  for (const [index, message] of messages.slice(lastId, lastId + 2).entries()) {
+    response.write(`id: ${lastId + index + 1}\ndata: ${message}\n\n`);
+  }
+  response.end();
+}).listen(4300, '127.0.0.1');
+```
+
+打开 `http://127.0.0.1:4300/` 后在 Console 运行下面的代码。Network 应能看到第二次 `/events` 请求携带 `Last-Event-ID: 2`，Console 应依次输出 ID 1、2、3、4。收到最后一条后，浏览器再次重连会收到 204，并停止重连。
+
+```javascript
+const feed = new EventSource('/events');
+feed.onmessage = ({ lastEventId, data }) => console.log(lastEventId, data);
+// 提前退出练习时，可在 Console 执行 feed.close()。
+```
+
+[HTML 标准中的 Last-Event-ID](https://html.spec.whatwg.org/multipage/server-sent-events.html#the-last-event-id-header)。
+
+---
+
+## Q417｜SSE 直连正常，经过反向代理后为什么一次收到一批？
+
+先用同一条持续推送的接口比较直连与代理地址。用 `curl -N -i` 查看响应头和事件到达间隔，`-N` 关闭 curl 自身的输出缓冲。直连也成批出现时，先查应用是否按事件写出、是否以空行结束帧，以及应用的压缩中间件是否缓冲。直连逐条到达而代理成批出现时，逐层检查反向代理、网关和 CDN。
+
+Nginx 的 `proxy_buffering off` 可针对流式路由关闭代理响应缓冲。上游也可发送 `X-Accel-Buffering: no`，前提是该响应头未被配置为忽略。关闭其中一层缓冲后，需要重新比较完整链路上的首条事件时间和后续间隔。
+
+**追问**　如果每隔固定时间断开呢？检查代理空闲超时。例如 Nginx 的 `proxy_read_timeout` 限制相邻两次上游读取的间隔。可以在最长空闲时间内发送 `: heartbeat` 加空行的 SSE 注释，确认心跳确实到达链路中各层。浏览器的 `message` 回调不会收到这些注释。
+
+[Nginx 响应缓冲](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering) · [Nginx 上游读取超时](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_read_timeout) · [逐条推送示例](?article=interview-network#q327)。
+
+---
+
+## Q418｜模型回答只显示一半，Fetch 流读到 EOF 可以标记成功吗？
+
+先看应用协议约定的完成信号。若协议要求明确的完成事件，例如 `data: [DONE]`，读到 EOF 时必须检查是否收到完整终止事件。200 只表示 HTTP 请求收到成功状态，`reader.read()` 的 `done` 只表示已无后续字节。若终止事件缺失或被截断，可以保留已显示的文字，并标记输出中断。
+
+用户点击停止时，把该次请求的 `AbortSignal` 传给 Fetch，界面标记为已停止。再次发送要创建新的控制器，并在更新界面前确认回调仍属于当前请求，防止上一条流的迟到错误把新回答标成失败。
+
+**追问**　自动重试能接着原回答写吗？要先确认服务端提供可验证的任务 ID、增量游标和重放契约。直接重发生成请求可能产生另一份回答或重复扣费。没有续传协议时，应将重试作为一次独立生成。
+
+[SSE 事件解析规则](https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream) · [Q376 流式输出示例](?article=interview-ai-fullstack#q376)。
 
 ---
