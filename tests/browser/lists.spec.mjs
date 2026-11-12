@@ -44,6 +44,28 @@ test('无效筛选参数显示真实生效条件，未知分类和标签可清�
   await expect(page.getByRole('navigation', { name: '笔记类型' }).getByRole('button', { name: '全部', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('第 2 页修改排序后回到第 1 页，并保留排序控件的焦点', async ({ page }) => {
+  const lists = [
+    { url: '/?view=questions&page=2', label: '题目排序', sort: 'number-desc' },
+    { url: '/?view=notes&page=2', label: '列表排序', sort: 'title' },
+    { url: '/?view=learning&filter=unread&page=2', label: '学习记录排序', sort: 'oldest' },
+  ];
+  for (const list of lists) {
+    await page.goto(list.url);
+    const pagination = page.locator('.list-pagination');
+    await expect(pagination).toContainText('2 /');
+    const sort = page.getByRole('combobox', { name: list.label, exact: true });
+    await sort.focus();
+    await sort.selectOption(list.sort);
+    await expect(pagination).toContainText('1 /');
+    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 0)));
+    await expect(sort).toBeFocused();
+    const params = new URL(page.url()).searchParams;
+    expect(params.get('sort')).toBe(list.sort);
+    expect(params.has('page')).toBe(false);
+  }
+});
+
 test('首页最近新增入口按题号降序，阅读返回和连续学习沿用排序', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('link', { name: '最近新增的题目 →', exact: true }).click();

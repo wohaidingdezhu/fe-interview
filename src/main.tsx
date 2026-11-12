@@ -96,10 +96,12 @@ const App = () => {
     const previousFocus = document.activeElement;
     const target = new URL(href, document.baseURI);
     const previous = new URL(window.location.href);
-    const changesListPage = (previous.searchParams.get('page') || '1') !== (target.searchParams.get('page') || '1');
+    // 翻页按钮写入页码，修改筛选或排序时删除页码。
+    const paginatesList = target.searchParams.has('page')
+      && (previous.searchParams.get('page') || '1') !== target.searchParams.get('page');
     const changesPage = articleIdFromLocation(previous.pathname, previous.search) !== articleIdFromLocation(target.pathname, target.search)
       || (previous.searchParams.get('view') || 'home') !== (target.searchParams.get('view') || 'home')
-      || changesListPage
+      || paginatesList
       || previous.searchParams.get('path') !== target.searchParams.get('path');
     const returning = source?.hasAttribute('data-list-return') ? readListReturn(window.history.state) : undefined;
     const restore = !replace && returning?.entry && returning.href === target.search ? { href: target.href, entry: returning.entry, previousFocus } : undefined;
@@ -114,7 +116,7 @@ const App = () => {
         // 用户已主动聚焦其他控件时，导航不能再抢走焦点。
         if (document.activeElement !== previousFocus && document.activeElement !== document.body) return;
         const main = document.getElementById('main');
-        const first = changesListPage ? main?.querySelector<HTMLElement>('.question-list h2 a, .resource-list h2 a') : undefined;
+        const first = paginatesList ? main?.querySelector<HTMLElement>('.question-list h2 a, .resource-list h2 a') : undefined;
         (first ?? main)?.focus({ preventScroll: true });
         first?.scrollIntoView({ block: 'start', behavior: 'instant' });
       }, 0);
