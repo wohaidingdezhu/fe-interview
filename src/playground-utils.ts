@@ -26,12 +26,13 @@ export const createRunnerDocument = (code: string, channel: string) => {
       if (typeof value === 'bigint') return value + 'n';
       if (value instanceof Error) return value.stack || value.message;
       try {
-        const seen = new WeakSet();
-        return JSON.stringify(value, (_key, item) => {
+        const ancestors = [];
+        return JSON.stringify(value, function (_key, item) {
           if (typeof item === 'bigint') return item + 'n';
           if (item && typeof item === 'object') {
-            if (seen.has(item)) return '[Circular]';
-            seen.add(item);
+            while (ancestors.length && ancestors[ancestors.length - 1] !== this) ancestors.pop();
+            if (ancestors.includes(item)) return '[Circular]';
+            ancestors.push(item);
           }
           return item;
         }, 2);
