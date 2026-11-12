@@ -3600,8 +3600,8 @@
       "https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream",
       "https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams"
     ],
-    "technologyVersion": "LLM/RAG/LoRA 通用原理；MCP 固定 2025-06-18；Dify Cloud 官方文档核对 2026-10-09",
-    "reviewedAt": "2026-10-09"
+    "technologyVersion": "浏览器 Fetch 与 Web Streams；示例使用自定义 SSE 完成事件",
+    "reviewedAt": "2026-11-12"
   },
   "Q377": {
     "status": "published",
@@ -3947,5 +3947,26 @@
     "sources": ["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type", "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#defaulting-to-the-unknown-type-in-catch-variables"],
     "technologyVersion": "TypeScript strict 模式；unknown 与异常收窄",
     "reviewedAt": "2026-11-10"
+  },
+  "Q416": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://html.spec.whatwg.org/multipage/server-sent-events.html#the-last-event-id-header"],
+    "technologyVersion": "浏览器 EventSource；本地示例使用 Node.js 24",
+    "reviewedAt": "2026-11-12"
+  },
+  "Q417": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering", "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_read_timeout", "https://curl.se/docs/manpage.html#--no-buffer"],
+    "technologyVersion": "SSE、Nginx 代理响应缓冲与上游读取超时",
+    "reviewedAt": "2026-11-12"
+  },
+  "Q418": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream", "https://fetch.spec.whatwg.org/"],
+    "technologyVersion": "Fetch 与 AbortSignal；示例使用应用自定义完成事件",
+    "reviewedAt": "2026-11-12"
   }
 }

@@ -44,3 +44,25 @@ test('流式题解与实际运行代码一致', async () => {
   const text = await readFile(new URL('../src/articles/interview-ai-fullstack.md', import.meta.url), 'utf8');
   assert.ok(text.includes(consumeSSE.toString()));
 });
+
+test('Q376 只将带完整结束事件的 SSE 响应标为成功', async () => {
+  const text = await readFile(new URL('../src/articles/interview-ai-fullstack.md', import.meta.url), 'utf8');
+  const question = text.split('## Q376｜')[1].split('## Q377｜')[0];
+  const client = [...question.matchAll(/```js\n([\s\S]*?)```/g)][1][1];
+  const delta = 'data: {"delta":"部分回答"}\n\n';
+  for (const { body, type = 'text/event-stream', error } of [
+    { body: delta + 'data: [DONE]\n\n', type: 'text/event-stream; charset=utf-8' },
+    { body: delta, error: /ended before/ },
+    { body: delta + 'data: [DONE]\n', error: /ended before/ },
+    { body: delta + 'data: [DONE]\n\n' + delta, error: /after \[DONE\]/ },
+    { body: delta, type: 'text/html', error: /Expected SSE/ },
+  ]) {
+    const response = new Response(body, { headers: { 'Content-Type': type } });
+    const start = new Function('consumeSSE', 'fetch', `${client}\nreturn start;`)(consumeSSE, async () => response);
+    const received = [];
+    const reading = start('问题', value => received.push(value));
+    if (error) await assert.rejects(reading, error);
+    else await reading;
+    assert.deepEqual(received, type === 'text/html' ? [] : ['部分回答']);
+  }
+});
