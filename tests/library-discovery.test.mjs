@@ -46,6 +46,22 @@ test('题库跨页清单与当前页严格共享全文、分类、标签和阅�
   assert.deepEqual(studyQueue(scoped, targets).map(target => target.href), ['?article=topic#q28', '?article=topic#q30']);
   assert.deepEqual(questionPage(questions, { ...options, query: '不存在' }).queue, []);
 });
+test('题号升降序只调整全文命中顺序，排序先于分页和学习清单', () => {
+  const options = {
+    query: '闭包', category: 'React', tag: 'Hooks', page: 1, size: 12,
+    documents: [
+      { id: 'topic', title: '闭包', text: '闭包', questionNumber: 8 },
+      { id: 'topic', title: '变量', text: '闭包', questionNumber: 2 },
+      { id: 'topic', title: '变量', text: '闭包', questionNumber: 30 },
+      { id: 'topic', title: '闭包', text: '闭包', questionNumber: 29 },
+    ],
+  };
+  assert.deepEqual(questionPage(questions, options).queue.map(question => question.number), [8, 2, 30]);
+  assert.deepEqual(questionPage(questions, { ...options, sort: 'number-asc' }).queue.map(question => question.number), [2, 8, 30]);
+  const descending = questionPage(questions, { ...options, sort: 'number-desc' });
+  assert.deepEqual(learningTargets(descending.queue, []).map(target => target.key), ['q:30', 'q:8', 'q:2']);
+  assert.deepEqual(questionPage(questions, { ...options, query: '', page: 2, sort: 'number-desc' }).items.map(question => question.number), [6, 4, 2]);
+});
 test('轻量题目目录不含正文，生产目录只包含可发布题目', () => {
   const article={id:'topic',title:'专题',category:'JS',tags:['基础'],description:'专题描述',status:'draft',quality:'incomplete',content:'## Q1｜公开题\n这是完整的参考答案，解释了相关的适用条件、实现思路以及需要注意的边界情况。\n\n## Q2｜私有题\nDRAFT_SECRET'};
   const publication={Q1:{status:'published',quality:'complete',sources:['https://example.com'],technologyVersion:'v1',reviewedAt:'2026-10-09'}};
