@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test('搜索加载失败可直接重试，保留关键词并恢复键盘选择', async ({ page }, testInfo) => {
+test('精确题号目录加载失败可重试，保留关键词并恢复键盘选择', async ({ page }, testInfo) => {
   let requests = 0;
-  await page.route('**/search/index-*.json', route => {
+  await page.route('**/content/questions-*.json', route => {
     requests++;
     return requests <= 2 ? route.fulfill({ status: requests === 1 ? 503 : 502, body: 'Unavailable' }) : route.continue();
   });
@@ -26,6 +26,31 @@ test('搜索加载失败可直接重试，保留关键词并恢复键盘选择',
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/article=interview-react#q206$/);
   expect(requests).toBe(3);
+});
+
+test('全文索引失败后仍可用精确题号直达，切回关键词可重试', async ({ page }) => {
+  let indexRequests = 0;
+  await page.route('**/search/index-*.json', route => {
+    indexRequests++;
+    return indexRequests === 1 ? route.fulfill({ status: 503, body: 'Unavailable' }) : route.continue();
+  });
+  await page.goto('/');
+  const input = page.getByRole('searchbox', { name: '搜索题目和笔记' });
+  const results = page.locator('.search-results');
+  await input.fill(' q206 ');
+  await expect(results.locator(':scope > a')).toHaveCount(1);
+  await expect(results.getByRole('link', { name: /Q206/ })).toHaveAttribute('href', '?article=interview-react#q206');
+  expect(indexRequests).toBe(0);
+  await input.fill('词法作用域');
+  await expect(results.getByRole('alert')).toContainText('503');
+  await input.fill('Q1');
+  await expect(results.locator(':scope > a')).toHaveCount(1);
+  await expect(results.locator(':scope > a').first()).toHaveAttribute('href', /#q1$/);
+  await expect(results.getByRole('alert')).toHaveCount(0);
+  expect(indexRequests).toBe(1);
+  await input.fill('词法作用域');
+  await expect(results.locator(':scope > a').first()).toHaveAttribute('href', '?article=closure');
+  expect(indexRequests).toBe(2);
 });
 
 test('搜索结果点击或触摸可跳转，键盘选择与移出焦点仍正常', async ({ page }, testInfo) => {

@@ -19,16 +19,20 @@ export const articleIdFromLocation = (pathname: string, search: string) => {
   if (params.has('view')) return undefined;
   return /\/articles\/([a-z0-9-]+)\/?(?:index\.html)?$/.exec(pathname)?.[1];
 };
+export const exactQuestionNumber = (query: string) => {
+  const match = /^q([1-9]\d*)$/i.exec(query.trim());
+  return match ? Number(match[1]) : undefined;
+};
 export const questionPage = (questions: QuestionEntry[], options: { query: string; category: string; tag: string; page: number; size: number; documents?: SearchDocument[]; ids?: Set<number>; sort?: QuestionSort }) => {
   const query = options.query.trim();
-  const exact = /^q([1-9]\d*)$/i.exec(query);
+  const exact = exactQuestionNumber(query);
   const matches = query && !exact && options.documents ? new Map(searchHits(options.documents, query).map((hit, rank) => [hit.questionNumber, rank])) : undefined;
   const ranks = options.sort ? undefined : matches;
   const direction = options.sort === 'number-desc' ? -1 : 1;
   const words = query.toLocaleLowerCase().split(/\s+/);
   const all = questions.filter(question => (!options.category || question.category === options.category)
     && (!options.tag || question.tags.includes(options.tag)) && (!options.ids || options.ids.has(question.number))
-    && (!query || (exact ? question.number === Number(exact[1]) : matches ? matches.has(question.number)
+    && (!query || (exact ? question.number === exact : matches ? matches.has(question.number)
       : words.every(word => `${question.title} ${question.category} ${question.tags.join(' ')}`.toLocaleLowerCase().includes(word)))))
     .sort((a, b) => ranks ? ranks.get(a.number)! - ranks.get(b.number)! : direction * (a.number - b.number));
   const size = [12, 24, 48].includes(options.size) ? options.size : 12;
