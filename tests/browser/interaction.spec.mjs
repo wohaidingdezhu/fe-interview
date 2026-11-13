@@ -1,6 +1,16 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
+test('按需页面加载失败时保留导航并可返回首页', async ({ page }) => {
+  await page.route('**/assets/QuestionList-*.js', route => route.fulfill({ status: 404, body: '' }));
+  await page.goto('/');
+  await page.getByRole('navigation', { name: '资料库入口' }).getByRole('link', { name: '全部题目' }).click();
+  await expect(page.locator('.route-error')).toContainText('页面暂时无法加载');
+  await expect(page.getByRole('banner').getByRole('link', { name: /前端资料库/ })).toBeVisible();
+  await page.getByRole('navigation', { name: '资料库入口' }).getByRole('link', { name: '首页' }).click();
+  await expect(page.getByRole('heading', { name: /知识有来处/ })).toBeVisible();
+});
+
 test('正文延迟加载不抢走用户已转到搜索框的焦点', async ({ page }) => {
   let release;
   const ready = new Promise(resolve => { release = resolve; });

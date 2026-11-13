@@ -4,6 +4,18 @@ import { mkdtemp, writeFile, readFile, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prerender } from '../scripts/prerender.mjs';
+
+test('生产壳层使用子路径图标并按页面拆分非首页视图', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /href="%BASE_URL%favicon\.svg"/);
+  const source = await readFile(new URL('../src/main.tsx', import.meta.url), 'utf8');
+  for (const name of ['QuestionList', 'LibraryList', 'LearningPage', 'LearningPath']) {
+    assert.match(source, new RegExp(`const ${name} = lazy\\(\\(\\) => import\\('\\./${name}'\\)`));
+    assert.doesNotMatch(source, new RegExp(`import \\{ ${name} \\} from '\\./${name}'`));
+  }
+  assert.match(source, /<RouteBoundary routeKey=/);
+});
+
 test('静态预渲染保留真实正文与分享元信息，排除草稿且可重复生成', async () => {
   const output=await mkdtemp(join(tmpdir(),'fe-prerender-'));
   try {

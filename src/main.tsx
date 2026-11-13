@@ -4,8 +4,8 @@ import { createRoot } from 'react-dom/client';
 import { articles, searchArticles, loadArticle, useQuestions, useSearchIndex } from './content';
 import { TableOfContents } from './TableOfContents';
 import type { Heading } from './ArticleContent';
-import { LibraryList } from './LibraryList';
 import { ReaderBoundary } from './ReaderBoundary';
+import { RouteBoundary } from './RouteBoundary';
 import { LoadRecovery } from './LoadRecovery';
 import { normalizeCategory } from './categories';
 import './style.css';
@@ -13,9 +13,6 @@ import './discovery.css';
 import siteConfig from '../site.config.json';
 import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
-import { QuestionList } from './QuestionList';
-import { LearningPage } from './LearningPage';
-import { LearningPath } from './LearningPath';
 import { findLearningPath } from './learning-paths';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
@@ -28,6 +25,10 @@ import { NavigationLink as Link } from './NavigationLink';
 import { navigationListReturn, readListReturn } from './list-return';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
+const QuestionList = lazy(() => import('./QuestionList').then((module) => ({ default: module.QuestionList })));
+const LibraryList = lazy(() => import('./LibraryList').then((module) => ({ default: module.LibraryList })));
+const LearningPage = lazy(() => import('./LearningPage').then((module) => ({ default: module.LearningPage })));
+const LearningPath = lazy(() => import('./LearningPath').then((module) => ({ default: module.LearningPath })));
 
 // 固定站点根目录，避免静态子路径或 history 导航改变资源相对地址。
 const baseElement = document.querySelector<HTMLBaseElement>('base') ?? document.createElement('base');
@@ -243,7 +244,9 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
-      {!id ? view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? <RouteBoundary routeKey={`${view}:${path?.id ?? ''}`}><Suspense fallback={<div className="route-loading" role="status"><span>LOADING</span><strong>正在准备{view === 'questions' ? '题库' : view === 'learning' ? '学习记录' : view === 'resources' ? '相关资料' : '知识笔记'}…</strong></div>}>
+        {view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} />}
+      </Suspense></RouteBoundary> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
