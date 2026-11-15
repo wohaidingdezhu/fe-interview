@@ -24,6 +24,7 @@ export const createRunnerDocument = (code: string, channel: string) => {
     const format = (value) => {
       if (typeof value === 'string') return value;
       if (typeof value === 'bigint') return value + 'n';
+      if (typeof value === 'number') return Object.is(value, -0) ? '-0' : String(value);
       if (value instanceof Error) return value.stack || value.message;
       try {
         const ancestors = [];
@@ -35,7 +36,7 @@ export const createRunnerDocument = (code: string, channel: string) => {
             ancestors.push(item);
           }
           return item;
-        }, 2);
+        }, 2) ?? String(value);
       } catch { return String(value); }
     };
     for (const level of ['log', 'info', 'warn', 'error']) {
