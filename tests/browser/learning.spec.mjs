@@ -80,15 +80,20 @@ test('正文资源失效可手动刷新恢复，保留清单与当前网址', as
   await expect(notice).toHaveCount(0);
 });
 
-test('阅读模块失效不会自动刷新，刷新后可以恢复', async ({ page }, testInfo) => {
+test('旧版阅读模块失效不会自动刷新，刷新到新版后可以恢复', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === 'chromium-dev', 'Vite preloadError 由生产构建产生');
-  await page.route('**/assets/ArticleContent-*.js', route => route.fulfill({ status: 404, body: '' }));
+  // 模拟仍打开旧版入口，部署后旧阅读模块 404，新入口引用另一资源地址。
+  await page.route('**/assets/index-*.js', async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(/ArticleContent-([\w-]+)\.js/g, 'ArticleContent-stale-$1.js');
+    await route.fulfill({ response, headers: { ...response.headers(), 'Cache-Control': 'no-store' }, body });
+  }, { times: 1 });
+  await page.route('**/assets/ArticleContent-stale-*.js', route => route.fulfill({ status: 404, body: '' }));
   await page.goto('/?view=questions&q=Q5');
   await page.getByRole('button', { name: '开始学习 →', exact: true }).click();
   await expect(page.getByRole('alert', { name: '内容加载恢复' })).toBeVisible();
   await expect(page.getByRole('button', { name: '标记已读并查看结果' })).toBeDisabled();
   const href = page.url();
-  await page.unroute('**/assets/ArticleContent-*.js');
   await page.getByRole('button', { name: '刷新并继续阅读' }).click();
   await expect(page.getByRole('button', { name: '标记已读并查看结果' })).toBeEnabled();
   await expect(page).toHaveURL(href);

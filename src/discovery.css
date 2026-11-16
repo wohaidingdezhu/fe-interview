@@ -2,8 +2,6 @@
 /* 窄屏使用下方的浮动导航与 dialog，避免与桌面目录重复显示。 */
 @media(max-width:1150px) { .workspace > .toc { display:none; } }
 .route-loading,.route-error { min-height:42vh; border-top:1px solid var(--line); padding-top:28px; }
-.route-loading { display:flex; flex-direction:column; gap:8px; color:#66796d; }
-.route-loading span { font:9px/1.4 'SFMono-Regular',Consolas,monospace; letter-spacing:2px; color:#8ba291; }
 .route-loading strong,.route-error > strong { font-family:'Songti SC','STSong',Georgia,serif; font-size:20px; font-weight:600; color:#294735; }
 .route-error { display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
 .route-error p { max-width:480px; margin:0; color:#718078; font-size:12px; line-height:1.8; }
