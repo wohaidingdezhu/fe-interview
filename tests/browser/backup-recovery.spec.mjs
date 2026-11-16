@@ -76,6 +76,20 @@ test('内容加载失败可先备份未保存修改，再在新页面导入恢�
   } finally { await restoredContext.close(); }
 });
 
+test('按需页面加载失败时可直接备份未保存的学习记录和清单', async ({ page }, testInfo) => {
+  await startUnsaved(page);
+  const chunk = testInfo.project.name === 'chromium-dev' ? '**/src/LibraryList.tsx' : '**/assets/LibraryList-*.js';
+  await page.route(chunk, route => route.fulfill({ status: 404, body: '' }));
+  await page.getByRole('banner').getByRole('link', { name: /前端资料库/ }).click();
+  await page.getByRole('link', { name: '阅读知识笔记 →', exact: true }).click();
+  const notice = page.getByRole('alert', { name: '页面加载失败' });
+  await expect(notice).toContainText('请先导出备份再刷新');
+  const backup = await exportBackup(page, notice, testInfo.outputPath('route-recovery-backup.json'));
+  expect(backup.learning.entries['q:5'].status).toBe('read');
+  expect(backup.study.keys).toEqual(['q:5']);
+  await expect(page).toHaveURL(/\?view=notes&collection=notes$/);
+});
+
 test('导出失败保留当前页和记录，并允许原地重试', async ({ page }, testInfo) => {
   await startUnsaved(page);
   await page.evaluate(() => {

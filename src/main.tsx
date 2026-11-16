@@ -15,6 +15,7 @@ import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
 import { findLearningPath } from './learning-paths';
 import { LearningControls } from './LearningControls';
+import { LearningBackupButton } from './LearningBackupButton';
 import { useLearning } from './useLearning';
 import { useStudySession } from './useStudySession';
 import { createStudySession, studyHref, shuffleStudyTargets, studyQuestion, skipToContentHref } from './study-session';
@@ -244,7 +245,7 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
-      {!id ? <RouteBoundary routeKey={`${view}:${path?.id ?? ''}`}><Suspense fallback={<div className="route-loading" role="status"><span>LOADING</span><strong>正在准备{view === 'questions' ? '题库' : view === 'learning' ? '学习记录' : view === 'resources' ? '相关资料' : '知识笔记'}…</strong></div>}>
+      {!id ? <RouteBoundary routeKey={`${view}:${path?.id ?? ''}`} unsavedBackup={learning.error || study.error ? <LearningBackupButton learning={learning} study={study} /> : undefined}><Suspense fallback={<div className="route-loading" role="status"><strong>正在准备{view === 'questions' ? '题库' : view === 'learning' ? '学习记录' : view === 'resources' ? '相关资料' : '知识笔记'}…</strong></div>}>
         {view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} />}
       </Suspense></RouteBoundary> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />

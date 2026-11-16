@@ -1,6 +1,6 @@
 import { Component, type ReactNode } from 'react';
 
-type RouteBoundaryProps = { children: ReactNode; routeKey: string };
+type RouteBoundaryProps = { children: ReactNode; routeKey: string; unsavedBackup?: ReactNode };
 
 export class RouteBoundary extends Component<RouteBoundaryProps, { failed: boolean }> {
   state = { failed: false };
@@ -12,10 +12,13 @@ export class RouteBoundary extends Component<RouteBoundaryProps, { failed: boole
   }
 
   render() {
-    return this.state.failed ? <section className="route-error" role="alert">
-      <span className="eyebrow">LOAD INTERRUPTED</span>
+    return this.state.failed ? <section className="route-error" role="alert" aria-label="页面加载失败">
       <strong>页面暂时无法加载</strong>
-      <p>网站可能刚刚更新，刷新后可以重新获取页面模块；已保存的学习记录不会受影响。</p>
+      <p>刷新后可重新加载当前页面。</p>
+      {this.props.unsavedBackup && <>
+        <p>本次访问有尚未保存的学习记录，请先导出备份再刷新。</p>
+        {this.props.unsavedBackup}
+      </>}
       <button type="button" onClick={() => window.location.reload()}>刷新页面</button>
     </section> : this.props.children;
   }
