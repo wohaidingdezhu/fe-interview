@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useQuestions, useSearchIndex } from './content';
-import { questionPage, articleHref } from './library-utils';
+import { questionPage, articleHref, exactQuestionNumber } from './library-utils';
 import { NavigationLink as Link, type Navigate } from './NavigationLink';
 import { LearningControls } from './LearningControls';
 import { normalizeCategory } from './categories';
@@ -16,7 +16,7 @@ export const QuestionList = ({ params, navigate, learning, study, startStudy, on
   const sort = requestedSort === 'number-asc' || requestedSort === 'number-desc' ? requestedSort : undefined;
   const progress = ['bookmarked', 'unread', 'read', 'review'].includes(params.get('progress') || '') ? params.get('progress')! : '';
   const categories = [...new Set(catalog.questions.map(q => q.category))], tags = [...new Set(catalog.questions.flatMap(q => q.tags))];
-  const search = useSearchIndex(query && !/^q[1-9]\d*$/i.test(query.trim()) ? query : '');
+  const search = useSearchIndex(exactQuestionNumber(query) ? '' : query);
   const ids = progress ? new Set(catalog.questions.filter(q => { const e = learning.data.entries[`q:${q.number}`]; return progress === 'bookmarked' ? e?.bookmarked : (e?.status ?? 'unread') === progress; }).map(q => q.number)) : undefined;
   const result = questionPage(catalog.questions, { query, category, tag, ids, sort, documents: search.documents, page: Number(params.get('page')) || 1, size: Number(params.get('size')) || 12 });
   const ready = !catalog.loading && !search.loading && !catalog.error && !search.error;

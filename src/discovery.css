@@ -1,6 +1,13 @@
 /* 发现知识与连续阅读：保留原有纸面绿，扩大内容层次和可点击区域。 */
 /* 窄屏使用下方的浮动导航与 dialog，避免与桌面目录重复显示。 */
 @media(max-width:1150px) { .workspace > .toc { display:none; } }
+.route-loading,.route-error { min-height:42vh; border-top:1px solid var(--line); padding-top:28px; }
+.route-loading { display:flex; flex-direction:column; gap:8px; color:#66796d; }
+.route-loading span { font:9px/1.4 'SFMono-Regular',Consolas,monospace; letter-spacing:2px; color:#8ba291; }
+.route-loading strong,.route-error > strong { font-family:'Songti SC','STSong',Georgia,serif; font-size:20px; font-weight:600; color:#294735; }
+.route-error { display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+.route-error p { max-width:480px; margin:0; color:#718078; font-size:12px; line-height:1.8; }
+.route-error button { min-height:42px; margin-top:8px; border:1px solid #cfdccc; border-radius:4px; padding:9px 15px; background:#f5f8f1; color:var(--green); }
 .home-page { padding-top: 8px; }
 .home-hero { position:relative; padding:42px 40px 44px; background:#f2f5ed; border:1px solid #e2e8d9; border-radius:3px; overflow:hidden; }
 .home-hero:after { content:'{ }'; position:absolute; right:25px; bottom:-40px; color:#dce5d3; font:180px/1 Georgia,serif; letter-spacing:-25px; pointer-events:none; }

@@ -1,11 +1,11 @@
 import { StudySaveRecovery } from './StudySaveRecovery';
 import { StrictMode, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { articles, searchArticles, loadArticle, useSearchIndex } from './content';
+import { articles, searchArticles, loadArticle, useQuestions, useSearchIndex } from './content';
 import { TableOfContents } from './TableOfContents';
 import type { Heading } from './ArticleContent';
-import { LibraryList } from './LibraryList';
 import { ReaderBoundary } from './ReaderBoundary';
+import { RouteBoundary } from './RouteBoundary';
 import { LoadRecovery } from './LoadRecovery';
 import { normalizeCategory } from './categories';
 import './style.css';
@@ -13,9 +13,6 @@ import './discovery.css';
 import siteConfig from '../site.config.json';
 import { ArticleHeader } from './ArticleHeader';
 import { HomePage } from './HomePage';
-import { QuestionList } from './QuestionList';
-import { LearningPage } from './LearningPage';
-import { LearningPath } from './LearningPath';
 import { findLearningPath } from './learning-paths';
 import { LearningControls } from './LearningControls';
 import { useLearning } from './useLearning';
@@ -23,13 +20,16 @@ import { useStudySession } from './useStudySession';
 import { createStudySession, studyHref, shuffleStudyTargets, studyQuestion, skipToContentHref } from './study-session';
 import { StudySessionBar } from './StudySessionBar';
 import type { LearningTarget } from './learning-view';
-import { articleIdFromLocation, libraryCounts, publicView } from './library-utils';
+import { articleHref, articleIdFromLocation, exactQuestionNumber, libraryCounts, publicView } from './library-utils';
 import { NavigationLink as Link } from './NavigationLink';
 import { navigationListReturn, readListReturn } from './list-return';
 const ArticleContent = lazy(() => import('./ArticleContent'));
 const CodePlayground = lazy(() => import('./CodePlayground').then((module) => ({ default: module.CodePlayground })));
+const QuestionList = lazy(() => import('./QuestionList').then((module) => ({ default: module.QuestionList })));
+const LibraryList = lazy(() => import('./LibraryList').then((module) => ({ default: module.LibraryList })));
+const LearningPage = lazy(() => import('./LearningPage').then((module) => ({ default: module.LearningPage })));
+const LearningPath = lazy(() => import('./LearningPath').then((module) => ({ default: module.LearningPath })));
 
-const articleHref = (id: string) => { return `?article=${encodeURIComponent(id)}`; };
 // 固定站点根目录，避免静态子路径或 history 导航改变资源相对地址。
 const baseElement = document.querySelector<HTMLBaseElement>('base') ?? document.createElement('base');
 baseElement.href = new URL(window.location.pathname.replace(/articles\/[a-z0-9-]+\/(?:index\.html)?$/, ''), window.location.origin).href;
@@ -53,7 +53,10 @@ const App = () => {
   const [body, setBody] = useState<{ id: string; content?: string; error?: string; retrying?: boolean }>({ id: '' });
   const [rendered, setRendered] = useState<{ body: typeof body; question: string; studyMode: boolean }>();
   const [loadAttempt, setLoadAttempt] = useState(0);
-  const search = useSearchIndex(query);
+  const searchedNumber = exactQuestionNumber(query);
+  const questionSearch = useQuestions(searchedNumber !== undefined);
+  const fullTextSearch = useSearchIndex(searchedNumber === undefined ? query : '');
+  const search = searchedNumber === undefined ? fullTextSearch : questionSearch;
   const route = new URL(location);
   const params = route.searchParams;
   const id = articleIdFromLocation(route.pathname, route.search);
@@ -71,7 +74,16 @@ const App = () => {
   const collection = articles.filter(item => categoryView === 'resources' ? item.section === 'resources' : categoryView === 'questions' && view !== 'home' ? item.questionCount > 0 : item.section !== 'resources');
   const categories = [...new Set(collection.map((item) => item.category))];
   const category = article?.category || normalizeCategory(params.get('category') || '');
-  const noteResults = query.trim() ? searchArticles(query, search.documents) : [];
+  const matchingQuestion = questionSearch.questions.find(item => item.number === searchedNumber);
+  const matchingTopic = matchingQuestion && articles.find(item => item.id === matchingQuestion.articleId);
+  const exactResult = matchingQuestion && matchingTopic ? [{
+    category: matchingTopic.category, section: matchingTopic.section, questionNumber: matchingQuestion.number,
+    title: `Q${matchingQuestion.number}｜${matchingQuestion.title}`,
+    href: articleHref(matchingTopic.id, `q${matchingQuestion.number}`), snippet: matchingTopic.title,
+  }] : [];
+  const searchResults = searchedNumber === undefined && query.trim()
+    ? searchArticles(query, fullTextSearch.documents)
+    : exactResult;
   const focusedHeading = question ? toc.find(heading => heading.id === question) : undefined;
   const onReaderReady = useCallback((ready: boolean) => {
     setRendered(ready ? { body, question, studyMode: inStudy } : undefined);
@@ -208,10 +220,10 @@ const App = () => {
           const target = event.target instanceof Element ? event.target.closest<HTMLElement>('a, button') : null;
           // Safari 点击链接或按钮不一定转移焦点，避免输入框先失焦并卸载结果。
           if (event.button === 0 && target) { event.preventDefault(); target.focus({ preventScroll: true }); }
-        }}><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${noteResults.length} 个知识结果`}</div>
-          {noteResults.slice(0, 6).map((item) => <Link key={item.href} href={item.href} navigate={navigate}><small>{item.questionNumber ? '题目' : item.section === 'resources' ? '资料' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></Link>)}
+        }}><div className="result-count" role="status">{search.loading ? '正在搜索题目和笔记…' : search.error ? '搜索暂时不可用' : `${searchResults.length} 个知识结果`}</div>
+          {searchResults.slice(0, 6).map((item) => <Link key={item.href} href={item.href} navigate={navigate}><small>{item.questionNumber ? '题目' : item.section === 'resources' ? '资料' : '笔记'} · {item.category}</small><strong>{item.title}</strong><span>{item.snippet}</span></Link>)}
           {search.error && <p role="alert">{search.error}<button onClick={() => { searchRef.current?.focus({ preventScroll: true }); search.retry(); }}>重试搜索</button></p>}
-          {!search.loading && !search.error && !noteResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
+          {!search.loading && !search.error && !searchResults.length && <p>没有找到相关内容，试试“React”或“性能”。</p>}
           <div className="search-all">{link(`?view=notes&q=${encodeURIComponent(query)}`, '查看专题与笔记 →')}{link(`?view=questions&q=${encodeURIComponent(query)}`, '查看全部题目结果 →')}{link(`?view=resources&q=${encodeURIComponent(query)}`, '查看相关资料 →')}</div>
         </div>}
       </div><span className="header-note"><i />整理知识，沉淀理解</span><button ref={menuButtonRef} className="menu-button" aria-label={menuOpen ? '关闭导航' : '打开导航'} aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '关闭' : '导航'}</button>
@@ -232,7 +244,9 @@ const App = () => {
     <div className={`workspace ${!id ? 'list-workspace' : ''} ${inStudy ? 'study-workspace' : ''}`}><main id="main" className="main" tabIndex={-1}>
       <LoadRecovery learning={learning} study={study} />
       {!inStudy && <StudySaveRecovery study={study} learning={learning} />}
-      {!id ? view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} /> : article ? <>
+      {!id ? <RouteBoundary routeKey={`${view}:${path?.id ?? ''}`}><Suspense fallback={<div className="route-loading" role="status"><span>LOADING</span><strong>正在准备{view === 'questions' ? '题库' : view === 'learning' ? '学习记录' : view === 'resources' ? '相关资料' : '知识笔记'}…</strong></div>}>
+        {view === 'questions' ? <QuestionList onListReady={onListReady} params={params} navigate={navigate} learning={learning} study={study} startStudy={startStudy} /> : view === 'learning' ? <>{path ? <LearningPath key={path.id} path={path} onListReady={onListReady} learning={learning} navigate={navigate} startStudy={startStudy} study={study} /> : <LearningPage onListReady={onListReady} learning={learning} navigate={navigate} params={params} startStudy={startStudy} study={study} />}</> : view === 'notes' || view === 'resources' ? <LibraryList onListReady={onListReady} key={view} params={params} navigate={navigate} /> : <HomePage navigate={navigate} learning={learning} study={study} />}
+      </Suspense></RouteBoundary> : article ? <>
         <ArticleHeader article={article} navigate={navigate} listReturn={readListReturn(window.history.state)} study={inStudy ? { question, returnHref: study.session?.returnSearch ?? '?view=learning' } : undefined} />
         {!inStudy && !article.questionCount && article.section !== 'resources' && <LearningControls itemKey={`a:${article.id}`} learning={learning} />}
         {learning.error && <p role="status">{learning.error}</p>}
