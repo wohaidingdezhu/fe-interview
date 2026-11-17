@@ -4,6 +4,7 @@
 .route-loading,.route-error { min-height:42vh; border-top:1px solid var(--line); padding-top:28px; }
 .route-loading strong,.route-error > strong { font-family:'Songti SC','STSong',Georgia,serif; font-size:20px; font-weight:600; color:#294735; }
 .route-error { display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+.main:has(> .load-recovery) .route-error { display:none; }
 .route-error p { max-width:480px; margin:0; color:#718078; font-size:12px; line-height:1.8; }
 .route-error button { min-height:42px; margin-top:8px; border:1px solid #cfdccc; border-radius:4px; padding:9px 15px; background:#f5f8f1; color:var(--green); }
 .home-page { padding-top: 8px; }

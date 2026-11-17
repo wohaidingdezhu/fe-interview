@@ -6,7 +6,19 @@ test('按需页面加载失败时保留导航并可返回首页', async ({ page 
   await page.route(chunk, route => route.fulfill({ status: 404, body: '' }));
   await page.goto('/');
   await page.getByRole('link', { name: '浏览全部题目 →', exact: true }).click();
-  await expect(page.getByRole('alert', { name: '页面加载失败' })).toContainText('页面暂时无法加载');
+  const recovery = page.getByRole('alert', { name: '内容加载恢复' });
+  const routeError = page.getByRole('alert', { name: '页面加载失败' });
+  if (testInfo.project.name === 'chromium-dev') {
+    await expect(recovery).toHaveCount(0);
+    await expect(routeError).toBeVisible();
+  } else {
+    await expect(recovery).toBeVisible();
+    await expect(routeError).toBeHidden();
+    await recovery.getByRole('button', { name: '暂不刷新' }).click();
+    await expect(recovery).toHaveCount(0);
+    await expect(routeError).toBeVisible();
+  }
+  await expect(routeError).toContainText('页面暂时无法加载');
   await page.getByRole('banner').getByRole('link', { name: /前端资料库/ }).click();
   await expect(page.getByRole('heading', { name: /知识有来处/ })).toBeVisible();
 });
