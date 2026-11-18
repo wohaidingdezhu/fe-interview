@@ -82,8 +82,10 @@ test('按需页面加载失败时可直接备份未保存的学习记录和清�
   await page.route(chunk, route => route.fulfill({ status: 404, body: '' }));
   await page.getByRole('banner').getByRole('link', { name: /前端资料库/ }).click();
   await page.getByRole('link', { name: '阅读知识笔记 →', exact: true }).click();
-  const notice = page.getByRole('alert', { name: '页面加载失败' });
-  await expect(notice).toContainText('请先导出备份再刷新');
+  // 生产构建与开发环境使用各自的资源恢复提示。
+  const dev = testInfo.project.name === 'chromium-dev';
+  const notice = page.getByRole('alert', { name: dev ? '页面加载失败' : '内容加载恢复' });
+  await expect(notice).toContainText(dev ? '请先导出备份再刷新' : '建议先导出备份再刷新');
   const backup = await exportBackup(page, notice, testInfo.outputPath('route-recovery-backup.json'));
   expect(backup.learning.entries['q:5'].status).toBe('read');
   expect(backup.study.keys).toEqual(['q:5']);
