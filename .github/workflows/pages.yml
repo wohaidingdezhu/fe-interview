@@ -29,34 +29,70 @@ jobs:
       - run: npm run typecheck
       # build 包含完整内容校验，并生成 .reports/content-quality.md。
       - run: npm run build
-      - run: npx playwright install --with-deps chromium webkit
-      - name: Verify WebKit save recovery
-        run: npx playwright test tests/browser/save-retry.spec.mjs --project=webkit --grep '连续学习重试|已排队'
-      - run: npm run test:e2e
-      - name: Browser failure report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: browser-failure-report
-          path: |
-            .reports/browser-report
-            .reports/browser-results
-          include-hidden-files: true
-          retention-days: 7
       - name: Content quality report
         if: always()
         run: |
           if [ -f .reports/content-quality.md ]; then
             cat .reports/content-quality.md >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Share production build with browser checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-build
+          path: dist
+          retention-days: 1
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
 
+  browser:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            browser: chromium
+          - project: webkit
+            browser: webkit
+          - project: mobile-webkit
+            browser: webkit
+          - project: chromium-dev
+            browser: chromium
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: browser-test-build
+          path: dist
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Verify WebKit save recovery
+        if: matrix.project == 'webkit'
+        run: npx playwright test tests/browser/save-retry.spec.mjs --project=webkit --grep '连续学习重试|已排队'
+      - name: Browser regression
+        run: npx playwright test --project=${{ matrix.project }}
+      - name: Browser failure report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure-report-${{ matrix.project }}
+          path: |
+            .reports/browser-report
+            .reports/browser-results
+          include-hidden-files: true
+          retention-days: 7
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, browser]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
