@@ -3968,5 +3968,61 @@
     "sources": ["https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream", "https://fetch.spec.whatwg.org/"],
     "technologyVersion": "Fetch 与 AbortSignal；示例使用应用自定义完成事件",
     "reviewedAt": "2026-11-12"
+  },
+  "Q419": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/process-model", "https://www.electronjs.org/docs/latest/tutorial/sandbox"],
+    "technologyVersion": "Electron 主进程、渲染进程与沙箱化 Preload",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q420": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/ipc", "https://www.electronjs.org/docs/latest/api/ipc-renderer"],
+    "technologyVersion": "Electron IPC、contextBridge 与消息序列化",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q421": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/context-isolation", "https://www.electronjs.org/docs/latest/tutorial/sandbox", "https://www.electronjs.org/docs/latest/tutorial/security#17-validate-the-sender-of-all-ipc-messages"],
+    "technologyVersion": "Electron 进程隔离、上下文隔离与沙箱",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q422": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/security", "https://www.electronjs.org/docs/latest/tutorial/context-isolation"],
+    "technologyVersion": "Electron 桌面能力接口与安全边界",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q423": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/ipc", "https://www.electronjs.org/docs/latest/api/ipc-renderer"],
+    "technologyVersion": "Electron IPC 请求、序列化与事件订阅",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q424": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/process-model", "https://www.electronjs.org/docs/latest/tutorial/ipc"],
+    "technologyVersion": "Electron 多窗口状态与并发更新",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q425": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/performance", "https://www.electronjs.org/docs/latest/api/utility-process"],
+    "technologyVersion": "Electron 性能分析与 utilityProcess",
+    "reviewedAt": "2026-11-18"
+  },
+  "Q426": {
+    "status": "published",
+    "quality": "complete",
+    "sources": ["https://www.electronjs.org/docs/latest/tutorial/distribution-overview", "https://www.electronjs.org/docs/latest/tutorial/code-signing", "https://www.electronjs.org/docs/latest/tutorial/updates", "https://www.electronjs.org/docs/latest/tutorial/asar-archives"],
+    "technologyVersion": "Electron 打包、签名和更新",
+    "reviewedAt": "2026-11-18"
   }
 }

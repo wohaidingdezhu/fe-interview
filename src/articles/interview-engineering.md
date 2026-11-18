@@ -2,11 +2,11 @@
 id: "interview-engineering"
 title: "前端构建与工程化面试题"
 category: "工程化"
-description: "收录 Q228–Q244 的参考答案、原理说明与配图。"
+description: "收录前端构建、工程化与 Electron 桌面应用面试题。"
 kind: "知识文章"
 tags: ["Webpack","Vite","工程化"]
 addedAt: "2026-10-08"
-updatedAt: "2026-10-09"
+updatedAt: "2026-11-18"
 order: 106
 status: draft
 quality: complete
@@ -265,5 +265,113 @@ SPA 通常在同一文档中进行客户端路由和状态更新，适合交互�
 SPA 要处理首屏脚本量、深链接、错误恢复与滚动状态；MPA 要考虑跨页交互连续性。MPA 的共享资源可命中缓存，不是每次都重新下载；SPA 结合 SSR/预渲染也能支持 SEO。按页面性质选择或混合，避免“某模式一定更快”的结论。
 
 参考：[资料 1](https://developer.mozilla.org/en-US/docs/Glossary/SPA) · [资料 2](https://web.dev/articles/rendering-on-the-web)。
+
+---
+
+## Q419｜Electron 的主进程、渲染进程和 Preload 分别做什么？
+
+适用：现代 Electron 的默认多进程模型。
+
+**面试回答**：Electron 使用 Chromium 渲染网页界面，并结合 Node.js 和原生系统能力构建桌面应用。每个应用有一个主进程，负责应用生命周期、创建和管理窗口，以及调用原生对话框、菜单等能力。每个窗口加载的网页运行在渲染进程中，例如 React 界面及其交互。
+
+Preload 是在渲染进程中、页面脚本运行前执行的脚本。启用上下文隔离时，它与页面脚本处于不同的 JavaScript 上下文，可以通过 `contextBridge` 暴露经过设计的接口。沙箱化的 Preload 只有受限的 Node.js 和 Electron API，不能假定它能使用完整 Node.js 环境。
+
+**追问**：Preload 是独立进程吗？不是，它属于渲染进程。窗口之间不能直接共享 JavaScript 对象状态，跨进程或跨窗口协作需要设计消息通道和数据所有权。
+
+参考：[Electron 进程模型](https://www.electronjs.org/docs/latest/tutorial/process-model) · [进程沙箱](https://www.electronjs.org/docs/latest/tutorial/sandbox)。
+
+---
+
+## Q420｜Electron 的 IPC 如何通信，如何选择调用方式？
+
+适用：Electron 的 `ipcMain`、`ipcRenderer` 与 `contextBridge`。
+
+**面试回答**：IPC 是进程间通信。页面点击“选择文件”后，可以调用 Preload 暴露的 `window.desktop.pickFile()`；Preload 使用 `ipcRenderer.invoke('file:pick')` 请求主进程，主进程通过 `ipcMain.handle('file:pick', handler)` 打开文件对话框，结果以 Promise 返回。通道名由应用定义，用户取消时应明确返回空结果，调用方也要处理请求失败。
+
+无需回复的渲染进程到主进程通知，可用 `ipcRenderer.send` 配合 `ipcMain.on`。主进程向指定页面推送事件可使用对应窗口的 `webContents.send`，Preload 内部注册监听并提供取消订阅的方法，组件卸载时清理监听器，避免重复响应。
+
+**追问**：传递任意 JavaScript 对象都可行吗？IPC 参数需要符合可序列化规则，DOM 对象、函数等不能直接当作普通消息传递。主进程应验证发送方、通道用途和参数，向页面暴露具体方法，而不是提供可任意发送的通用 IPC 接口。
+
+参考：[Electron IPC 指南](https://www.electronjs.org/docs/latest/tutorial/ipc) · [ipcRenderer API](https://www.electronjs.org/docs/latest/api/ipc-renderer)。
+
+---
+
+## Q421｜Electron 的进程隔离、上下文隔离和沙箱有什么区别？
+
+适用：启用上下文隔离与渲染进程沙箱的现代 Electron 应用。
+
+**面试回答**：进程隔离将主进程和渲染进程放在不同的操作系统进程，使用各自的内存空间并通过 IPC 交换消息。上下文隔离让同一渲染进程内的 Preload 和页面脚本运行在不同的 JavaScript 上下文中，各自的全局对象相互隔离，使用 `contextBridge` 暴露选定的能力。沙箱限制渲染进程可直接使用的系统能力，需要特权的工作由主进程处理。
+
+**追问**：开启隔离后，页面就可以安全调用任意 IPC 通道吗？应用仍需控制暴露给页面的能力。应为业务操作定义窄接口，在主进程校验发送方的 `webContents`、框架和可信来源以及参数，并处理页面导航、子框架和窗口生命周期。不要把 IPC 事件对象直接传给页面，也不要仅靠通道名称当作授权。
+
+参考：[上下文隔离](https://www.electronjs.org/docs/latest/tutorial/context-isolation) · [进程沙箱](https://www.electronjs.org/docs/latest/tutorial/sandbox) · [IPC 发送方校验](https://www.electronjs.org/docs/latest/tutorial/security#17-validate-the-sender-of-all-ipc-messages)。
+
+---
+
+## Q422｜Electron 应用如何设计安全的桌面能力接口？
+
+适用：加载本地页面或远程内容的 Electron 应用。
+
+**面试回答**：先划清信任边界：页面负责交互，Preload 只暴露业务必需的方法，主进程执行特权操作并负责授权。窗口通常保持 `contextIsolation: true`、`sandbox: true` 和 `nodeIntegration: false`；对于远程内容尤其不能开启 Node.js 集成。配置隔离只是基础，仍需限制页面导航和新窗口、设置合适的内容安全策略（CSP），并按需处理权限请求。
+
+例如文件选择只暴露 `pickFile()`，不要暴露让页面自行指定通道的 `send(channel, ...args)`。主进程对每个特权请求检查 `event.sender` 所属窗口及 `event.senderFrame` 的可信来源和框架，校验参数及允许的操作；来源 URL 应解析后按协议、域名和预期路径等规则检查，不能仅用字符串前缀判断。要同时考虑 iframe、窗口跳转和销毁等情况。
+
+**追问**：为什么开启上下文隔离后仍可能不安全？如果桥接接口能力过大，或主进程相信任意请求，受攻击的页面仍可通过已暴露接口滥用权限。事件订阅的回调也只应向页面传递业务数据，不直接传递 IPC 事件对象。
+
+参考：[Electron 安全指南](https://www.electronjs.org/docs/latest/tutorial/security) · [上下文隔离](https://www.electronjs.org/docs/latest/tutorial/context-isolation)。
+
+---
+
+## Q423｜Electron 中如何设计可靠的 IPC 请求和事件订阅？
+
+适用：`invoke` / `handle` 请求及主进程向页面推送事件。
+
+**面试回答**：把 IPC 当作跨边界的接口来设计：按业务定义通道、参数和结果；页面通过 `invoke` 等待 `handle` 的异步结果，处理 Promise 拒绝、用户取消和窗口关闭。传递的数据应符合结构化克隆规则，函数、DOM 对象等不能作为普通参数发送。不要使用同步 IPC 等待耗时操作，否则会阻塞调用方。
+
+主进程推送进度时，通过目标窗口的 `webContents.send` 发送可序列化数据。Preload 包装监听器，只把业务数据交给页面，并返回取消订阅函数；React 组件在 effect 清理阶段调用它。重复挂载、窗口销毁和任务取消都应考虑，避免重复通知和向已销毁的窗口发送消息。
+
+**追问**：调用失败和用户取消是一回事吗？不是。取消是预期业务结果，错误应有清晰的错误约定；跨进程错误可能丢失部分原始信息，不要依赖完整的错误对象或向页面泄露敏感路径。
+
+参考：[Electron IPC 指南](https://www.electronjs.org/docs/latest/tutorial/ipc) · [ipcRenderer API](https://www.electronjs.org/docs/latest/api/ipc-renderer)。
+
+---
+
+## Q424｜Electron 多窗口如何同步状态，避免数据覆盖？
+
+适用：设置窗口、主窗口等需要共享数据的场景。
+
+**面试回答**：不同窗口的页面各有运行环境，不能把某个窗口的内存对象当成共享状态。可以让主进程或专门的数据服务持有权威状态：窗口启动时请求快照，修改时发送意图，数据源校验并更新后，再向相关窗口广播新状态或变更。窗口重新打开或重载时重新获取快照，不能只依赖之前的广播。
+
+**追问**：两个窗口同时修改设置怎么办？需要明确冲突策略，例如由数据源串行处理修改、对不同字段合并，或带版本号提交并在版本冲突时提示重试。快照与订阅之间也可能发生更新，可用版本号识别遗漏并重新同步。涉及落盘时还应处理写入失败和应用意外退出；不要把广播成功误认为数据已持久化。
+
+参考：[Electron 进程模型](https://www.electronjs.org/docs/latest/tutorial/process-model) · [Electron IPC 指南](https://www.electronjs.org/docs/latest/tutorial/ipc)。
+
+---
+
+## Q425｜Electron 应用卡顿时如何定位和处理？
+
+适用：启动缓慢、界面掉帧或文件处理耗时等场景。
+
+**面试回答**：先量化并区分启动阶段、渲染进程和主进程的问题：用 Chromium 开发者工具的性能分析观察长任务与渲染；结合主进程日志和时间标记检查启动、磁盘与 IPC 耗时。主进程承担窗口和应用生命周期管理，长时间同步计算或同步文件操作会影响整个应用；渲染进程的长任务则会阻塞页面交互。
+
+处理时优先减少启动时不必要的工作、延迟加载非关键模块，I/O 优先使用异步接口。CPU 密集型任务可以根据隔离与通信需要放到 Worker 或独立的 utility process；`utilityProcess` 可从主进程启动具备 Node.js 能力的子进程。异步函数本身不会自动把 CPU 密集计算移出当前线程。
+
+**追问**：放到其他进程就一定更快吗？不一定。进程启动、数据序列化和传输都可能带来开销；要比较数据规模、任务频率和资源占用，并处理进程异常退出、取消、进度和清理。
+
+参考：[Electron 性能指南](https://www.electronjs.org/docs/latest/tutorial/performance) · [utilityProcess API](https://www.electronjs.org/docs/latest/api/utility-process)。
+
+---
+
+## Q426｜Electron 应用如何打包、签名和更新？
+
+适用：面向 macOS、Windows 或 Linux 分发桌面应用。
+
+**面试回答**：先使用 Electron Forge 等工具将应用代码、资源和 Electron 运行时打包，再根据目标系统生成安装包或分发产物。代码签名帮助操作系统和用户识别发布者并验证产物完整性；macOS、Windows 的签名和发布要求不同，macOS 分发还需根据渠道处理公证。发布前应在目标平台检查安装、启动和卸载，而不只看构建是否成功。
+
+更新流程通常包括检查版本、下载和校验更新、提示用户并在适当时机安装；还要处理下载中断、更新失败、用户数据兼容以及回退策略。Electron 内置更新能力与不同平台、安装格式和发布服务有关，选型时应核对对应工具文档，不能假定所有平台的流程相同。
+
+**追问**：把代码放进 ASAR 就能保护密钥吗？不能。ASAR 是应用资源归档格式，不是可靠的加密或保密方案；不要在客户端包中放置需要保密的服务端密钥。
+
+参考：[Electron 分发概览](https://www.electronjs.org/docs/latest/tutorial/distribution-overview) · [代码签名](https://www.electronjs.org/docs/latest/tutorial/code-signing) · [应用更新](https://www.electronjs.org/docs/latest/tutorial/updates) · [ASAR 归档](https://www.electronjs.org/docs/latest/tutorial/asar-archives)。
 
 ---
