@@ -20,7 +20,7 @@ export const articleIdFromLocation = (pathname: string, search: string) => {
   return /\/articles\/([a-z0-9-]+)\/?(?:index\.html)?$/.exec(pathname)?.[1];
 };
 export const exactQuestionNumber = (query: string) => {
-  const match = /^q([1-9]\d*)$/i.exec(query.trim());
+  const match = /^q:?([1-9]\d*)$/i.exec(query.trim());
   return match ? Number(match[1]) : undefined;
 };
 export const questionPage = (questions: QuestionEntry[], options: { query: string; category: string; tag: string; page: number; size: number; documents?: SearchDocument[]; ids?: Set<number>; sort?: QuestionSort }) => {

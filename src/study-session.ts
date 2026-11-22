@@ -68,9 +68,12 @@ export const studyProgress = (queue: LearningTarget[], data: LearningData) => {
 };
 
 export const studyDirectory = (queue: LearningTarget[], data: LearningData, query: string, status: LearningStatus | '') => {
-  const words = query.trim().toLocaleLowerCase(), exact = /^q([1-9]\d*)$/.exec(words);
+  const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return queue.map((target, index) => ({ ...target, index, status: data.entries[target.key]?.status ?? 'unread' })).filter(target =>
-    (!status || target.status === status) && (!words || (exact ? target.key === `q:${exact[1]}` : words.split(/\s+/).every(word => `${target.title} ${target.category}`.toLocaleLowerCase().includes(word)))));
+    (!status || target.status === status) && words.every(word => {
+      const question = /^q:?([1-9]\d*)$/.exec(word);
+      return question ? target.key === `q:${question[1]}` : `${target.title} ${target.category}`.toLocaleLowerCase().includes(word);
+    }));
 };
 
 // 只从当前公开目录生成标题与地址，不信任会话存储中的链接。

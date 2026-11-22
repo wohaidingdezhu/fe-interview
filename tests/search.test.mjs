@@ -80,3 +80,12 @@ test('题目结果排序优先标题，普通文章保持关键词搜索', async
   assert.deepEqual(searchHits(docs, '稳定引用').map(hit => hit.id), ['note']);
   assert.deepEqual(searchHits(docs, '   '), []);
 });
+
+test('全文搜索支持带冒号的题号及多词精确筛选', () => {
+  const docs = [
+    { id: 'one', text: 'React Q1 闭包', questionNumber: 1 },
+    { id: 'ten', text: 'React Q10 闭包', questionNumber: 10 },
+  ];
+  assert.deepEqual(searchHits(docs, 'React Q:1').map(hit => hit.id), ['one']);
+  assert.deepEqual(searchHits(docs, 'Q:10').map(hit => hit.id), ['ten']);
+});

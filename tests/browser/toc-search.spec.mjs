@@ -15,6 +15,9 @@ test('目录按题号精确查找、多词筛选、清空和跳转保持当前�
   await input.fill(' q1 ');
   await expect(directory.locator('.toc-links a')).toHaveCount(1);
   await expect(directory.locator('.toc-links a')).toHaveAttribute('href', /#q1$/);
+  await input.fill('Q:1');
+  await expect(directory.locator('.toc-links a')).toHaveCount(1);
+  await expect(directory.locator('.toc-links a')).toHaveAttribute('href', /#q1$/);
   await input.fill('找不到的标题');
   await expect(directory.getByRole('status')).toContainText('没有匹配');
   await expect(directory.locator('.toc-links a')).toHaveCount(0);
@@ -47,7 +50,7 @@ test('目录可搜索未展开章节的小标题，切换文章清除旧筛选',
   await directory.getByRole('link', { name: '延迟回调检查', exact: true }).click();
   await expect(page.getByRole('heading', { name: '延迟回调检查', exact: true })).toBeFocused();
   const search = page.getByRole('searchbox', { name: '搜索题目和笔记' });
-  await search.fill('Q5');
+  await search.fill('Q:5');
   await page.locator('.search-results').getByRole('link', { name: /Q5/ }).click();
   await expect(page.getByRole('heading', { name: /Q5｜/ })).toBeFocused();
   await expect((await openDirectory(page)).getByRole('searchbox', { name: '搜索本篇目录' })).toHaveValue('');

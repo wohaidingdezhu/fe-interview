@@ -2,7 +2,7 @@ export type SearchDocument = { id: string; text: string; title?: string; aliases
 export type SearchHit = SearchDocument & { snippet: string };
 const normalizedText = new WeakMap<SearchDocument, string>();
 export const searchHits = (documents: SearchDocument[], query: string): SearchHit[] => {
-  const terms = [...new Set(query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean))];
+  const terms = [...new Set(query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean).map(term => term.replace(/^q:([1-9]\d*)$/, 'q$1')))];
   const result: { hit: SearchHit; score: number }[] = [];
   if (!terms.length) return [];
   const questionTerms = terms.filter(term => /^q[1-9]\d*$/.test(term));

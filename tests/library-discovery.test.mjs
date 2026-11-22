@@ -17,6 +17,7 @@ test('题目筛选、精确 Q 编号、分页和全文命中保持正确', () =>
   assert.equal(questionPage(questions,{...base,page:999}).items[0].number,25);
   assert.equal(questionPage(questions,{...base,page:-1}).page,1);
   assert.deepEqual(questionPage(questions,{...base,query:'Q1'}).items.map(q=>q.number),[1]);
+  assert.deepEqual(questionPage(questions,{...base,query:'Q:1'}).items.map(q=>q.number),[1]);
   assert.equal(questionPage(questions,{...base,category:'React',tag:'基础'}).total,0);
   assert.deepEqual(questionPage(questions,{...base,ids:new Set([2,10])}).items.map(q=>q.number),[2,10]);
   assert.deepEqual(questionPage(questions,{...base,query:'闭包',documents:[{id:'topic',text:'闭包',questionNumber:8}]}).items.map(q=>q.number),[8]);

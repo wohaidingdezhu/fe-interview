@@ -96,6 +96,8 @@ test('清单目录按实际状态计数，组合搜索保留原序号，精确�
   assert.equal(studyDirectory(targets, data, 'Q1', '').length, 0);
   assert.equal(studyDirectory(targets, data, 'Q10', 'unread').length, 0);
   assert.equal(studyDirectory(targets, data, 'Q10', '').length, 1);
+  assert.equal(studyDirectory(targets, data, 'Q:10', '').length, 1);
+  assert.equal(studyDirectory(targets, data, 'React Q:1', '').length, 0);
   assert.deepEqual(studyDirectory(targets, data, '', 'unread').map(target => target.key), ['a:closure']);
 });
 

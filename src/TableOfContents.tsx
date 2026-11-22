@@ -9,7 +9,7 @@ import { studyHref } from './study-session';
 const isQuestion = (heading: Heading) => /^q[1-9]\d*$/.test(heading.id);
 
 export const filterHeadings = (headings: Heading[], query: string) => {
-  const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean).map(term => term.replace(/^q:([1-9]\d*)$/, 'q$1'));
   return headings.filter(heading => terms.every(term => /^q[1-9]\d*$/.test(term)
     ? heading.id === term : heading.title.toLocaleLowerCase().includes(term)));
 };
