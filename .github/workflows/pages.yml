@@ -53,8 +53,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, webkit, mobile-webkit, chromium-dev]
-        shard: [1, 2]
+        include:
+          - { project: chromium, shard: 1, total: 2 }
+          - { project: chromium, shard: 2, total: 2 }
+          - { project: mobile-webkit, shard: 1, total: 2 }
+          - { project: mobile-webkit, shard: 2, total: 2 }
+          - { project: webkit, shard: 1, total: 4 }
+          - { project: webkit, shard: 2, total: 4 }
+          - { project: webkit, shard: 3, total: 4 }
+          - { project: webkit, shard: 4, total: 4 }
+          - { project: chromium-dev, shard: 1, total: 4 }
+          - { project: chromium-dev, shard: 2, total: 4 }
+          - { project: chromium-dev, shard: 3, total: 4 }
+          - { project: chromium-dev, shard: 4, total: 4 }
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -71,7 +82,7 @@ jobs:
         if: matrix.project == 'webkit' && matrix.shard == 1
         run: npx playwright test tests/browser/save-retry.spec.mjs --project=webkit --grep '连续学习重试|已排队'
       - name: Browser regression
-        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
+        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.total }}
       - name: Browser failure report
         if: failure()
         uses: actions/upload-artifact@v4
