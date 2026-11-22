@@ -44,7 +44,7 @@ export const learningShelf = (targets: LearningTarget[], data: LearningData, par
   const filter = learningFilters.find(item => item.value === params.get('filter'))?.value ?? 'bookmarked';
   const category = normalizeCategory(params.get('category') || '');
   const query = (params.get('q') || '').trim().toLocaleLowerCase();
-  const exact = /^q([1-9]\d*)$/.exec(query);
+  const exact = /^q:?([1-9]\d*)$/.exec(query);
   const kind = ['questions', 'notes'].includes(params.get('kind') ?? '') ? params.get('kind')! : '';
   const sort = ['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? params.get('sort')! : filter === 'review' ? 'oldest' : 'recent';
   const size = [12, 24, 48].includes(Number(params.get('size'))) ? Number(params.get('size')) : 12;

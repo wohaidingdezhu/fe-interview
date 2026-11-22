@@ -30,6 +30,8 @@ test('学习目录按题与独立笔记统计，不把整个专题再次计入�
 test('学习页组合筛选与精确题号可从 URL 还原，不误命中 Q10', () => {
   const original = JSON.stringify(data);
   assert.deepEqual(learningShelf(targets, data, new URLSearchParams('q=Q1')).items.map(item => item.key), ['q:1']);
+  assert.deepEqual(learningShelf(targets, data, new URLSearchParams('q=Q%3A1')).items.map(item => item.key), ['q:1']);
+  assert.deepEqual(learningShelf(targets, data, new URLSearchParams('filter=review&q=q%3A10')).items.map(item => item.key), ['q:10']);
   const params = new URLSearchParams('filter=review&category=React+生态&q=React+闭包&page=99');
   const result = learningShelf(targets, data, params);
   assert.equal(result.category, 'React');
