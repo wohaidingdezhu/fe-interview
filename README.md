@@ -223,7 +223,7 @@ npm run import:resources -- /tmp/resource.json --dry-run
 
 源码仓库：`https://github.com/wohaidingdezhu/fe-interview`，当前为公开仓库。文档转换草稿 `draft_*_folder/` 仅保留在本地，不进入源码仓库。
 
-自动部署配置在 `.github/workflows/pages.yml`。推送到 `main` 或手动运行工作流时，安装 Node 24 和依赖，执行测试、类型检查和生产构建（包含内容校验），再将四种 Playwright 浏览器配置并行回归；全部通过后部署 Pages。PR 运行相同检查，不部署。质量报告会出现在 Actions 运行摘要中；各浏览器的失败报告分别作为 artifact 保存 7 天；检查失败时保留上一次网站版本。
+自动部署配置在 `.github/workflows/pages.yml`。推送到 `main` 或手动运行工作流时，安装 Node 24 和依赖，执行测试、类型检查和生产构建（包含内容校验），再将四种 Playwright 浏览器配置各拆为两组并行回归；全部通过后部署 Pages。PR 运行相同检查，不部署。质量报告会出现在 Actions 运行摘要中；各浏览器的失败报告分别作为 artifact 保存 7 天；检查失败时保留上一次网站版本。
 
 本地浏览器回归：首次运行 `npx playwright install chromium webkit`，然后运行 `npm run build && npm run test:e2e`。测试自动启动独立的 4186（生产预览）和 4187（开发模式）端口，使用隔离浏览器上下文，不读取日常学习记录。覆盖 Chromium、WebKit、手机 WebKit 视口及开发模式 StrictMode；报告位于 `.reports/browser-report/`，失败截图和 trace 位于 `.reports/browser-results/`。WebKit 自动测试不能代替真实 Safari 和手机虚拟键盘验收。
 

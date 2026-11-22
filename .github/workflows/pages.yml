@@ -53,15 +53,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - project: chromium
-            browser: chromium
-          - project: webkit
-            browser: webkit
-          - project: mobile-webkit
-            browser: webkit
-          - project: chromium-dev
-            browser: chromium
+        project: [chromium, webkit, mobile-webkit, chromium-dev]
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -73,17 +66,17 @@ jobs:
         with:
           name: browser-test-build
           path: dist
-      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npx playwright install --with-deps ${{ startsWith(matrix.project, 'chromium') && 'chromium' || 'webkit' }}
       - name: Verify WebKit save recovery
-        if: matrix.project == 'webkit'
+        if: matrix.project == 'webkit' && matrix.shard == 1
         run: npx playwright test tests/browser/save-retry.spec.mjs --project=webkit --grep '连续学习重试|已排队'
       - name: Browser regression
-        run: npx playwright test --project=${{ matrix.project }}
+        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
       - name: Browser failure report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-failure-report-${{ matrix.project }}
+          name: browser-failure-report-${{ matrix.project }}-${{ matrix.shard }}
           path: |
             .reports/browser-report
             .reports/browser-results
