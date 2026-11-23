@@ -33,3 +33,17 @@ test('控制台正确显示特殊数值', async ({ page }) => {
   await page.getByRole('button', { name: /运行/ }).click();
   await expect(page.locator('.console-log')).toContainText('NaN Infinity -Infinity -0 0');
 });
+
+test('难以格式化的对象不会中断后续代码', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`const value = Object.create(null);
+value.toJSON = () => { throw new Error('无法序列化'); };
+console.log(value);
+console.log('继续执行');`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  const output = page.locator('.console-log');
+  await expect(output).toHaveCount(2);
+  await expect(output.nth(0)).toContainText('[无法格式化的值]');
+  await expect(output.nth(1)).toContainText('继续执行');
+});

@@ -37,7 +37,10 @@ export const createRunnerDocument = (code: string, channel: string) => {
           }
           return item;
         }, 2) ?? String(value);
-      } catch { return String(value); }
+      } catch {
+        try { return String(value); }
+        catch { return '[无法格式化的值]'; }
+      }
     };
     for (const level of ['log', 'info', 'warn', 'error']) {
       const original = console[level].bind(console);
