@@ -144,3 +144,17 @@ test('独立笔记可单独勾选，刷新后只保留阅读标记，不恢复�
   await expect(page.locator('.learning-select input')).toHaveCount(0);
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).entries, storageKey)).toEqual(saved);
 });
+
+test('学习记录组合搜索保持题号精确匹配', async ({ page }) => {
+  await page.goto('/?view=learning&filter=unread&kind=questions');
+  const search = page.getByRole('searchbox', { name: '搜索学习记录', exact: true });
+  await search.fill('HTML Q1');
+  await expect(page.locator('.resource-card')).toHaveCount(1);
+  await expect(page.locator('.resource-card h2 a')).toHaveAttribute('href', /#q1$/);
+  await search.fill('HTML Q:1');
+  await expect(page.locator('.resource-card')).toHaveCount(1);
+  await expect(page.locator('.resource-card h2 a')).toHaveAttribute('href', /#q1$/);
+  await page.reload();
+  await expect(search).toHaveValue('HTML Q:1');
+  await expect(page.locator('.resource-card')).toHaveCount(1);
+});

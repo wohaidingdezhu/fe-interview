@@ -44,14 +44,17 @@ export const learningShelf = (targets: LearningTarget[], data: LearningData, par
   const filter = learningFilters.find(item => item.value === params.get('filter'))?.value ?? 'bookmarked';
   const category = normalizeCategory(params.get('category') || '');
   const query = (params.get('q') || '').trim().toLocaleLowerCase();
-  const exact = /^q:?([1-9]\d*)$/.exec(query);
+  const terms = query.split(/\s+/).filter(Boolean);
   const kind = ['questions', 'notes'].includes(params.get('kind') ?? '') ? params.get('kind')! : '';
   const sort = ['recent', 'oldest', 'title'].includes(params.get('sort') ?? '') ? params.get('sort')! : filter === 'review' ? 'oldest' : 'recent';
   const size = [12, 24, 48].includes(Number(params.get('size'))) ? Number(params.get('size')) : 12;
   const matching = targets.filter(target => matchesLearning(data, target.key, filter)
     && (!kind || target.key.startsWith(kind === 'questions' ? 'q:' : 'a:'))
     && (!category || normalizeCategory(target.category) === category)
-    && (!query || (exact ? target.key === `q:${exact[1]}` : query.split(/\s+/).every(word => `${target.title} ${target.category}`.toLocaleLowerCase().includes(word)))))
+    && terms.every(word => {
+      const question = /^q:?([1-9]\d*)$/.exec(word);
+      return question ? target.key === `q:${question[1]}` : `${target.title} ${target.category}`.toLocaleLowerCase().includes(word);
+    }))
     .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title, 'zh-CN', { numeric: true }) : sort === 'oldest'
       ? (data.entries[a.key]?.updatedAt ?? '').localeCompare(data.entries[b.key]?.updatedAt ?? '')
       : (data.entries[b.key]?.updatedAt ?? '').localeCompare(data.entries[a.key]?.updatedAt ?? ''));
