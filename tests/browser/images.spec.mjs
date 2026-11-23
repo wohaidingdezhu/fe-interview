@@ -53,3 +53,15 @@ test('图片链接保留原跳转，空说明图片可预览，加载失败可�
   await expect.poll(() => modal.locator('img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   await expect(modal.getByRole('alert')).toHaveCount(0);
 });
+
+test('正文中的同站资源链接交给浏览器打开', async ({ page }) => {
+  await page.route('**/content/closure-*.json', async route => {
+    const response = await route.fetch(), body = await response.json();
+    body.content += '\n\n[查看站点图标](/favicon.svg)';
+    await route.fulfill({ response, json: body });
+  });
+  await page.goto('/?article=closure');
+  await page.getByRole('link', { name: '查看站点图标', exact: true }).click();
+  await expect(page).toHaveURL(/\/favicon\.svg$/);
+  await expect.poll(() => page.evaluate(() => document.contentType)).toBe('image/svg+xml');
+});
