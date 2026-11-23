@@ -26,7 +26,7 @@ export const createRunnerDocument = (code: string, channel: string) => {
       if (typeof value === 'bigint') return value + 'n';
       if (typeof value === 'number') return Object.is(value, -0) ? '-0' : String(value);
       try {
-        if (value instanceof Error) return value.stack || value.message;
+        if (value instanceof Error) return String(value.stack || value.message);
         const ancestors = [];
         return JSON.stringify(value, function (_key, item) {
           if (typeof item === 'bigint') return item + 'n';
@@ -49,7 +49,7 @@ export const createRunnerDocument = (code: string, channel: string) => {
         post(level, values.map(format));
       };
     }
-    window.addEventListener('error', (event) => post('error', [event.error?.stack || event.message]));
+    window.addEventListener('error', (event) => post('error', [event.error ? format(event.error) : event.message]));
     window.addEventListener('unhandledrejection', (event) => post('error', [format(event.reason)]));
     post('system', ['sandbox-ready']);
     try {

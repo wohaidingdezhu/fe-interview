@@ -63,3 +63,27 @@ console.log('继续执行');`);
   await expect(output.nth(0)).toContainText('[无法格式化的值]');
   await expect(output.nth(1)).toContainText('继续执行');
 });
+
+test('异常对象的自定义堆栈不会中断控制台和后续执行', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`const error = new Error('示例');
+Object.defineProperty(error, 'stack', { value: () => 'custom stack' });
+console.log(error);
+console.log('继续执行');`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  const output = page.locator('.console-log');
+  await expect(output).toHaveCount(2);
+  await expect(output.nth(0)).toContainText('custom stack');
+  await expect(output.nth(1)).toContainText('继续执行');
+});
+
+test('异步抛出的自定义异常堆栈仍可显示', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`const error = new Error('异步示例');
+Object.defineProperty(error, 'stack', { value: () => 'async custom stack' });
+setTimeout(() => { throw error; }, 0);`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  await expect(page.locator('.console-error')).toContainText('async custom stack');
+});
