@@ -25,8 +25,8 @@ export const createRunnerDocument = (code: string, channel: string) => {
       if (typeof value === 'string') return value;
       if (typeof value === 'bigint') return value + 'n';
       if (typeof value === 'number') return Object.is(value, -0) ? '-0' : String(value);
-      if (value instanceof Error) return value.stack || value.message;
       try {
+        if (value instanceof Error) return value.stack || value.message;
         const ancestors = [];
         return JSON.stringify(value, function (_key, item) {
           if (typeof item === 'bigint') return item + 'n';

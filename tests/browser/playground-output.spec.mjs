@@ -47,3 +47,19 @@ console.log('继续执行');`);
   await expect(output.nth(0)).toContainText('[无法格式化的值]');
   await expect(output.nth(1)).toContainText('继续执行');
 });
+
+test('异常代理对象不会中断控制台和后续执行', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`const value = new Proxy({}, {
+  getPrototypeOf() { throw new Error('禁止读取原型'); },
+  get() { throw new Error('禁止读取属性'); }
+});
+console.log(value);
+console.log('继续执行');`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  const output = page.locator('.console-log');
+  await expect(output).toHaveCount(2);
+  await expect(output.nth(0)).toContainText('[无法格式化的值]');
+  await expect(output.nth(1)).toContainText('继续执行');
+});
