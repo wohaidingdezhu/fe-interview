@@ -173,3 +173,20 @@ test('大量导入记录按页核对，未知内容标识可搜索，筛选恢�
   await page.keyboard.press('Escape');
   expect(await state(page)).toEqual(before);
 });
+
+test('备份明细组合搜索精确匹配题号', async ({ page }) => {
+  await page.goto('/?view=learning');
+  await page.getByText('记录管理 · 备份与清理', { exact: true }).click();
+  const backup = { version: 1, entries: { 'q:1': entry(11), 'q:19': entry(11) } };
+  await select(page, backup);
+  const dialog = page.getByRole('dialog', { name: '导入备份预览' });
+  await dialog.getByText('查看记录变更明细', { exact: true }).click();
+  const search = dialog.getByRole('searchbox', { name: '搜索导入记录' });
+  const items = dialog.getByRole('list', { name: '备份记录变更明细' }).getByRole('listitem');
+  await search.fill('Q1 什么');
+  await expect(items).toHaveCount(1);
+  await expect(items.first()).toContainText('Q1｜');
+  await search.fill('Q:1 什么');
+  await expect(items).toHaveCount(1);
+  await expect(items.first()).toContainText('Q1｜');
+});

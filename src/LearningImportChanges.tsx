@@ -10,9 +10,12 @@ export const LearningImportChanges = ({ changes, targets }: { changes: LearningI
   const [filter, setFilter] = useState('changed'), [query, setQuery] = useState(''), [page, setPage] = useState(1);
   const heading = useRef<HTMLParagraphElement>(null), focusPage = useRef(false);
   const titles = useMemo(() => new Map(targets.map(target => [target.key, target.title])), [targets]);
-  const words = query.trim().toLocaleLowerCase(), exact = /^q:?([1-9]\d*)$/.exec(words);
+  const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   const matches = changes.filter(change => (filter === 'changed' ? change.kind !== 'retained' : change.kind === filter)
-    && (!words || (exact ? change.key === `q:${exact[1]}` : words.split(/\s+/).every(word => `${change.key} ${titles.get(change.key) ?? ''}`.toLocaleLowerCase().includes(word)))))
+    && words.every(word => {
+      const question = /^q:?([1-9]\d*)$/.exec(word);
+      return question ? change.key === `q:${question[1]}` : `${change.key} ${titles.get(change.key) ?? ''}`.toLocaleLowerCase().includes(word);
+    }))
     .sort((a, b) => a.key.localeCompare(b.key, 'zh-CN', { numeric: true }));
   const pages = Math.max(1, Math.ceil(matches.length / 8)), currentPage = Math.min(page, pages);
   useEffect(() => { setPage(value => Math.min(value, pages)); }, [pages]);

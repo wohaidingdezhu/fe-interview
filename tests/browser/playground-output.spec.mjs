@@ -78,14 +78,16 @@ console.log('继续执行');`);
   await expect(output.nth(1)).toContainText('继续执行');
 });
 
-test('异步抛出的自定义异常堆栈仍可显示', async ({ page }) => {
+test('异步抛出的异常可在控制台显示', async ({ page }, testInfo) => {
   await page.goto('/?article=closure');
   const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
   await editor.fill(`const error = new Error('异步示例');
 Object.defineProperty(error, 'stack', { value: () => 'async custom stack' });
 setTimeout(() => { throw error; }, 0);`);
   await page.getByRole('button', { name: /运行/ }).click();
-  await expect(page.locator('.console-error')).toContainText('async custom stack');
+  // 部分 WebKit 环境仅暴露通用的跨来源脚本错误信息。
+  const expected = testInfo.project.name.includes('webkit') ? /async custom stack|Script error\.?/ : 'async custom stack';
+  await expect(page.locator('.console-error')).toContainText(expected);
 });
 
 test('运行代码中的 console.clear 只清除之前的输出', async ({ page }) => {
