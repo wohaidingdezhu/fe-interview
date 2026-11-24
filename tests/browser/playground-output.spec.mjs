@@ -87,3 +87,18 @@ setTimeout(() => { throw error; }, 0);`);
   await page.getByRole('button', { name: /运行/ }).click();
   await expect(page.locator('.console-error')).toContainText('async custom stack');
 });
+
+test('运行代码中的 console.clear 只清除之前的输出', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`console.log('清除前');
+console.warn('旧警告');
+console.clear();
+console.log('清除后');`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  const consolePane = page.locator('.console-lines');
+  await expect(consolePane.locator('.console-log')).toHaveCount(1);
+  await expect(consolePane.locator('.console-log')).toContainText('清除后');
+  await expect(consolePane.locator('.console-warn')).toHaveCount(0);
+  await expect(consolePane).not.toContainText('清除前');
+});

@@ -26,11 +26,13 @@ export const CodePlayground = () => {
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.source !== iframeRef.current?.contentWindow) return;
-      const data = event.data as { source?: string; channel?: string; level?: LogLevel; values?: unknown[] };
+      const data = event.data as { source?: string; channel?: string; level?: LogLevel | 'clear'; values?: unknown[] };
       if (data?.source !== 'fe-js-playground' || data.channel !== channelRef.current || !data.level || !Array.isArray(data.values)) return;
+      const level = data.level;
+      if (level === 'clear') { setLogs([]); return; }
       const text = data.values.map(String).join(' ');
-      if (data.level === 'system' && text === 'sandbox-ready') return;
-      setLogs((current) => [...current.slice(-79), { id: ++sequenceRef.current, level: data.level!, text }]);
+      if (level === 'system' && text === 'sandbox-ready') return;
+      setLogs((current) => [...current.slice(-79), { id: ++sequenceRef.current, level, text }]);
     };
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);

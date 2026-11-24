@@ -49,6 +49,8 @@ export const createRunnerDocument = (code: string, channel: string) => {
         post(level, values.map(format));
       };
     }
+    const clearConsole = console.clear.bind(console);
+    console.clear = () => { clearConsole(); post('clear', []); };
     window.addEventListener('error', (event) => post('error', [event.error ? format(event.error) : event.message]));
     window.addEventListener('unhandledrejection', (event) => post('error', [format(event.reason)]));
     post('system', ['sandbox-ready']);
