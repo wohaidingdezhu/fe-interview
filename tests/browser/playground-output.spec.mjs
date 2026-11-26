@@ -104,3 +104,17 @@ console.log('清除后');`);
   await expect(consolePane.locator('.console-warn')).toHaveCount(0);
   await expect(consolePane).not.toContainText('清除前');
 });
+
+test('调试输出显示在控制台并可被清空', async ({ page }) => {
+  await page.goto('/?article=closure');
+  const editor = page.getByRole('textbox', { name: 'JavaScript 代码编辑器' });
+  await editor.fill(`console.debug('旧调试信息');
+console.clear();
+console.debug('新的调试信息', { count: 2 });`);
+  await page.getByRole('button', { name: /运行/ }).click();
+  const output = page.locator('.console-log');
+  await expect(output).toHaveCount(1);
+  await expect(output).toContainText('新的调试信息');
+  await expect(output).toContainText('"count": 2');
+  await expect(page.locator('.console-lines')).not.toContainText('旧调试信息');
+});

@@ -42,11 +42,11 @@ export const createRunnerDocument = (code: string, channel: string) => {
         catch { return '[无法格式化的值]'; }
       }
     };
-    for (const level of ['log', 'info', 'warn', 'error']) {
+    for (const level of ['log', 'debug', 'info', 'warn', 'error']) {
       const original = console[level].bind(console);
       console[level] = (...values) => {
         original(...values);
-        post(level, values.map(format));
+        post(level === 'debug' ? 'log' : level, values.map(format));
       };
     }
     const clearConsole = console.clear.bind(console);
